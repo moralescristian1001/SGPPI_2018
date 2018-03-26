@@ -1,0 +1,16 @@
+nav.navbar {
+	background-color: #196844 !important;
+}
+
+a.navbar-brand {
+	color: #E8C63E !important;
+	font-weight: bold;
+}
+
+a.dropdown-toggle {
+	color: #FFFFDC !important;
+}
+
+a.dropdown-toggle:hover {
+	background-color: #E8C63E !important;
+}
