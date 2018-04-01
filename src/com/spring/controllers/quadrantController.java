@@ -26,7 +26,7 @@ public class quadrantController {
 	@RequestMapping("pages/quadrant")
 	public ModelAndView sale(HttpServletRequest request, ModelMap model, HttpServletResponse response)
 			throws UnsupportedEncodingException {
-		if (request.getSession().getAttribute("user") != null) {
+		if (request.getSession().getAttribute("user") != null) {                                    
 //			System.out.println(dao.getAsignaturaMapper().selectByExample(new AsignaturaExample()));
 			model.addAttribute("user", (Usuarios)request.getSession().getAttribute("user"));
 			model.addAttribute("listAsig", dao.getAsignaturaMapper().selectByExample(new AsignaturaExample()));
