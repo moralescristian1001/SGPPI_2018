@@ -363,13 +363,13 @@
                            class="form-control" value="${idAsignatura}" />
                         <div class="form-group">
                            <label for="cliente">*Código:</label>
-                           <div class='input-group' id='fecha'>
+                           <div class='input-group col-lg-12' id='fecha'>
                               <input type="text" class="form-control" name="code" id="code" placeholder="Ingrese el codigo de la asignatura">
                            </div>
                         </div>
                         <div class="form-group">
                            <label for="empleado">*Asignatura:</label>
-                           <div class='input-group' id='fecha'>
+                           <div class='input-group col-lg-12' id='fecha'>
                               <input type="text" class="form-control" name="asig" id="asig"
                                  placeholder="Ingrese el nombre de la asignatura">
                            </div>
@@ -377,7 +377,7 @@
                         <div class="form-group ">
                            <label for="totalVenta">*Semestre:</label>
                            <div class='input-group' id='fecha'>
-                              <span class="input-group-addon"></span> 
+                              <span class="input-group-addon"><i class="glyphicon glyphicon-ok"></i></span> 
                               <select
                                  class="form-control" id="semes" name="semes">
                                  <option>Seleccione</option>

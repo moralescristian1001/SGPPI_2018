@@ -2,9 +2,7 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <jsp:include page="header.jsp" />
-
 <div id="wrapper">
-
 	<!-- Navigation -->
 	<nav class="navbar navbar-default navbar-static-top" role="navigation"
 		style="margin-bottom: 0">
@@ -302,7 +300,7 @@
 							class="form-control" value="${id_cuadrante}" />
 						<div class="form-group">
 							<label for="cliente">*Número:</label>
-							<div class='input-group' id='fecha'>
+							<div class='input-group col-lg-12' id='fecha'>
 								<select class="form-control" id="num" name="num">
 									<option>Seleccione</option>
 									<option>1</option>
@@ -315,7 +313,7 @@
 
 						<div class="form-group">
 							<label for="empleado">*Nombre:</label>
-							<div class='input-group' id='fecha'>
+							<div class='input-group col-lg-12' id='fecha'>
 								<input type="text" class="form-control" name="nomCuadra"
 									id="nomCuadra" placeholder="Ingrese el nombre del cuadrante">
 							</div>
@@ -323,16 +321,16 @@
 
 						<div class="form-group">
 							<label for="medioPago">*Descripción:</label>
-							<div class='input-group' id='fecha'>
+							<div class='input-group col-lg-12' id='fecha'>
 								<textarea class="form-control" rows="5" name="desCuadra"
 									id="desCuadra"
-									placeholder="Ingrese la descripci�n del cuadrante"></textarea>
+									placeholder="Ingrese la descripción del cuadrante"></textarea>
 							</div>
 						</div>
 						<div class="form-group ">
 							<label for="totalVenta">*Asignatura asociada:</label>
-							<div class='input-group' id='fecha'>
-								<span class="input-group-addon"></span> <select
+							<div class='input-group col-lg-12' id='fecha'>
+								<span class="input-group-addon"><i class="glyphicon glyphicon-ok"></i></span> <select
 									class="form-control" id="asigAso" name="asigAso" required>
 									<option value="0">Seleccione</option>
 									<c:forEach items="${listAsig}" var="listAs">
