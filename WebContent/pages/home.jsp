@@ -3,10 +3,7 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <jsp:include page="header.jsp" />
-<%
-	Usuarios usu = (Usuarios) request.getSession().getAttribute("user");
-	System.out.print(usu.getNombre());
-%>
+
 <div id="wrapper">
 
 	<!-- Navigation -->

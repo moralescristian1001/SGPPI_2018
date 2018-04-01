@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.mybatis.models.Asignatura;
 import com.mybatis.models.AsignaturaExample;
+import com.mybatis.models.Usuarios;
 import com.springMybatis.persistence.daoHelper;
 
 @Controller
@@ -25,6 +26,7 @@ public class sunModule {
 	public ModelAndView sale(HttpServletRequest request, ModelMap model, HttpServletResponse response)
 			throws UnsupportedEncodingException {
 		if(request.getSession().getAttribute("user") != null){
+			model.addAttribute("user", (Usuarios)request.getSession().getAttribute("user"));
 			model.addAttribute("listAsig", dao.getAsignaturaMapper().selectByExample(new AsignaturaExample()));
 			model.addAttribute("listCuadrantes", dao.getCuadranteMapper().getRecords());
 			model.addAttribute("ListEquipos", dao.getEquipoMapper().getRecords());
@@ -49,6 +51,7 @@ public class sunModule {
 	@RequestMapping("pages/sunModule/saveSunModulo")
 	public void saveSale(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
+		response.setCharacterEncoding("UTF-8");
 		try {
 			String idAsig = request.getParameter("idAsig");
 			String code = request.getParameter("code");
@@ -68,7 +71,7 @@ public class sunModule {
 			} else {
 				dao.getAsignaturaMapper().insert(asigna);
 			}
-
+			
 			object.put("status", "ok");
 			object.put("message", "Se ha creado correctamente la asignatura");
 		} catch (Exception e) {
@@ -83,6 +86,7 @@ public class sunModule {
 	@RequestMapping("pages/sunModule/deleteSunModule")
 	public void deleteSale(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
+		response.setCharacterEncoding("UTF-8");
 		try {
 			String idAsig = request.getParameter("idAsig");
 			if (idAsig != null && !idAsig.isEmpty() && !idAsig.equals("0") && !idAsig.equals("undefined")

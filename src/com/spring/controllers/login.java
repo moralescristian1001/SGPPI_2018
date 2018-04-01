@@ -35,6 +35,7 @@ public class login {
 			user.setCorreo(email);
 			
 			if(new UsuariosExample().validateLogin(user)){
+				
 				request.getSession().setAttribute("user", user);
 				object.put("status", "ok");
 			}else{
@@ -51,7 +52,20 @@ public class login {
 
 		writeObject(object, response);
 	}
-
+	@RequestMapping("pages/logout")
+	public void logOut(HttpServletRequest request, HttpServletResponse response) {
+		
+		try {
+						
+			request.getSession().setAttribute("user", null);
+			response.setCharacterEncoding("UTF-8");
+			request.getRequestDispatcher("../index.html").forward(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
 
 	public void writeObject(JSONObject object, HttpServletResponse response) {
 		try {

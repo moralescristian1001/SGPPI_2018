@@ -12,6 +12,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.mybatis.models.AsignaturaExample;
 import com.mybatis.models.Usuarios;
 import com.springMybatis.persistence.daoHelper;
 
@@ -23,6 +24,7 @@ public class home {
 	public ModelAndView sale(HttpServletRequest request, ModelMap model, HttpServletResponse response)
 			throws UnsupportedEncodingException {
 		if(request.getSession().getAttribute("user") != null){
+			model.addAttribute("user", (Usuarios)request.getSession().getAttribute("user"));
 			
 			return new ModelAndView("pages/home");
 		}else{

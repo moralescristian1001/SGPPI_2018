@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.mybatis.models.AsignaturaExample;
 import com.mybatis.models.Cuadrante;
 import com.mybatis.models.CuadranteExample;
+import com.mybatis.models.Usuarios;
 import com.springMybatis.persistence.daoHelper;
 
 @Controller
@@ -27,6 +28,7 @@ public class quadrantController {
 			throws UnsupportedEncodingException {
 		if (request.getSession().getAttribute("user") != null) {
 //			System.out.println(dao.getAsignaturaMapper().selectByExample(new AsignaturaExample()));
+			model.addAttribute("user", (Usuarios)request.getSession().getAttribute("user"));
 			model.addAttribute("listAsig", dao.getAsignaturaMapper().selectByExample(new AsignaturaExample()));
 			model.addAttribute("listCuadrantes", dao.getCuadranteMapper().getRecords());
 			model.addAttribute("ListEquipos", dao.getEquipoMapper().getRecords());
