@@ -33,7 +33,7 @@ function login() {
 					jQuery('#errorDiv').html(data.message);
 					jQuery('#errorDiv').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
-					location.href = "pages/home.jsp";
+					location.href = "pages/home.html";
 				}
 			} catch (err) {
 				jQuery('errorDiv').html(

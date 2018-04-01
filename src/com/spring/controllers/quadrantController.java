@@ -59,7 +59,6 @@ public class quadrantController {
 
 			Cuadrante cuadrant = new Cuadrante();
 			cuadrant.setNumero(Integer.parseInt(num));
-			;
 			cuadrant.setNombre(nomCuadra);
 			cuadrant.setDescripcion(desCuadra);
 			cuadrant.setIdAsignatura(Integer.parseInt(asigAso));
