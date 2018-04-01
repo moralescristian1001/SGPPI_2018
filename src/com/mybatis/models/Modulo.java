@@ -6,17 +6,20 @@ public class Modulo {
 	private String nombre;
 	private Object info;
 	private int[] permisos;
+	private String icono;
 
-	public Modulo(String nombre, Object info, int[] permiso) {
+	public Modulo(String nombre, Object info, int[] permiso, String icono) {
 		this.nombre = nombre;
 		this.info = info;
 		this.permisos = permiso;
+		this.icono = icono;
 	}
 
-	public Modulo(String nombre, Object info, int permiso) {
+	public Modulo(String nombre, Object info, int permiso, String icono) {
 		this.nombre = nombre;
 		this.info = info;
 		this.permisos = new int[] { permiso };
+		this.icono = icono;
 	}
 
 	public String getNombre() {
@@ -35,12 +38,20 @@ public class Modulo {
 		this.info = info;
 	}
 
-	public int[] getPermiso() {
+	public int[] getPermisos() {
 		return permisos;
 	}
 
-	public void setPermiso(int[] permiso) {
-		this.permisos = permiso;
+	public void setPermisos(int[] permisos) {
+		this.permisos = permisos;
+	}
+
+	public String getIcono() {
+		return icono;
+	}
+
+	public void setIcono(String icono) {
+		this.icono = icono;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -48,16 +59,20 @@ public class Modulo {
 		String menu = "";
 		for (Modulo modulo : modulos) {
 			boolean encuentra = false;
-			for (int i = 0; i < modulo.getPermiso().length; i++) {
-				if (modulo.getPermiso()[i] == cargo) {
-					encuentra = true;
-					break;
+			if (cargo == 6) {
+				encuentra = true;
+			} else {
+				for (int i = 0; i < modulo.getPermisos().length; i++) {
+					if (modulo.getPermisos()[i] == cargo) {
+						encuentra = true;
+						break;
+					}
 				}
 			}
 			if (encuentra) {
 				menu += "<li>";
-				String link = modulo.getInfo() instanceof String ? modulo.getInfo()+".html" : "#";  
-				menu += "<a href='"+link+ "'><i class='fa fa-dashboard fa-fw'></i>"
+				String link = modulo.getInfo() instanceof String ? modulo.getInfo() + ".html" : "#";
+				menu += "<a href='" + link + "'><i class='fa fa-" + modulo.getIcono() + " fa-fw'></i>"
 						+ modulo.getNombre() + "</a>";
 				if (modulo.getInfo() instanceof ArrayList<?>) {
 					menu += "<ul class='nav nav-second-level'>" + menu((ArrayList<Modulo>) modulo.getInfo(), cargo)

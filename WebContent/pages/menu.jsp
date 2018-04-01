@@ -192,26 +192,26 @@
 					ArrayList<Modulo> modulos = new ArrayList<Modulo>();
 
 					ArrayList<Modulo> usuarios = new ArrayList<Modulo>();
-					usuarios.add(new Modulo("Gestionar Usuarios", "users", 5));
-					usuarios.add(new Modulo("Gestionar Equipos", "team", 5));
+					usuarios.add(new Modulo("Gestionar Usuarios", "users", 5, "user-plus"));
+					usuarios.add(new Modulo("Gestionar Equipos", "team", 5, "group"));
 
 					ArrayList<Modulo> asesorias = new ArrayList<Modulo>();
-					asesorias.add(new Modulo("Agendar", "schedule", 3));
-					asesorias.add(new Modulo("Solicitar", "request", 1));
-					asesorias.add(new Modulo("Seguimiento", "tracing", new int[] { 1, 3 }));
+					asesorias.add(new Modulo("Agendar", "schedule", 3, "calendar-check-o"));
+					asesorias.add(new Modulo("Solicitar", "request", 1, "calendar-plus-o"));
+					asesorias.add(new Modulo("Seguimiento", "tracing", new int[] { 1, 3 }, "history"));
 
 					ArrayList<Modulo> events = new ArrayList<Modulo>();
-					events.add(new Modulo("Programar Evento", "social", 5));
-					events.add(new Modulo("Gestionar Rúbricas", "rubric", 5));
-					events.add(new Modulo("Gestionar Cuadrantes", "quadrant", 5));
+					events.add(new Modulo("Programar Evento", "social", 5, "bullhorn"));
+					events.add(new Modulo("Gestionar Rúbricas", "rubric", 5, "check-square"));
+					events.add(new Modulo("Gestionar Cuadrantes", "quadrant", 5, "sticky-note-o"));
 
 // 					modulos.add(new Modulo("Perfiles y Seguridad", "profile", new int[] { 1, 2, 3, 4, 5 }));
-					modulos.add(new Modulo("Usuarios", usuarios, 5));
-					modulos.add(new Modulo("Asignaturas", "sunModule", 5));
-					modulos.add(new Modulo("Asesorias", asesorias, new int[] { 1, 3 }));
-					modulos.add(new Modulo("Informes", "reports", 5));
-					modulos.add(new Modulo("Parametrización", events, 5));
-					modulos.add(new Modulo("Calificar", "qualify", new int[] { 2, 4 }));
+					modulos.add(new Modulo("Usuarios", usuarios, 5, "user"));
+					modulos.add(new Modulo("Asignaturas", "sunModule", 5, "book"));
+					modulos.add(new Modulo("Asesorias", asesorias, new int[] { 1, 3 }, "calendar"));
+					modulos.add(new Modulo("Informes", "reports", 5, "area-chart"));
+					modulos.add(new Modulo("Parametrización", events, 5, "edit"));
+					modulos.add(new Modulo("Calificar", "qualify", new int[] { 2, 4 }, "check"));
 
 					final int cargo = user.getIdCargo();
 					String menu = Modulo.menu(modulos, cargo);
