@@ -3,11 +3,11 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <jsp:include page="header.jsp" />
 <div id="wrapper">
-<jsp:include page="menu.jsp"></jsp:include>
+	<jsp:include page="menu.jsp"></jsp:include>
 	<div id="page-wrapper">
 		<div class="row">
 			<div class="col-lg-12">
-				<h1 class="page-header">Cuadrantes</h1>
+				<h1 class="page-header">Programar Asesoria</h1>
 			</div>
 			<!-- /.col-lg-12 -->
 		</div>
@@ -29,7 +29,7 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="panel panel-default">
-						<div class="panel-heading">Cuadrantes</div>
+						<div class="panel-heading">Asesoria</div>
 						<!-- /.panel-heading -->
 						<div class="panel-body">
 							<table width="100%"
@@ -87,7 +87,7 @@
 							class="form-control" value="${id_cuadrante}" />
 						<div class="form-group">
 							<label for="cliente">*Número:</label>
-							<div class='input-group col-lg-12' id='fecha'>
+							<div class='input-group' id='fecha'>
 								<select class="form-control" id="num" name="num">
 									<option>Seleccione</option>
 									<option>1</option>
@@ -100,7 +100,7 @@
 
 						<div class="form-group">
 							<label for="empleado">*Nombre:</label>
-							<div class='input-group col-lg-12' id='fecha'>
+							<div class='input-group' id='fecha'>
 								<input type="text" class="form-control" name="nomCuadra"
 									id="nomCuadra" placeholder="Ingrese el nombre del cuadrante">
 							</div>
@@ -108,16 +108,16 @@
 
 						<div class="form-group">
 							<label for="medioPago">*Descripción:</label>
-							<div class='input-group col-lg-12' id='fecha'>
+							<div class='input-group' id='fecha'>
 								<textarea class="form-control" rows="5" name="desCuadra"
 									id="desCuadra"
-									placeholder="Ingrese la descripción del cuadrante"></textarea>
+									placeholder="Ingrese la descripci�n del cuadrante"></textarea>
 							</div>
 						</div>
 						<div class="form-group ">
 							<label for="totalVenta">*Asignatura asociada:</label>
-							<div class='input-group col-lg-12' id='fecha'>
-								<span class="input-group-addon"><i class="glyphicon glyphicon-ok"></i></span> <select
+							<div class='input-group' id='fecha'>
+								<span class="input-group-addon"></span> <select
 									class="form-control" id="asigAso" name="asigAso" required>
 									<option value="0">Seleccione</option>
 									<c:forEach items="${listAsig}" var="listAs">

@@ -94,10 +94,6 @@
 										<input class="form-control" placeholder="Password"
 											name="password" id="password" type="password" value="">
 									</div>
-									<div class="checkbox">
-										<label> <input name="remember" type="checkbox">Recordar
-										</label>
-									</div>
 									<div class="alert alert-danger" role="alert" id="errorDiv"
 										style="display: none; width: 100%;">
 										<button type="button" class="close">

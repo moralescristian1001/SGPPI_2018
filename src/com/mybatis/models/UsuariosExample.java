@@ -56,6 +56,12 @@ public class UsuariosExample {
     	this.createCriteria().andClaveEqualTo(user.getClave()).andCorreoEqualTo(user.getCorreo());
     	List<Usuarios> u = dao.getUsuariosMapper().selectByExample(this);
     	if(u.size() == 1){
+    		user.setNombre(u.get(0).getNombre());
+    		user.setEstado(u.get(0).getEstado());
+    		user.setFechaNac(u.get(0).getFechaNac());
+    		user.setIdCargo(u.get(0).getIdCargo());
+    		user.setUsuario(u.get(0).getUsuario());
+    		user.setApellidos(u.get(0).getApellidos());
     		validate = true;
     	}
     	
