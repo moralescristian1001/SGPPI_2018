@@ -119,7 +119,6 @@ public class quadrantController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		;
 	}
 
 }

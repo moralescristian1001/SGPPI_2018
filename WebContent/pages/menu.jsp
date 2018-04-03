@@ -16,7 +16,7 @@
 			<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span>
 			<span class="icon-bar"></span> <span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="index.html">SGPPI</a>
+		<a class="navbar-brand" href="home.html">SGPPI</a>
 	</div>
 	<!-- /.navbar-header -->
 

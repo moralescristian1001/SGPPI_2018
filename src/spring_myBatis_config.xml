@@ -60,4 +60,9 @@
 		<property name="mapperInterface" value="com.mybatis.mappers.UsuariosMapper" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	<bean id="semestreMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="com.mybatis.mappers.SemestreMapper" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	
 </beans>

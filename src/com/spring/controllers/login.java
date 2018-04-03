@@ -55,8 +55,7 @@ public class login {
 	@RequestMapping("pages/logout")
 	public void logOut(HttpServletRequest request, HttpServletResponse response) {
 		
-		try {
-						
+		try {						
 			request.getSession().setAttribute("user", null);
 			response.setCharacterEncoding("UTF-8");
 			request.getRequestDispatcher("../index.html").forward(request, response);

@@ -3,6 +3,8 @@ package com.mybatis.mappers;
 import com.mybatis.models.Cargo;
 import com.mybatis.models.CargoExample;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface CargoMapper {
@@ -72,4 +74,6 @@ public interface CargoMapper {
 	 * @mbg.generated  Mon Mar 26 14:55:49 COT 2018
 	 */
 	int updateByPrimaryKey(Cargo record);
+	
+	List<Map<String, Object>> getRecords();
 }

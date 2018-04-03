@@ -10,6 +10,7 @@ import com.mybatis.mappers.EquipoMapper;
 import com.mybatis.mappers.EstudiantesxequiposMapper;
 import com.mybatis.mappers.ProfesoresxasignaturasMapper;
 import com.mybatis.mappers.RubricaxitemMapper;
+import com.mybatis.mappers.SemestreMapper;
 import com.mybatis.mappers.UsuariosMapper;
 
 public class daoHelper {
@@ -22,6 +23,7 @@ public class daoHelper {
 	private ProfesoresxasignaturasMapper profesoresxasignaturasMapper;
 	private RubricaxitemMapper rubricaxitemMapper;
 	private UsuariosMapper usuariosMapper;
+	private SemestreMapper semestreMapper;
 	
 	public daoHelper(){
 		ApplicationContext context = new ClassPathXmlApplicationContext("/spring_myBatis_config.xml");
@@ -33,6 +35,7 @@ public class daoHelper {
 		profesoresxasignaturasMapper = (ProfesoresxasignaturasMapper) context.getBean("profesoresxasignaturasMapper");
 		rubricaxitemMapper = (RubricaxitemMapper) context.getBean("rubricaxitemMapper");
 		usuariosMapper = (UsuariosMapper) context.getBean("usuariosMapper");
+		semestreMapper = (SemestreMapper) context.getBean("semestreMapper");
 	}
 
 	public AsignaturaMapper getAsignaturaMapper() {
@@ -97,6 +100,14 @@ public class daoHelper {
 
 	public void setUsuariosMapper(UsuariosMapper usuariosMapper) {
 		this.usuariosMapper = usuariosMapper;
+	}
+
+	public SemestreMapper getSemestreMapper() {
+		return semestreMapper;
+	}
+
+	public void setSemestreMapper(SemestreMapper semestreMapper) {
+		this.semestreMapper = semestreMapper;
 	}
 
 }
