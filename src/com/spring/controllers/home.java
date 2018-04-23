@@ -25,7 +25,6 @@ public class home {
 			throws UnsupportedEncodingException {
 		if(request.getSession().getAttribute("user") != null){
 			model.addAttribute("user", (Usuarios)request.getSession().getAttribute("user"));
-			
 			return new ModelAndView("pages/home");
 		}else{
 			

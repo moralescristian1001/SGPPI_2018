@@ -14,3 +14,13 @@ a.dropdown-toggle {
 a.dropdown-toggle:hover {
 	background-color: #E8C63E !important;
 }
+
+.schedule-td {
+	text-align: center;
+}
+
+.schedule-td:hover {
+	cursor: pointer !important;
+	background-color: #E8C63E !important;
+	color: #196844 !important;
+}

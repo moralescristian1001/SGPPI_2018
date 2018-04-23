@@ -4,6 +4,7 @@ import com.mybatis.models.Usuarios;
 import com.mybatis.models.UsuariosExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 public interface UsuariosMapper {
 
@@ -72,4 +73,8 @@ public interface UsuariosMapper {
 	 * @mbg.generated  Sun Apr 01 18:04:05 COT 2018
 	 */
 	int updateByPrimaryKey(Usuarios record);
+	
+	
+	@Select("SELECT EXISTS(SELECT 1 FROM usuarios WHERE cedula=#{cedula})")
+	boolean checkUserExists(@Param("cedula") String cedula);
 }

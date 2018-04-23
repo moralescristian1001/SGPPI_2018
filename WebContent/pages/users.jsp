@@ -76,7 +76,7 @@
 											String thAdicional = "";
 												switch (cargo.getIdCargo()) {
 													case 1 : //Estudiante
-														thAdicional = "<th>Semestre</th>";
+														thAdicional = "<th>Equipos</th>";
 														break;
 													case 2 ://Profesor
 														thAdicional = "<th>Asignaturas</th>";

@@ -1,3 +1,7 @@
+<%@page import="com.mybatis.models.Equipo"%>
+<%@page import="java.util.Iterator"%>
+<%@page import="com.mybatis.models.Asesorias"%>
+<%@page import="java.util.List"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ page contentType="text/html;charset=UTF-8"%>
@@ -33,33 +37,74 @@
 						<!-- /.panel-heading -->
 						<div class="panel-body">
 							<table width="100%"
-								class="table table-striped table-bordered table-hover"
+								class="table table-bordered"
 								id="dataTables-example">
 								<thead>
 									<tr>
-										<th>Número</th>
-										<th>Nombre</th>
-										<th>Descripción</th>
-										<th>Asignatura asociada</th>
-										<th>Acción</th>
+									<th>Hora</th>
+									<%
+									String[] diasSemana = new String[]{"Lunes", "Martes", "Miercoles", "Jueves","Viernes", "Sábado"};
+									for(String dia : diasSemana){
+									%>
+									
+										
+										<th><%=dia %></th>
+									
+									<%} %>
 									</tr>
 								</thead>
 								<tbody>
-									<c:forEach items="${listCuadrantes}" var="listCuad">
-										<tr>
-											<td><c:out value="${listCuad.numero}" /></td>
-											<td><c:out value="${listCuad.nombre}" /></td>
-											<td><c:out value="${listCuad.descripcion}" /></td>
-											<td><c:out value="${listCuad.nombreAsig}" /></td>
-											<td><input type="button" data-toggle="modal"
-												data-target="#myModal" class="btn btn-default pull-left"
-												onclick="updateCuadrantes(${listCuad.id_cuadrante},${listCuad.numero},'${listCuad.nombre}','${listCuad.descripcion}','${listCuad.nombreAsig}')"
-												value="Actualizar" /> <input type="button"
-												class="btn btn-default pull-left"
-												onclick="confirmationCuadra(${listCuad.id_cuadrante});"
-												value="Eliminar" /></td>
-										</tr>
-									</c:forEach>
+									<%
+										//desde las 6am hasta las
+										List<Asesorias> asesorias = (List<Asesorias>) request.getAttribute("listSchedules");
+										List<Equipo> equipos = (List<Equipo>) request.getAttribute("listTeams");
+										
+										for (int hora = 6; hora < 22; hora++) {
+									%>
+									<tr>
+										<td><%=hora == 12 ? hora + "PM" : ((hora % 12) + "" + (hora > 12 ? "PM" : "AM"))%></td>
+										<%
+											for (int dia = 1; dia < 7; dia++) {
+												%>
+										<td class="schedule-td">
+											<%
+													boolean encontrado = false;
+													for (Asesorias a : asesorias) {
+														
+														if (a.getHoraSemana() == hora && a.getDiaSemana() == dia) {
+																
+															String nombreEquipo = "";
+															for(Equipo equipo : equipos){
+																if(equipo.getIdEquipo() == a.getIdEquipo()){
+																	nombreEquipo = equipo.getNombre() + "(" + equipo.getCodigo() + ")";
+																	break;
+																}
+															}
+															%><div class="row">
+															<div class="col-sm-6">
+																<div class="text-left"><a href="javascript:modificarCitaForm(<%=a.getIdAsesoria()%>, <%=a.getIdEquipo()%>,<%=dia%>,<%=hora%>,'<%=diasSemana[dia-1]%>')"><i class="fa fa-edit fa-fw"><%=nombreEquipo%></i></a></div>
+															</div>
+															<div class="col-sm-6">
+															<div class="text-right"><a href="javascript:confirmationAsesoria(<%=a.getIdAsesoria()%>)"><i class="fa fa-calendar-times-o fa-fw"></i></a></div>
+															</div></div>
+															<%
+															
+															
+															encontrado = true;
+															break;
+														}
+													}
+												if(!encontrado){
+												%><a href="javascript:asignarCitaForm(<%=dia%>,<%=hora%>,'<%=diasSemana[dia-1]%>')"><i class='fa fa-calendar-plus-o fa-fw'></i></a> 
+												<%}%>
+										</td>
+										<%
+											}	
+										%>
+									</tr>
+									<%
+										}
+									%>
 								</tbody>
 							</table>
 							<!-- /.table-responsive -->
@@ -80,58 +125,38 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Modal Header</h4>
+						<h4 class="modal-title">Programación de Asesorias</h4>
 					</div>
 					<div class="modal-body">
-						<input type='hidden' id="idCuadra" name="idCuadra"
-							class="form-control" value="${id_cuadrante}" />
+						<input type='hidden' id="id_asesoria" name="id_asesoria"
+							class="form-control" />
+						<input type='hidden' id="dia_semana" name="dia_semana"
+							class="form-control" />
+						<input type='hidden' id="hora_semana" name="hora_semana"
+							class="form-control" />
 						<div class="form-group">
-							<label for="cliente">*Número:</label>
-							<div class='input-group' id='fecha'>
-								<select class="form-control" id="num" name="num">
-									<option>Seleccione</option>
-									<option>1</option>
-									<option>2</option>
-									<option>3</option>
-									<option>4</option>
-								</select>
+							<label for="dia-hora-asesoria">Dia y Hora:</label><span id="dia-hora-asesoria"></span><i class="fa fa-calendar fa-fw"></i>
+						</div>
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="form-group">
+									<label for="id_equipo">*Equipo:</label>
+									<div class='input-group'>
+										<select class="form-control" id="id_equipo" name="id_equipo" required>
+											<option value="-1">Seleccione el equipo...</option>
+											<c:forEach items="${listTeams}" var="equipo">
+												<option value="${equipo.idEquipo}">${equipo.nombre} (${equipo.codigo})</option>
+											</c:forEach>
+										</select>
+									</div>
+								</div>								
 							</div>
 						</div>
-
-						<div class="form-group">
-							<label for="empleado">*Nombre:</label>
-							<div class='input-group' id='fecha'>
-								<input type="text" class="form-control" name="nomCuadra"
-									id="nomCuadra" placeholder="Ingrese el nombre del cuadrante">
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label for="medioPago">*Descripción:</label>
-							<div class='input-group' id='fecha'>
-								<textarea class="form-control" rows="5" name="desCuadra"
-									id="desCuadra"
-									placeholder="Ingrese la descripci�n del cuadrante"></textarea>
-							</div>
-						</div>
-						<div class="form-group ">
-							<label for="totalVenta">*Asignatura asociada:</label>
-							<div class='input-group' id='fecha'>
-								<span class="input-group-addon"></span> <select
-									class="form-control" id="asigAso" name="asigAso" required>
-									<option value="0">Seleccione</option>
-									<c:forEach items="${listAsig}" var="listAs">
-										<option value="${listAs.idAsignatura}">${listAs.nombre}</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						<input type="button" class="btn btn-default pull-left"
-							name="guardar" value="Guardar" onclick="saveCuadra();"></input>
+							name="guardar" value="Guardar" onclick="saveAsesoria();"></input>
 					</div>
 				</div>
 			</div>
@@ -143,7 +168,7 @@
 <!-- /#page-wrapper -->
 
 <!-- /#wrapper -->
-<script src="../pagesJs/quadrant.js"></script>
+<script src="../pagesJs/schedule.js"></script>
 <script src="../vendor/jquery/jquery.min.js"></script>
 <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
 <script src="../vendor/metisMenu/metisMenu.min.js"></script>
@@ -152,10 +177,10 @@
 <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
 <script src="../dist/js/sb-admin-2.js"></script>
 <script>
-         $(document).ready(function() {
-             $('#dataTables-example').DataTable({
-                 responsive: true
-             });
-         });
-      </script>
+	$(document).ready(function() {
+		$('#dataTables-example').DataTable({
+			responsive : true
+		});
+	});
+</script>
 <jsp:include page="footer.jsp" />

@@ -950,6 +950,7 @@ public class UsuariosExample {
     	this.createCriteria().andClaveEqualTo(user.getClave()).andCorreoEqualTo(user.getCorreo());
     	List<Usuarios> u = dao.getUsuariosMapper().selectByExample(this);
     	if(u.size() == 1){
+    		user.setIdUsuario(u.get(0).getIdUsuario());
     		user.setNombre(u.get(0).getNombre());
     		user.setEstado(u.get(0).getEstado());
     		user.setFechaNac(u.get(0).getFechaNac());

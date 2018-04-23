@@ -4,6 +4,7 @@ import com.mybatis.models.Semestre;
 import com.mybatis.models.SemestreExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 public interface SemestreMapper {
     /**
@@ -93,4 +94,11 @@ public interface SemestreMapper {
      * @mbg.generated Mon Mar 26 15:00:45 COT 2018
      */
     int updateByPrimaryKey(Semestre record);
+    
+    /**
+     * Este metodo retorna el semestre actual
+     * 
+     */
+    Semestre selectSemestreActual();
+    
 }

@@ -11,6 +11,22 @@
 
 	<div id="page-wrapper">
 		<div class="row">
+			<div class="alert alert-danger alert-dismissible" role="alert" style="display:
+			<%
+			String errors = "";
+			if(request.getAttribute("errors") != null){
+				errors = String.valueOf(request.getAttribute("errors"));
+			%>
+			block;
+			<%	
+			}else{
+			%>
+			none;
+			<%}%>
+			"><%=errors%>
+			</div>
+		</div>
+		<div class="row">
 			<div class="col-lg-12">
 				<h1 class="page-header">Dashboard</h1>
 			</div>
