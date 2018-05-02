@@ -1,41 +1,38 @@
 var puerto = '8080';
-function asignarSolicitudForm(dia, hora, asesor, asesorNombre, diaString) {
-	jQuery('#asesor-nombre').html(asesorNombre);
+function solicitarCitaForm(dia, hora, diaString) {
+	
 	jQuery('#dia-hora-asesoria').html(
 			diaString + " de " + hora + ":00 a " + (hora + 1) + ":00");
 	jQuery("#dia_semana").val(dia);
 	jQuery("#hora_semana").val(hora);
-	jQuery("#id_asesor").val(asesor);
+	jQuery("#foot-MyModal").html('<div class="modal-footer" id="footer-div">\
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>\
+						<input type="button" class="btn btn-primary pull-left"\
+							name="guardar" value="Solicitar" onclick="saveSolicitud();"></input>\
+					</div>');
 	jQuery("#myModal").modal("show");
 }
-function modificarSolicitudForm(id_solicitud, id_equipo, dia, hora, diaString) {
+function verMiAsesoria(dia, hora, diaString, asesorNombre){
+	jQuery('#asesor-nombre').html("<label>Asesor:</label>" + asesorNombre + "<i class='fa fa-user fa-fw'></i>");
 	jQuery('#dia-hora-asesoria').html(
 			diaString + " de " + hora + ":00 a " + (hora + 1) + ":00");
 	jQuery("#dia_semana").val(dia);
 	jQuery("#hora_semana").val(hora);
-	
-	jQuery("#id_equipo").val(id_equipo);
-	jQuery("#id_asesoria").val(id_asesoria);
+	jQuery("#foot-MyModal").empty();
 	jQuery("#myModal").modal("show");
-}	
+	
+}
 
 function saveSolicitud(){
 	jQuery('#errorDiv').css('display', 'none');
-	var idEquipo = jQuery('#id_equipo').val();
+	
 	var diaSemana = jQuery('#dia_semana').val();
 	var horaSemana = jQuery('#hora_semana').val();
-	var idAsesoria = jQuery("#id_asesoria").val();
-	
-	
-	if(idEquipo == "" || idEquipo == "-1"){
-		jQuery('#errorDiv').html("Debe ingresar el equipo");
-		jQuery('#errorDiv').css('display', 'block');
-	    return;
-	}	
+		
 		
 	jQuery.ajax({
-		url : 'http://localhost:'+puerto+'/SGPPI_2018/pages/schedule/saveSchedule.html',
-		data: {id_asesoria: idAsesoria, id_equipo: idEquipo, dia_semana:diaSemana, hora_semana:horaSemana},
+		url : 'http://localhost:'+puerto+'/SGPPI_2018/pages/request/saveRequest.html',
+		data: {dia_semana:diaSemana, hora_semana:horaSemana},
 		success: function(o) {
 			if(o=="") {
 				return;
@@ -73,42 +70,45 @@ function confirmationSolicitud(id){
 
 function deleteSolicitud(id) {
 	jQuery('#errorDiv').css('display', 'none');
-	var idAsesoria = id;
+	var idSolicitud = id;
 	
-	if(idAsesoria == "" || idAsesoria== "" || idAsesoria== undefined){
-		jQuery('#errorDiv').html("No se encontró la asesoria");
+	if(idSolicitud == "" || idSolicitud == "" || idSolicitud == undefined){
+		jQuery('#errorDiv').html("No se encontró la solicitud");
 		jQuery('#errorDiv').css('display', 'block');
 	    return;
 	}
-	jQuery.ajax({
-		url : 'http://localhost:'+puerto+'/SGPPI_2018/pages/schedule/deleteSchedule.html',
-		data: {id_asesoria:idAsesoria},
-		success: function(o) {
-			if(o=="") {
-				return;
-			}
-			var data;
-			try {
-				data = jQuery.parseJSON(o);
-				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
-				}else if(data.status != undefined && data.status == 'ok'){
-					jQuery('#successDiv').html(data.message);
-		        	jQuery('#successDiv').css('display', 'block');
-		        	clear();
-		        	setTimeout(function(){ location.reload(); }, 500);
-				}else{
-					jQuery('errorDiv').html("Ocurri&oacute; un error eliminando la asesoria");
-					jQuery('errorDiv').css('display', 'block');
+	if(confirm("Esta seguro que desea eliminar su solicitd?")){
+		jQuery.ajax({
+			url : 'http://localhost:'+puerto+'/SGPPI_2018/pages/request/deleteRequest.html',
+			data: {id_solicitud:idSolicitud},
+			success: function(o) {
+				if(o=="") {
+					return;
 				}
-			} catch (err) {
-				jQuery('errorDiv').html("Ocurrió un error eliminando la asesoria");
-				jQuery('errorDiv').css('display', 'block');
-				return;
+				var data;
+				try {
+					data = jQuery.parseJSON(o);
+					if (data.status != undefined && data.status == 'errors') {
+						jQuery('#errorDiv').html(data.message);
+						jQuery('#errorDiv').css('display', 'block');
+					}else if(data.status != undefined && data.status == 'ok'){
+						jQuery('#successDiv').html(data.message);
+			        	jQuery('#successDiv').css('display', 'block');
+			        	clear();
+			        	setTimeout(function(){ location.reload(); }, 500);
+					}else{
+						jQuery('errorDiv').html("Ocurri&oacute; un error eliminando la solicitud");
+						jQuery('errorDiv').css('display', 'block');
+					}
+				} catch (err) {
+					jQuery('errorDiv').html("Ocurrió un error eliminando la solicitud");
+					jQuery('errorDiv').css('display', 'block');
+					return;
+				}
 			}
-		}
-	});
+		});
+	}
+	
 }
 
 function clear(){

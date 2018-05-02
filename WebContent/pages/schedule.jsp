@@ -1,3 +1,6 @@
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.text.DateFormat"%>
+<%@page import="com.mybatis.models.SolicitudAsesoria"%>
 <%@page import="com.mybatis.models.Equipo"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="com.mybatis.models.Asesorias"%>
@@ -36,21 +39,22 @@
 						<div class="panel-heading">Asesoria</div>
 						<!-- /.panel-heading -->
 						<div class="panel-body">
-							<table width="100%"
-								class="table table-bordered"
+							<table width="100%" class="table table-bordered"
 								id="dataTables-example">
 								<thead>
 									<tr>
-									<th>Hora</th>
-									<%
-									String[] diasSemana = new String[]{"Lunes", "Martes", "Miercoles", "Jueves","Viernes", "Sábado"};
-									for(String dia : diasSemana){
-									%>
-									
-										
-										<th><%=dia %></th>
-									
-									<%} %>
+										<th>Hora</th>
+										<%
+											String[] diasSemana = new String[]{"Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado"};
+											for (String dia : diasSemana) {
+										%>
+
+
+										<th><%=dia%></th>
+
+										<%
+											}
+										%>
 									</tr>
 								</thead>
 								<tbody>
@@ -58,48 +62,111 @@
 										//desde las 6am hasta las
 										List<Asesorias> asesorias = (List<Asesorias>) request.getAttribute("listSchedules");
 										List<Equipo> equipos = (List<Equipo>) request.getAttribute("listTeams");
+										List<SolicitudAsesoria> listRequests = (List<SolicitudAsesoria>)request.getAttribute("listRequests");
 										
+										String scriptsColor = "";
+										DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
 										for (int hora = 6; hora < 22; hora++) {
 									%>
 									<tr>
 										<td><%=hora == 12 ? hora + "PM" : ((hora % 12) + "" + (hora > 12 ? "PM" : "AM"))%></td>
 										<%
 											for (int dia = 1; dia < 7; dia++) {
-												%>
-										<td class="schedule-td">
+										%>
+										<td class="schedule-td" id="td-<%=dia + "-" + hora%>">
+											
 											<%
-													boolean encontrado = false;
-													for (Asesorias a : asesorias) {
-														
-														if (a.getHoraSemana() == hora && a.getDiaSemana() == dia) {
-																
-															String nombreEquipo = "";
-															for(Equipo equipo : equipos){
-																if(equipo.getIdEquipo() == a.getIdEquipo()){
-																	nombreEquipo = equipo.getNombre() + "(" + equipo.getCodigo() + ")";
-																	break;
+												boolean encontrado = false;
+											
+														for (Asesorias a : asesorias) {
+
+															if (a.getHoraSemana() == hora && a.getDiaSemana() == dia) {
+																if(!encontrado){
+																	%><div class="row"><%
 																}
-															}
-															%><div class="row">
-															<div class="col-sm-6">
-																<div class="text-left"><a href="javascript:modificarCitaForm(<%=a.getIdAsesoria()%>, <%=a.getIdEquipo()%>,<%=dia%>,<%=hora%>,'<%=diasSemana[dia-1]%>')"><i class="fa fa-edit fa-fw"><%=nombreEquipo%></i></a></div>
-															</div>
-															<div class="col-sm-6">
-															<div class="text-right"><a href="javascript:confirmationAsesoria(<%=a.getIdAsesoria()%>)"><i class="fa fa-calendar-times-o fa-fw"></i></a></div>
-															</div></div>
-															<%
-															
-															
-															encontrado = true;
-															break;
-														}
-													}
-												if(!encontrado){
-												%><a href="javascript:asignarCitaForm(<%=dia%>,<%=hora%>,'<%=diasSemana[dia-1]%>')"><i class='fa fa-calendar-plus-o fa-fw'></i></a> 
-												<%}%>
+																
+																int idEquipoSolicitud = -1;
+																if (a.getIdEquipo() == null) {
+																	
+																	//buscamos solicitudes
+																	boolean encuentraSolicitud = false;
+																	String nombreEquipo = "";
+																	for(SolicitudAsesoria s : listRequests){
+																		if(s.getHoraSemana() == hora && s.getDiaSemana() == dia){
+																			
+																			encuentraSolicitud = true;
+																			for (Equipo equipo : equipos) {
+																				if (equipo.getIdEquipo() == s.getIdEquipo()) {
+																					nombreEquipo = "Solicitud: " + equipo.getNombre() + "(" + equipo.getCodigo() + ")";
+																					break;
+																				}
+																			}
+																			%>
+																			<div class="col-sm-6">
+																				<div class="text-left">
+																					<a
+																						href="javascript:modificarCitaForm(<%=a.getIdAsesoria()%>, <%=s.getIdEquipo()%>,<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>',<%=s.getIdSolicitud()%>, '<%=df.format(s.getFechaSolicitud())%>')"><i
+																						class="fa fa-edit fa-fw"><%=nombreEquipo%></i></a>
+																				</div>
+																			</div><%
+																			
+																		}
+																	}
+																	if(!encuentraSolicitud){
+																		%>
+																		<div class="col-sm-6">
+																			<div class="text-left">
+																				<a
+																					href="javascript:modificarCitaForm(<%=a.getIdAsesoria()%>, <%=a.getIdEquipo()%>,<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>', '','')"><i
+																					class="fa fa-edit fa-fw">Sin Equipo</i></a>
+																			</div>
+																		</div><%
+																	}
+																} else {
+																	String nombreEquipo = "";
+																	for (Equipo equipo : equipos) {
+																		if (equipo.getIdEquipo() == a.getIdEquipo()) {
+																			nombreEquipo = equipo.getNombre() + "(" + equipo.getCodigo() + ")";
+																			break;
+																		}
+																	}
+																	
+																	%>
+																	<div class="col-sm-6">
+																		<div class="text-left">
+																			<a
+																				href="javascript:modificarCitaForm(<%=a.getIdAsesoria()%>, <%=a.getIdEquipo()%>,<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>', '', '')"><i
+																				class="fa fa-edit fa-fw"><%=nombreEquipo%></i></a>
+																		</div>
+																	</div><%
+																	
+																}
+																scriptsColor += "$('#td-" + dia + "-" + hora + "').css('backgroundColor','#D9EDF7');";
+																
+																%><div class="col-sm-6"><div class="text-right">
+																	<a
+																		href="javascript:confirmationAsesoria(<%=a.getIdAsesoria()%>)"><i
+																		class="fa fa-calendar-times-o fa-fw"></i></a>
+																</div>
+															</div> <%
+							if(!encontrado){
+								%></div><%
+							}
+ 	encontrado = true;
+ 					break;
+ 				}
+ 			}
+														
+ 			if (!encontrado) {
+ %><a
+											href="javascript:asignarCitaForm(<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>')"><i
+												class='fa fa-calendar-plus-o fa-fw'></i></a> <%
+ 	}
+ %></div>
 										</td>
 										<%
-											}	
+											}
 										%>
 									</tr>
 									<%
@@ -114,8 +181,6 @@
 					<!-- /.panel -->
 				</div>
 				<!-- /.col-lg-12 -->
-				<input type="button" data-toggle="modal" data-target="#myModal"
-					class="btn btn-default pull-left" name="guardar" value="Nuevo"></input>
 			</div>
 		</form>
 		<!-- Modal -->
@@ -129,33 +194,40 @@
 					</div>
 					<div class="modal-body">
 						<input type='hidden' id="id_asesoria" name="id_asesoria"
-							class="form-control" />
-						<input type='hidden' id="dia_semana" name="dia_semana"
-							class="form-control" />
-						<input type='hidden' id="hora_semana" name="hora_semana"
-							class="form-control" />
+							class="form-control" /> <input type='hidden' id="dia_semana"
+							name="dia_semana" class="form-control" /> <input type='hidden'
+							id="hora_semana" name="hora_semana" class="form-control" />
+						<input type='hidden'
+							id="id_solicitud" name="id_solicitud" class="form-control" />
 						<div class="form-group">
-							<label for="dia-hora-asesoria">Dia y Hora:</label><span id="dia-hora-asesoria"></span><i class="fa fa-calendar fa-fw"></i>
+							<label for="dia-hora-asesoria">Dia y Hora:</label><span
+								id="dia-hora-asesoria"></span><i class="fa fa-calendar fa-fw"></i>
 						</div>
 						<div class="row">
 							<div class="col-sm-12">
 								<div class="form-group">
 									<label for="id_equipo">*Equipo:</label>
 									<div class='input-group'>
-										<select class="form-control" id="id_equipo" name="id_equipo" required>
-											<option value="-1">Seleccione el equipo...</option>
+										<select class="form-control" id="id_equipo" name="id_equipo"
+											required>
+											<option value="-1">Sin equipo programado...</option>
 											<c:forEach items="${listTeams}" var="equipo">
-												<option value="${equipo.idEquipo}">${equipo.nombre} (${equipo.codigo})</option>
+												<option value="${equipo.idEquipo}">${equipo.nombre}
+													(${equipo.codigo})</option>
 											</c:forEach>
 										</select>
 									</div>
-								</div>								
+								</div>
 							</div>
+							
+						</div>
+						<div class="form-group">
+							<span id="fecha-solicitud"></span>
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						<input type="button" class="btn btn-default pull-left"
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<input type="button" class="btn btn-default pull-left btn-primary"
 							name="guardar" value="Guardar" onclick="saveAsesoria();"></input>
 					</div>
 				</div>
@@ -183,4 +255,13 @@
 		});
 	});
 </script>
+<%
+	if(!scriptsColor.equals("")){
+		%>
+		<script>
+		<%=scriptsColor%>
+		</script>
+		<% 
+	}
+%>
 <jsp:include page="footer.jsp" />

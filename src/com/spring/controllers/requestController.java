@@ -2,10 +2,9 @@ package com.spring.controllers;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,9 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.mybatis.models.Asesorias;
 import com.mybatis.models.AsesoriasExample;
 import com.mybatis.models.Equipo;
-import com.mybatis.models.EquipoExample;
-import com.mybatis.models.Estudiantesxequipos;
-import com.mybatis.models.EstudiantesxequiposExample;
+import com.mybatis.models.Semestre;
 import com.mybatis.models.SolicitudAsesoria;
 import com.mybatis.models.SolicitudAsesoriaExample;
 import com.mybatis.models.Usuarios;
@@ -43,40 +40,32 @@ public class requestController {
 			Usuarios usu = (Usuarios) request.getSession().getAttribute("user");
 			model.addAttribute("user", usu);
 			
-			//obtenemos el semestre actual
-			int idSemestreActual = dao.getSemestreMapper().selectSemestreActual().getIdSemestre();
-
-			//equipos del semestra actual
-			EquipoExample eEx = new EquipoExample();
-			eEx.createCriteria().andIdSemestreEqualTo(idSemestreActual);
-			List<Equipo> equipos = dao.getEquipoMapper().selectByExample(eEx);
-
-			//obteniendo el equipo del usuario
-			EstudiantesxequiposExample axeEx = new EstudiantesxequiposExample();
-			axeEx.createCriteria().andIdEstudianteEqualTo(usu.getIdUsuario())
-					.andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
-			List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(axeEx);
-			
 			
 			//si el usuario tiene un equipo y es de este semestre
-			if (!exes.isEmpty() && exes.size() == 1) {
+			if (request.getSession().getAttribute("team") != null) {
 				
-				Equipo equipoEstudiante = dao.getEquipoMapper().selectByPrimaryKey(exes.get(0).getIdEquipo());
+				Equipo equipoEstudiante = (Equipo)request.getSession().getAttribute("team");
+				
+				
+				List<Integer> cargosAsesores = new ArrayList<>();
+				cargosAsesores.add(3);
+				cargosAsesores.add(6);
 				
 				UsuariosExample usuEx = new UsuariosExample();
-				usuEx.createCriteria().andIdCargoEqualTo(3).andEstadoEqualTo(true);
+				usuEx.createCriteria().andIdCargoIn(cargosAsesores).andEstadoEqualTo(true);
 
 				List<Usuarios> asesores = dao.getUsuariosMapper().selectByExample(usuEx);
 
 				AsesoriasExample aEx = new AsesoriasExample();
-				aEx.createCriteria().andIdSemestreEqualTo(idSemestreActual);
+				aEx.createCriteria().andIdSemestreEqualTo(((Semestre)request.getSession().getAttribute("semestre")).getIdSemestre());
 				List<Asesorias> asesorias = dao.getAsesoriasMapper().selectByExample(aEx);
 
 				SolicitudAsesoriaExample saEx = new SolicitudAsesoriaExample();
 				saEx.createCriteria().andAceptadaEqualTo(false).andIdEquipoEqualTo(equipoEstudiante.getIdEquipo());
 
 				List<SolicitudAsesoria> solicitudes = dao.getSolicitudAsesoriaMapper().selectByExample(saEx);
-
+				
+				model.addAttribute("equipoEstudiante", equipoEstudiante);
 				model.addAttribute("listAsesorias", asesorias);
 				model.addAttribute("listSolicitudes", solicitudes);
 				model.addAttribute("listAsesores", asesores);
@@ -101,44 +90,24 @@ public class requestController {
 	}
 
 	@RequestMapping("pages/request/saveRequest")
-	public void saveSaleSchedule(HttpServletRequest request, HttpServletResponse response) {
+	public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
 		try {
-
-			Usuarios estudiante = (Usuarios) request.getSession().getAttribute("user");
 			
-			int idSemestreActual = dao.getSemestreMapper().selectSemestreActual().getIdSemestre();
+			Equipo equipoEstudiante = (Equipo)request.getSession().getAttribute("team");
 			
-			//equipos del semestra actual
-			EquipoExample eEx = new EquipoExample();
-			eEx.createCriteria().andIdSemestreEqualTo(idSemestreActual);
-			List<Equipo> equipos = dao.getEquipoMapper().selectByExample(eEx);
-			
-			EstudiantesxequiposExample axeEx = new EstudiantesxequiposExample();
-			axeEx.createCriteria().andIdEstudianteEqualTo(estudiante.getIdUsuario())
-					.andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
-			List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(axeEx);
-			
-			
-			
-			String idSolicitud = request.getParameter("id_asesoria");
 			int diaSemana = Integer.parseInt(request.getParameter("dia_semana"));
 			int horaSemana = Integer.parseInt(request.getParameter("hora_semana"));
 
 			SolicitudAsesoria solicitud = new SolicitudAsesoria();
-			solicitud.setIdEquipo(exes.get(0).getIdEquipo());
+			solicitud.setIdEquipo(equipoEstudiante.getIdEquipo());
 			solicitud.setDiaSemana(diaSemana);
 			solicitud.setHoraSemana(horaSemana);
 			solicitud.setAceptada(false);
+			solicitud.setFechaSolicitud(new Date());
 			
-
-			if (idSolicitud != null && !idSolicitud.isEmpty() && !idSolicitud.equals("0")
-					&& !idSolicitud.equals("undefined") && !idSolicitud.equals("null")) {
-				solicitud.setIdSolicitud(Integer.parseInt(idSolicitud));
-				dao.getSolicitudAsesoriaMapper().updateByPrimaryKey(solicitud);
-			} else {
-				dao.getSolicitudAsesoriaMapper().insert(solicitud);
-			}
+			dao.getSolicitudAsesoriaMapper().insert(solicitud);
+			
 
 			object.put("status", "ok");
 			object.put("message", "Se ha creado la solicitud correctamente");
@@ -152,7 +121,7 @@ public class requestController {
 
 	@SuppressWarnings("unchecked")
 	@RequestMapping("pages/request/deleteRequest")
-	public void deleteSchedule(HttpServletRequest request, HttpServletResponse response) {
+	public void deleteRequest(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
 		try {
 			String idSolicitud = request.getParameter("id_solicitud");

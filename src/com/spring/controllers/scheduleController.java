@@ -16,10 +16,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.mybatis.models.Asesorias;
 import com.mybatis.models.AsesoriasExample;
-import com.mybatis.models.Cuadrante;
-import com.mybatis.models.CuadranteExample;
 import com.mybatis.models.Equipo;
 import com.mybatis.models.EquipoExample;
+import com.mybatis.models.SolicitudAsesoria;
+import com.mybatis.models.SolicitudAsesoriaExample;
 import com.mybatis.models.Usuarios;
 import com.springMybatis.persistence.daoHelper;
 
@@ -38,15 +38,21 @@ public class scheduleController {
 			model.addAttribute("user", (Usuarios) request.getSession().getAttribute("user"));
 
 			int idSemestreActual = dao.getSemestreMapper().selectSemestreActual().getIdSemestre();
-			
+
 			EquipoExample eEx = new EquipoExample();
 			eEx.createCriteria().andIdSemestreEqualTo(idSemestreActual);
 			List<Equipo> equipos = dao.getEquipoMapper().selectByExample(eEx);
 
 			AsesoriasExample aEx = new AsesoriasExample();
-			aEx.createCriteria().andIdSemestreEqualTo(idSemestreActual).andIdAsesorEqualTo(usu.getIdUsuario())
-					.andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
+			aEx.createCriteria().andIdSemestreEqualTo(idSemestreActual).andIdAsesorEqualTo(usu.getIdUsuario());
 			List<Asesorias> asesorias = dao.getAsesoriasMapper().selectByExample(aEx);
+
+			SolicitudAsesoriaExample sEx = new SolicitudAsesoriaExample();
+			sEx.createCriteria().andAceptadaEqualTo(false)
+					.andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
+			List<SolicitudAsesoria> solicitudes = dao.getSolicitudAsesoriaMapper().selectByExample(sEx);
+
+			model.addAttribute("listRequests", solicitudes);
 			model.addAttribute("listSchedules", asesorias);
 			model.addAttribute("listTeams", equipos);
 			request.setCharacterEncoding("UTF-8");
@@ -69,16 +75,17 @@ public class scheduleController {
 	public void saveSaleSchedule(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
 		try {
-			
+
 			int idSemestreActual = dao.getSemestreMapper().selectSemestreActual().getIdSemestre();
-			
-			Usuarios asesor = (Usuarios)request.getSession().getAttribute("user");
-			
+
+			Usuarios asesor = (Usuarios) request.getSession().getAttribute("user");
+
 			String idAsesoria = request.getParameter("id_asesoria");
-			int idEquipo = Integer.parseInt(request.getParameter("id_equipo"));
+			Integer idEquipo = request.getParameter("id_equipo").equals("-1") ? null
+					: Integer.parseInt(request.getParameter("id_equipo"));
 			int diaSemana = Integer.parseInt(request.getParameter("dia_semana"));
 			int horaSemana = Integer.parseInt(request.getParameter("hora_semana"));
-			
+			String idSolicitud = request.getParameter("id_solicitud");
 
 			Asesorias asesoria = new Asesorias();
 			asesoria.setIdEquipo(idEquipo);
@@ -86,13 +93,23 @@ public class scheduleController {
 			asesoria.setHoraSemana(horaSemana);
 			asesoria.setIdSemestre(idSemestreActual);
 			asesoria.setIdAsesor(asesor.getIdUsuario());
-			
-			if (idAsesoria != null && !idAsesoria.isEmpty() && !idAsesoria.equals("0") && !idAsesoria.equals("undefined")
-					&& !idAsesoria.equals("null")) {
+
+			if (idAsesoria != null && !idAsesoria.isEmpty() && !idAsesoria.equals("0")
+					&& !idAsesoria.equals("undefined") && !idAsesoria.equals("null")) {
 				asesoria.setIdAsesoria(Integer.parseInt(idAsesoria));
 				dao.getAsesoriasMapper().updateByPrimaryKey(asesoria);
 			} else {
 				dao.getAsesoriasMapper().insert(asesoria);
+			}
+			if (idSolicitud != null && !idSolicitud.isEmpty() && !idSolicitud.equals("0")
+					&& !idSolicitud.equals("undefined") && !idSolicitud.equals("null")) {
+				SolicitudAsesoria solicitud = dao.getSolicitudAsesoriaMapper()
+						.selectByPrimaryKey(Integer.parseInt(idSolicitud));
+				if (solicitud.getIdEquipo() == idEquipo) {
+					solicitud.setAceptada(true);
+					dao.getSolicitudAsesoriaMapper().updateByPrimaryKey(solicitud);
+				}
+
 			}
 
 			object.put("status", "ok");
@@ -111,8 +128,8 @@ public class scheduleController {
 		JSONObject object = new JSONObject();
 		try {
 			String idAsesoria = request.getParameter("id_asesoria");
-			if (idAsesoria != null && !idAsesoria.isEmpty() && !idAsesoria.equals("0") && !idAsesoria.equals("undefined")
-					&& !idAsesoria.equals("null")) {
+			if (idAsesoria != null && !idAsesoria.isEmpty() && !idAsesoria.equals("0")
+					&& !idAsesoria.equals("undefined") && !idAsesoria.equals("null")) {
 				AsesoriasExample aseEx = new AsesoriasExample();
 				aseEx.createCriteria().andIdAsesoriaEqualTo(Integer.parseInt(idAsesoria));
 				List<Asesorias> aseList = dao.getAsesoriasMapper().selectByExample(aseEx);
