@@ -150,13 +150,13 @@ function saveUser() {
 	});
 }
 
-function confirmationCuadra(id) {
-	if (confirm('Seguro que desea eliminar el cuadrante?')) {
-		deleteCuadra(id);
+function confirmationUser(id) {
+	if (confirm('Seguro que desea eliminar el usuario?')) {
+		deleteUsuario(id);
 	}
 }
 
-function updateCuadrantes(id, code, nom, encar, semest) {
+function updateUserForm(id_usuario, correo, nombre, apellidos, semest) {
 	jQuery('#idCuadra').val(id);
 	jQuery('#num').val(code);
 	jQuery('#nomCuadra').val(nom);
@@ -164,18 +164,18 @@ function updateCuadrantes(id, code, nom, encar, semest) {
 	jQuery('#asigAso').val(semest)
 }
 
-function deleteCuadra(id) {
+function deleteUsuario(id) {
 	jQuery('#errorDiv').css('display', 'none');
-	var idCuadra = id;
+	var idUsuario = id;
 
-	if (idCuadra == "" || idCuadra == "" || idCuadra == undefined) {
-		jQuery('#errorDiv').html("No se encontró el cuadrante");
+	if (idUsuario == "" || idUsuario == "" || idUsuario == undefined) {
+		jQuery('#errorDiv').html("No se encontró el usuario");
 		jQuery('#errorDiv').css('display', 'block');
 		return;
 	}
 	jQuery.ajax({
 		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/quadrant/deleteQuadrant.html',
+				+ '/SGPPI_2018/pages/user/deleteUser.html',
 		data : {
 			idCuadra : idCuadra
 		},

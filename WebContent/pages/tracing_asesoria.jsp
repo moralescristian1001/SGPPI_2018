@@ -16,7 +16,7 @@
 	<div id="page-wrapper">
 		<div class="row">
 			<div class="col-lg-12">
-				<h1 class="page-header">Solicitar Asesoria</h1>
+				<h1 class="page-header">Seguimiento de Asesoria</h1>
 			</div>
 			<!-- /.col-lg-12 -->
 		</div>
@@ -41,29 +41,6 @@
 						<div class="panel-heading">Asesorias</div>
 						<!-- /.panel-heading -->
 						<div class="panel-body">
-							<div class="row">
-								<%
-									String[] colores = new String[] { "fff3aa", "ffd0a8", "ffb1b1", "d9d1ff", "b7efff" };
-
-									List<Usuarios> asesores = (List<Usuarios>) request.getAttribute("listAsesores");
-									Map<Integer, String> coloresXAsesor = new HashMap();
-									String scriptColores = "";
-
-									int colSize = 12 / asesores.size();
-
-									int i = 0;
-									for (Usuarios asesor : asesores) {
-										coloresXAsesor.put(asesor.getIdUsuario(), colores[i]);
-								%>
-								<div class="col-sm-<%=colSize%>">
-									<div class="alert" style="background-color: #<%=colores[i]%>"
-										role="alert"><%=asesor.getNombre() + " " + asesor.getApellidos()%></div>
-								</div>
-								<%
-									i++;
-									}
-								%>
-							</div>
 							<table width="100%" class="table table-bordered"
 								id="dataTables-example">
 								<thead>
@@ -83,10 +60,13 @@
 								</thead>
 								<tbody>
 									<%
-										//desde las 6am hasta las
+										//desde las 6am hasta las 10
 										List<Asesorias> asesorias = (List<Asesorias>) request.getAttribute("listAsesorias");
-										List<SolicitudAsesoria> solicitudes = (List<SolicitudAsesoria>) request.getAttribute("listSolicitudes");
-										Equipo equipoEstudiante = (Equipo) request.getAttribute("equipoEstudiante");
+										List<Equipo> equipos = (List<Equipo>) request.getAttribute("listEquipos");
+										int horaHoy = Integer.parseInt(request.getAttribute("hora").toString()); // 6 - 10
+										int diaHoy = 3; // 1- 7
+										// 										int diaHoy = Integer.parseInt(request.getAttribute("dia").toString()); // 1- 7
+										String scriptColores = "";
 										for (int hora = 6; hora < 22; hora++) {
 									%>
 									<tr>
@@ -97,79 +77,41 @@
 										<td class="schedule-td" id="td-<%=dia + "-" + hora%>">
 											<%
 												boolean encontrado = false;
-														List<Integer> asesoresEncontrados = new ArrayList();
+
 														for (Asesorias a : asesorias) {
 
 															if (a.getHoraSemana() == hora && a.getDiaSemana() == dia) {
-																if (a.getIdEquipo() != null && !encontrado) { // esta ocupada por otro equipo
-																	if (a.getIdEquipo() == equipoEstudiante.getIdEquipo()) {
-																		String nombreAsesor = "";
-																		for (Usuarios asesor : asesores) {
-																			nombreAsesor = asesor.getNombre() + " " + asesor.getApellidos();
-																		}
+																String iconSeguimiento = "calendar";
+																if (dia == diaHoy) {
+																	if (hora == horaHoy) {
+																		//se señana
+																		scriptColores += "$('#td-" + dia + "-" + hora + "').css('backgroundColor', 'red');";
+																	}
+																	iconSeguimiento += "-plus-o";
+																	//habilitado para hacer seguimiento
+
+																}
+																String nombreEquipo = "";
+																for (Equipo eq : equipos) {
+																	if (eq.getIdEquipo() == a.getIdEquipo()) {
+																		nombreEquipo = eq.getNombre();
+																		break;
+																	}
+																}
 											%><a
-											href="javascript:verMiAsesoria(<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>', '<%=nombreAsesor%>')"><i
-												class='fa fa-calendar-check-o fa-fw'></i></a>
-											<%
-												encontrado = true;
-																		asesoresEncontrados.add(a.getIdAsesor());
-																	} else {
-											%> No esta disponible <%
-												}
-
-																} else { // no esta ocupada por otro equipo
-
-																	asesoresEncontrados.add(a.getIdAsesor());
-																	if (!encontrado) {
-																		boolean yaSolicito = false;
-																		for (SolicitudAsesoria s : solicitudes) {
-																			if (s.getHoraSemana() == hora && s.getDiaSemana() == dia) {
-																				yaSolicito = true;
-																				break;
-																			}
-																		}
-																		if (!yaSolicito) {
-											%> <a
-											href="javascript:solicitarCitaForm(<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>')"><i
-												class='fa fa-calendar-plus-o fa-fw'></i></a> <%
- 	}
-
- 							encontrado = true;
- 						}
- 					}
+											href="javascript:verSeguimientoForm(<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>',<%=a.getIdAsesoria()%>,'<%=nombreEquipo%>', <%=diaHoy%>)"><i
+												class='fa fa-<%=iconSeguimiento%> %> fa-fw'></i></a> <%
+ 	encontrado = true;
+ 					break;
 
  				}
- 			}
-
- 			if (encontrado) {
- 				String coloresAgregados = "";
-
- 				int porcentajeColorPorParte = 100 / asesoresEncontrados.size();
- 				int porcentajeColor = 100;
- 				for (Integer asesorEncontrado : asesoresEncontrados) {
- 					porcentajeColor -= porcentajeColorPorParte;
- 					coloresAgregados += ", #" + coloresXAsesor.get(asesorEncontrado) + " " + porcentajeColor
- 							+ "%";
-
- 				}
- 				if (asesoresEncontrados.size() == 1) {
- 					coloresAgregados += ", #" + coloresXAsesor.get(asesoresEncontrados.get(0));
- 				}
- 				scriptColores += "$('#td-" + dia + "-" + hora + "').css({background: 'linear-gradient(to right"
- 						+ coloresAgregados + ")'});";
- 			}
- 			for (SolicitudAsesoria s : solicitudes) {
- 				if (s.getHoraSemana() == hora && s.getDiaSemana() == dia) {
- %> <a
-											href="javascript:deleteSolicitud(<%=s.getIdSolicitud()%>)"><i
-												class='fa fa-calendar-times-o fa-fw'></i></a> <%
- 	}
  			}
  %>
 										</td>
 										<%
 											}
 										%>
+
 									</tr>
 									<%
 										}
@@ -193,19 +135,65 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Solicitud de Asesorias</h4>
+						<h4 class="modal-title">Seguimiento de Asesorias</h4>
 					</div>
 					<div class="modal-body">
-						<input type='hidden' id="id_solicitud" name="id_solicitud"
-							class="form-control" /> <input type='hidden' id="dia_semana"
-							name="dia_semana" class="form-control" /> <input type='hidden'
-							id="hora_semana" name="hora_semana" class="form-control" />
+						<input type='hidden' id="id_seguimiento" name="id_seguimiento"
+							class="form-control" /> <input type='hidden' id="id_asesoria"
+							name="id_asesoria" class="form-control" />
 						<div class="form-group">
 							<label for="dia-hora-asesoria">Dia y Hora:</label><span
 								id="dia-hora-asesoria"></span><i class="fa fa-calendar fa-fw"></i>
 						</div>
 						<div class="form-group">
-							<span id="asesor-nombre"></span>
+							<label>Equipo:</label><span id="equipo-nombre"></span>
+						</div>
+						<div id="div-agregar-seguimiento" style="display: none;">
+							<div class="row">
+								<div class="col-sm-12">
+									<fieldset>
+
+										<legend>Seguimiento Hoy</legend>
+										<div class="row">
+											<div class="col-sm-12 form-group">
+												<label>Observaciones:</label>
+												<textarea id="observaciones" name="observaciones"
+													class="form-control"></textarea>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-sm-12 form-group">
+												<label>Asistencia Estudiantes:</label> <select
+													id="asistencia" name="asistencia" class="form-control"
+													multiple>
+												</select>
+											</div>
+										</div>
+									</fieldset>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-12">
+								<fieldset>
+									<legend>Historial de Seguimiento</legend>
+									<div class="row">
+										<div class="col-sm-12">
+											<table id="seguimientos-tabla" class="table table-bordered">
+												<thead>
+													<tr>
+														<th>Fecha</th>
+														<th>Observaciones</th>
+														<th>Estudiantes Faltaron</th>
+													</tr>
+												</thead>
+												<tbody>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</fieldset>
+							</div>
 						</div>
 					</div>
 					<div id="foot-MyModal"></div>
@@ -219,7 +207,7 @@
 <!-- /#page-wrapper -->
 
 <!-- /#wrapper -->
-<script src="../pagesJs/request.js"></script>
+<script src="../pagesJs/tracing.js"></script>
 <script src="../vendor/jquery/jquery.min.js"></script>
 <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
 <script src="../vendor/metisMenu/metisMenu.min.js"></script>

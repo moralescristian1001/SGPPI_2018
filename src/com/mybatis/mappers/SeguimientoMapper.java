@@ -117,4 +117,10 @@ public interface SeguimientoMapper {
      * @mbg.generated Mon Mar 26 15:00:09 COT 2018
      */
     int updateByPrimaryKey(Seguimiento record);
+    
+    
+    /*
+     * This method will to get the next id
+     * */
+    int getNextId();
 }

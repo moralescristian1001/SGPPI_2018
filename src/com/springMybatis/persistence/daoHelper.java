@@ -11,10 +11,12 @@ import com.mybatis.mappers.EquipoMapper;
 import com.mybatis.mappers.EstudiantesxequiposMapper;
 import com.mybatis.mappers.ProfesoresxasignaturasMapper;
 import com.mybatis.mappers.RubricaxitemMapper;
+import com.mybatis.mappers.SeguimientoAsistenciaMapper;
 import com.mybatis.mappers.SeguimientoMapper;
 import com.mybatis.mappers.SemestreMapper;
 import com.mybatis.mappers.SolicitudAsesoriaMapper;
 import com.mybatis.mappers.UsuariosMapper;
+import com.mybatis.models.SeguimientoAsistencia;
 import com.mybatis.models.SolicitudAsesoria;
 
 public class daoHelper {
@@ -31,6 +33,7 @@ public class daoHelper {
 	private AsesoriasMapper asesoriasMapper;
 	private SolicitudAsesoriaMapper solicitudAsesoriaMapper;
 	private SeguimientoMapper seguimientoMapper;
+	private SeguimientoAsistenciaMapper seguimientoAsistenciaMapper;
 	
 	public daoHelper(){
 		ApplicationContext context = new ClassPathXmlApplicationContext("/spring_myBatis_config.xml");
@@ -46,6 +49,7 @@ public class daoHelper {
 		asesoriasMapper = (AsesoriasMapper) context.getBean("asesoriasMapper");
 		solicitudAsesoriaMapper = (SolicitudAsesoriaMapper) context.getBean("solicitudAsesoriaMapper");
 		seguimientoMapper = (SeguimientoMapper) context.getBean("seguimientoMapper");
+		seguimientoAsistenciaMapper = (SeguimientoAsistenciaMapper) context.getBean("seguimientoAsistenciaMapper");
 	}
 
 	public AsignaturaMapper getAsignaturaMapper() {
@@ -142,5 +146,13 @@ public class daoHelper {
 
 	public void setSeguimientoMapper(SeguimientoMapper seguimientoMapper) {
 		this.seguimientoMapper = seguimientoMapper;
+	}
+	
+	public SeguimientoAsistenciaMapper getSeguimientoAsistenciaMapper() {
+		return seguimientoAsistenciaMapper;
+	}
+
+	public void setSeguimientoMapper(SeguimientoAsistenciaMapper seguimientoAsistenciaMapper) {
+		this.seguimientoAsistenciaMapper = seguimientoAsistenciaMapper;
 	}
 }

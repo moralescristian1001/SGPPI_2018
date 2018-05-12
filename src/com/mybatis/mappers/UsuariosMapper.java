@@ -77,4 +77,9 @@ public interface UsuariosMapper {
 	
 	@Select("SELECT EXISTS(SELECT 1 FROM usuarios WHERE cedula=#{cedula})")
 	boolean checkUserExists(@Param("cedula") String cedula);
+	
+	/**
+	 * getNextId
+	 */
+	int getNextId();
 }

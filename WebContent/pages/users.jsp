@@ -36,11 +36,11 @@
 			<span class="alert-content">${errors}<%=request.getParameter("errors")%></span>
 		</div>
 		<div class="alert alert-success" role="alert" id="successDiv"
-			style="display: none; width: 100%;">
+			style="display: <%=request.getParameter("success") != null ? "block" : "none"%>; width: 100%;">
 			<button type="button" class="close">
 				<span aria-hidden="true">&times;</span> <span class="sr-only">Close</span>
 			</button>
-			<span class="alert-content">${success}</span>
+			<span class="alert-content">${success}<%=request.getParameter("success")%></span>
 		</div>
 		<form>
 			<div class="row">
@@ -111,12 +111,9 @@
 										<%=usu.getUsuario()%>
 										<td><%=estado%></td>
 										<td><input type="button" data-toggle="modal"
-											data-target="#myModal" class="btn btn-default pull-left"
-											onclick="updateCuadrantes(${listCuad.id_cuadrante},${listCuad.numero},'${listCuad.nombre}','${listCuad.descripcion}','${listCuad.nombreAsig}')"
-											value="Actualizar" /> <input type="button"
-											class="btn btn-default pull-left"
-											onclick="confirmationCuadra(${listCuad.id_cuadrante});"
-											value="Eliminar" /></td>
+											data-target="#myModalEditar" class="btn btn-default pull-left"
+											onclick="updateUserForm(<%=usu.getIdUsuario()%>,<%=usu.getCorreo()%>,'<%=usu.getNombre()%>','<%=usu.getApellidos()%>','<%=usu.getCedula()%>','<%=fechaFormateada%>', <%=usu.getEstado() ? 1 : 0%>)"
+											value="Actualizar" />
 									</tr>
 									<%
 										}
@@ -179,7 +176,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="modal fade" id="myModal" role="dialog">
+		<div class="modal fade" id="myModalEditar" role="dialog">
 			<div class="modal-dialog">
 				<!-- Modal content-->
 				<div class="modal-content">

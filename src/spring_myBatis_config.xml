@@ -76,4 +76,8 @@
 		<property name="mapperInterface" value="com.mybatis.mappers.SeguimientoMapper" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	<bean id="seguimientoAsistenciaMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="com.mybatis.mappers.SeguimientoAsistenciaMapper" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
 </beans>

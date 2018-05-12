@@ -9,10 +9,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
@@ -26,6 +26,13 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.mybatis.models.Asesorias;
+import com.mybatis.models.AsesoriasExample;
 import com.mybatis.models.Asignatura;
 import com.mybatis.models.AsignaturaExample;
 import com.mybatis.models.Cargo;
@@ -77,6 +84,9 @@ public class usersController {
 							Semestre semestre = dao.getSemestreMapper().selectByPrimaryKey(eq.getIdSemestre());
 							info += eq.getNombre() + " - Semestre " + semestre.getAno() + "-" + semestre.getNumero()
 									+ "<br>";
+						}
+						if(info.isEmpty()){
+							info = "Sin equipo asignado";
 						}
 
 						break;
@@ -132,72 +142,87 @@ public class usersController {
 	public void saveSaleUser(HttpServletRequest request, HttpServletResponse response) {
 		try {
 
-//			InputStream myxls = new FileInputStream("C:\\Users\\USER\\workspace\\SGPPI_2018\\usuarios_subida.xlsx");
-//			HSSFWorkbook wb = new HSSFWorkbook(myxls);
-//
-//			for (int i = 0; i < wb.getNumberOfSheets(); i++) {
-//				HSSFSheet sheet = wb.getSheetAt(i);
-//				int idCargo = i + 1;
-//				for (int r = 0; r < sheet.getLastRowNum(); r++) {
-//					HSSFRow row = sheet.getRow(r);
-//					String correo = row.getCell(0).getStringCellValue();
-//					String nombre = row.getCell(1).getStringCellValue();
-//					String apellido = row.getCell(2).getStringCellValue();
-//					String cedula = row.getCell(3).getStringCellValue();
-//
-//					HSSFCell fechaNacCell = row.getCell(4); // fechaNac
-//
-//					if (!HSSFDateUtil.isCellDateFormatted(fechaNacCell)) {
-//						response.getWriter()
-//								.write("<script>location.href='../users.html?errors=La fecha de nacimiento de la página "
-//										+ idCargo + " en la fila " + r + " no es fecha';</script>");
-//						return;
-//					}
-//					Date fechaNac = HSSFDateUtil.getJavaDate(fechaNacCell.getNumericCellValue());
-//					Usuarios usu = new Usuarios();
-//					
-//					//nextVaal
-//					int idUsuario = 2; 
-//					usu.setIdUsuario(idUsuario);
-//					usu.setCorreo(correo);
-//					usu.setNombre(nombre);
-//					usu.setApellidos(apellido);
-//					usu.setCedula(cedula);
-//					usu.setFechaNac(fechaNac);
-//
-//					if (idCargo == 2) { // profesor
-//						// revisamos tambien la celda 5
-//						if (!row.getCell(4).getStringCellValue().equals("")) {
-//							String asignaturasString = row.getCell(4).getStringCellValue();
-//							String[] asignaturasCodigos = asignaturasString.split(",");
-//							
-//							AsignaturaExample asigEx = new AsignaturaExample();
-//							asigEx.createCriteria().andCodigoIn(Arrays.asList(asignaturasCodigos));
-//							List<Asignatura> asignaturas = dao.getAsignaturaMapper().selectByExample(asigEx);
-//							for(Asignatura asig : asignaturas){
-//								Profesoresxasignaturas pxa = new Profesoresxasignaturas();
-//								pxa.setIdAsignatura(asig.getIdAsignatura());
-//								pxa.setIdProfesor(usu.getIdUsuario());
-//								dao.getProfesoresxasignaturasMapper().insert(pxa);
-//							}
-//						}
-//
-//					}
-//
-//					if (true) { // exists
-//						dao.getUsuariosMapper().insert(usu);
-//					} else { // not exists
-//						UsuariosExample usuEx = new UsuariosExample();
-//						usuEx.createCriteria().andCedulaEqualTo(cedula);
-//						dao.getUsuariosMapper().updateByExample(usu, usuEx);
-//					}
-//
-//				}
-//
-//			}
+			InputStream myxls = new FileInputStream("C:\\Users\\USER\\workspace\\SGPPI_2018\\usuarios_subida.xlsx");
+			XSSFWorkbook wb = new XSSFWorkbook(myxls);
+			int numberSheets = wb.getNumberOfSheets();
+			
+			for (int i = 0; i < numberSheets; i++) {
+				XSSFSheet sheet = wb.getSheetAt(i);
+				int idCargo = i + 1;
+				int lastRows = sheet.getLastRowNum();
+				for (int r = 1; r <= lastRows; r++) {
+					XSSFRow row = sheet.getRow(r);
+					String correo = row.getCell(0).getStringCellValue();
+					String nombre = row.getCell(1).getStringCellValue();
+					String apellido = row.getCell(2).getStringCellValue();
+					String cedula = String.valueOf((int) row.getCell(3).getNumericCellValue());
+
+					XSSFCell fechaNacCell = row.getCell(4); // fechaNac
+
+					if (!HSSFDateUtil.isCellDateFormatted(fechaNacCell)) {
+						response.getWriter()
+								.write("<script>location.href='../users.html?errors=La fecha de nacimiento de la página "
+										+ idCargo + " en la fila " + r + " no es fecha';</script>");
+						return;
+					}
+					Date fechaNac = HSSFDateUtil.getJavaDate(fechaNacCell.getNumericCellValue());
+					Usuarios usu = new Usuarios();
+
+					// nextVaal
+					int idUsuario = dao.getUsuariosMapper().getNextId();
+					usu.setIdUsuario(idUsuario);
+					usu.setCorreo(correo);
+					usu.setUsuario(correo);
+					usu.setClave(cedula);
+					usu.setIdCargo(idCargo);
+					usu.setNombre(nombre);
+					usu.setApellidos(apellido);
+					usu.setCedula(cedula);
+					usu.setFechaNac(fechaNac);
+					usu.setEstado(true);
+					
+					if (!dao.getUsuariosMapper().checkUserExists(cedula)) { // exists
+						dao.getUsuariosMapper().insert(usu);
+					} else { // not exists
+						UsuariosExample usuEx = new UsuariosExample();
+						usuEx.createCriteria().andCedulaEqualTo(cedula);
+						dao.getUsuariosMapper().updateByExample(usu, usuEx);
+					}
+					
+					if (idCargo == 2) { // profesor
+						// revisamos tambien la celda 5
+						if (!row.getCell(5).getStringCellValue().equals("")) {
+							String asignaturasString = row.getCell(5).getStringCellValue();
+							String[] asignaturasCodigos = asignaturasString.split(",");
+
+							AsignaturaExample asigEx = new AsignaturaExample();
+							asigEx.createCriteria().andCodigoIn(Arrays.asList(asignaturasCodigos));
+							List<Asignatura> asignaturas = dao.getAsignaturaMapper().selectByExample(asigEx);
+							
+							ProfesoresxasignaturasExample pxaEx = new ProfesoresxasignaturasExample();
+							pxaEx.createCriteria().andIdAsignaturaIn(asignaturas.stream().map(Asignatura::getIdAsignatura).collect(Collectors.toList())).andIdProfesorEqualTo(usu.getIdUsuario());
+							dao.getProfesoresxasignaturasMapper().deleteByExample(pxaEx);
+							
+							
+							for (Asignatura asig : asignaturas) {
+								
+								Profesoresxasignaturas pxa = new Profesoresxasignaturas();
+								pxa.setIdAsignatura(asig.getIdAsignatura());
+								pxa.setIdProfesor(usu.getIdUsuario());
+								dao.getProfesoresxasignaturasMapper().insert(pxa);
+							}
+						}
+
+					}
+
+					
+
+				}
+
+			}
 
 			response.getWriter()
-					.write("<script>location.href='../users.html?errors=Error al subir el archivo';</script>");
+					.write("<script>location.href='../users.html?success=Se han guardado el/los usuarios';</script>");
 			// request.getRequestDispatcher("../users.html?err=true").forward(request,
 			// response);
 		} catch (IOException e) {
@@ -248,7 +273,8 @@ public class usersController {
 		writeObject(object, response);
 
 	}
-
+	
+	
 	public void writeObject(JSONObject object, HttpServletResponse response) {
 		try {
 			object.writeJSONString(response.getWriter());
