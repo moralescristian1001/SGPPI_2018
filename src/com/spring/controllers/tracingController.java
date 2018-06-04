@@ -58,7 +58,7 @@ public class tracingController {
 			int dia = rightNow.get(Calendar.DAY_OF_WEEK) - 1;
 			List<Integer> cargosAsesores = new ArrayList<>();
 			cargosAsesores.add(3);
-//			cargosAsesores.add(6);
+			cargosAsesores.add(6);
 
 			if (cargosAsesores.contains(usu.getIdCargo())) {
 				// asesor
@@ -104,7 +104,7 @@ public class tracingController {
 					model.addAttribute("listAsesores", asesores);
 					request.setCharacterEncoding("UTF-8");
 					response.setCharacterEncoding("UTF-8");
-					return new ModelAndView("pages/tracing_asesoria");
+					return new ModelAndView("pages/tracing");
 				} else {
 					model.addAttribute("errors", "No tienes equipo asignado");
 					return new ModelAndView("pages/home");

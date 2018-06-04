@@ -71,7 +71,6 @@
 											asignaturasSemestre.add(asig.getIdAsignatura());
 										}
 									}
-									
 							%>
 
 							<table width="100%"
@@ -93,31 +92,40 @@
 
 									<%
 										List<Equipo> equiposXSemestre = new ArrayList();
-											for (Equipo eq : equipos) {
-												if (asignaturasSemestre.contains(eq.getIdAsignatura())) {
+																		for (Equipo eq : equipos) {
+																			if (asignaturasSemestre.contains(eq.getIdAsignatura())) {
 
-													equiposXSemestre.add(eq);
-												}
-											}
-											for (Equipo eq : equiposXSemestre) {
-												String asignaturaNombre = "";
-												for (Asignatura asig : asignaturas) {
-													if (asig.getIdAsignatura() == eq.getIdAsignatura()) {
-														asignaturaNombre = asig.getNombre();
-														break;
-													}
+																				equiposXSemestre.add(eq);
+																			}
+																		}
+																		for (Equipo eq : equiposXSemestre) {
+																			String asignaturaNombre = "";
+																			for (Asignatura asig : asignaturas) {
+																				if (asig.getIdAsignatura() == eq.getIdAsignatura()) {
+																					asignaturaNombre = asig.getNombre();
+																					break;
+																				}
 
-												}
-												String estudiantesEquipo = "";
-												for (Estudiantesxequipos exe : estudiantesxequipos) {
-													if (exe.getIdEquipo() == eq.getIdEquipo()) {
-														for (Usuarios usu : estudiantes) {
-															if (usu.getIdUsuario() == exe.getIdEstudiante()) {
-																estudiantesEquipo += "<li>" + usu.getNombre() + " " + usu.getApellidos() + "</li>";
-															}
-														}
-													}
-												}
+																			}
+																			String estudiantesEquipo = "";
+																			String jsonEstudiante = "";
+																			for (Estudiantesxequipos exe : estudiantesxequipos) {
+																				if (exe.getIdEquipo() == eq.getIdEquipo()) {
+																					for (Usuarios usu : estudiantes) {
+																						if (usu.getIdUsuario() == exe.getIdEstudiante()) {
+																							estudiantesEquipo += "<li>" + usu.getNombre() + " " + usu.getApellidos() + "</li>";
+																							jsonEstudiante += ",{nombre:'" + usu.getNombre() + " " + usu.getApellidos()
+																									+ "', id_usuario:" + usu.getIdUsuario() + "}";
+																						}
+																					}
+																				}
+																			}
+																			if(jsonEstudiante.isEmpty()){
+																				jsonEstudiante = "[]";	
+																			}else{
+																				jsonEstudiante = "[" + jsonEstudiante.substring(1) + "]";
+																			}
+																			
 												estudiantesEquipo = "<ul>" + estudiantesEquipo + "</ul>";
 									%>
 									<tr>
@@ -129,7 +137,7 @@
 										<td><input type="button" data-toggle="modal"
 											data-target="#myModalEditar"
 											class="btn btn-default pull-left"
-											onclick="updateTeamForm(<%=eq.getIdEquipo()%>,<%=eq.getCodigo()%>,'<%=eq.getNombre()%>',<%=eq.getIdAsignatura()%>)"
+											onclick="updateTeamForm(<%=eq.getIdEquipo()%>,<%=eq.getCodigo()%>,'<%=eq.getNombre()%>',<%=eq.getIdAsignatura()%>,<%=jsonEstudiante%>)"
 											value="Actualizar" /> <input type="button"
 											class="btn btn-default pull-left"
 											onclick="confirmationTeam(<%=eq.getIdEquipo()%>);"
@@ -238,6 +246,21 @@
 								</select>
 							</div>
 						</div>
+
+						<fieldset>
+							<legend>Estudiantes</legend>
+							<div class="row">
+								<div class="col-sm-12" id="div_tabla_estudiantes"></div>
+							</div>
+							<div class="row">
+								<div class="col-sm-12">
+									<a href='javascript:agregarEstudiante()'
+										class='btn btn-success'><i class='fa fa-plus fa-fw'></i></a>
+								</div>
+							</div>
+						</fieldset>
+
+
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -256,6 +279,10 @@
 
 <!-- /#wrapper -->
 <script src="../pagesJs/team.js"></script>
-
+<template id="template-sin-equipo"> <c:forEach var="est"
+	items="${estudiantesSinEquipo}">
+	<option value="${est.idUsuario}">${est.nombre}
+		${est.apellidos}</option>
+</c:forEach> </template>
 
 <jsp:include page="footer.jsp" />

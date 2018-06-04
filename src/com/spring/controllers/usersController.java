@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -57,7 +58,8 @@ public class usersController {
 		if (request.getSession().getAttribute("user") != null) {
 			// System.out.println(dao.getAsignaturaMapper().selectByExample(new
 			// AsignaturaExample()));
-			model.addAttribute("user", (Usuarios) request.getSession().getAttribute("user"));
+			Usuarios user = (Usuarios) request.getSession().getAttribute("user");
+			model.addAttribute("user", user);
 			CargoExample ce = new CargoExample();
 			ce.setOrderByClause("descripcion");
 			List<Cargo> cargos = dao.getCargoMapper().selectByExample(ce);
@@ -85,7 +87,7 @@ public class usersController {
 							info += eq.getNombre() + " - Semestre " + semestre.getAno() + "-" + semestre.getNumero()
 									+ "<br>";
 						}
-						if(info.isEmpty()){
+						if (info.isEmpty()) {
 							info = "Sin equipo asignado";
 						}
 
@@ -118,9 +120,12 @@ public class usersController {
 				}
 				usuariosXCargo.put(cargo, usuarios);
 			}
-			request.setAttribute("users", usuariosXCargo);
-			// model.addAttribute("users", usuariosXCargo);
+			// getting asignaturas
+			List<Asignatura> asignaturas = dao.getAsignaturaMapper().selectByExample(new AsignaturaExample());
 
+			request.setAttribute("cargos", cargos);
+			request.setAttribute("users", usuariosXCargo);
+			request.setAttribute("asignaturas", asignaturas);
 			request.setCharacterEncoding("UTF-8");
 			response.setCharacterEncoding("UTF-8");
 			return new ModelAndView("pages/users");
@@ -145,7 +150,7 @@ public class usersController {
 			InputStream myxls = new FileInputStream("C:\\Users\\USER\\workspace\\SGPPI_2018\\usuarios_subida.xlsx");
 			XSSFWorkbook wb = new XSSFWorkbook(myxls);
 			int numberSheets = wb.getNumberOfSheets();
-			
+
 			for (int i = 0; i < numberSheets; i++) {
 				XSSFSheet sheet = wb.getSheetAt(i);
 				int idCargo = i + 1;
@@ -180,7 +185,7 @@ public class usersController {
 					usu.setCedula(cedula);
 					usu.setFechaNac(fechaNac);
 					usu.setEstado(true);
-					
+
 					if (!dao.getUsuariosMapper().checkUserExists(cedula)) { // exists
 						dao.getUsuariosMapper().insert(usu);
 					} else { // not exists
@@ -188,7 +193,7 @@ public class usersController {
 						usuEx.createCriteria().andCedulaEqualTo(cedula);
 						dao.getUsuariosMapper().updateByExample(usu, usuEx);
 					}
-					
+
 					if (idCargo == 2) { // profesor
 						// revisamos tambien la celda 5
 						if (!row.getCell(5).getStringCellValue().equals("")) {
@@ -198,14 +203,15 @@ public class usersController {
 							AsignaturaExample asigEx = new AsignaturaExample();
 							asigEx.createCriteria().andCodigoIn(Arrays.asList(asignaturasCodigos));
 							List<Asignatura> asignaturas = dao.getAsignaturaMapper().selectByExample(asigEx);
-							
+
 							ProfesoresxasignaturasExample pxaEx = new ProfesoresxasignaturasExample();
-							pxaEx.createCriteria().andIdAsignaturaIn(asignaturas.stream().map(Asignatura::getIdAsignatura).collect(Collectors.toList())).andIdProfesorEqualTo(usu.getIdUsuario());
+							pxaEx.createCriteria().andIdAsignaturaIn(
+									asignaturas.stream().map(Asignatura::getIdAsignatura).collect(Collectors.toList()))
+									.andIdProfesorEqualTo(usu.getIdUsuario());
 							dao.getProfesoresxasignaturasMapper().deleteByExample(pxaEx);
-							
-							
+
 							for (Asignatura asig : asignaturas) {
-								
+
 								Profesoresxasignaturas pxa = new Profesoresxasignaturas();
 								pxa.setIdAsignatura(asig.getIdAsignatura());
 								pxa.setIdProfesor(usu.getIdUsuario());
@@ -214,8 +220,6 @@ public class usersController {
 						}
 
 					}
-
-					
 
 				}
 
@@ -239,42 +243,119 @@ public class usersController {
 			String correo = request.getParameter("correo");
 			String nombre = request.getParameter("nombre");
 			String apellidos = request.getParameter("apellidos");
-			String fechaNac = request.getParameter("fechaNac");
-			int idCargo = Integer.parseInt(request.getParameter("idCargo"));
+			String fechaNac = request.getParameter("fecha_nac");
+			int idCargo = Integer.parseInt(request.getParameter("id_cargo"));
 			String cedula = request.getParameter("cedula");
 			String idUser = request.getParameter("id_usuario");
+			int estado = Integer.parseInt(request.getParameter("estado"));
 			Usuarios usuario = new Usuarios();
+
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
 
 			usuario.setCorreo(correo);
 			usuario.setNombre(nombre);
 			usuario.setApellidos(apellidos);
-
-			// usuario.setFechaNac(fechaNac);
+			usuario.setFechaNac(formatter.parse(fechaNac));
 			usuario.setIdCargo(idCargo);
-
 			usuario.setCedula(cedula);
+			usuario.setUsuario(correo);
+			usuario.setClave(cedula);
+			usuario.setEstado(estado == 1 ? true : false);
 
 			if (idUser != null && !idUser.isEmpty() && !idUser.equals("0") && !idUser.equals("undefined")
 					&& !idUser.equals("null")) {
 				usuario.setIdUsuario(Integer.parseInt(idUser));
 				dao.getUsuariosMapper().updateByPrimaryKey(usuario);
+
+				if (usuario.getIdCargo() == 2) {
+					String idAsignaturaStr = request.getParameter("id_asignatura");
+					String[] asignaturasArrStr = idAsignaturaStr.split(",");
+					int[] asignaturas = new int[asignaturasArrStr.length];
+					for (int i = 0; i < asignaturas.length; i++) {
+						asignaturas[i] = Integer.parseInt(asignaturasArrStr[i]);
+					}
+
+					ProfesoresxasignaturasExample proxasigEx = new ProfesoresxasignaturasExample();
+					dao.getProfesoresxasignaturasMapper().deleteByExample(proxasigEx);
+
+					for (int idAsignatura : asignaturas) {
+						Profesoresxasignaturas pxa = new Profesoresxasignaturas();
+						pxa.setIdAsignatura(idAsignatura);
+						pxa.setIdProfesor(usuario.getIdUsuario());
+						dao.getProfesoresxasignaturasMapper().insert(pxa);
+					}
+				}
+
 			} else {
 				object.put("status", "errors");
 				object.put("message", "Ha ocurrido un error inesperado");
 			}
 
 			object.put("status", "ok");
-			object.put("message", "Se ha creado el cuadrante correctamente");
+			object.put("message", "Se ha modificado el usuario correctamente");
+		} catch (Exception e) {
+			e.printStackTrace();
+			object.put("status", "errors");
+			object.put("message", "Ocurrió un error modificando el usuario");
+		}
+		writeObject(object, response);
+
+	}
+
+	@RequestMapping("pages/users/getInfoAdicional")
+	public void getInfoAdicional(HttpServletRequest request, HttpServletResponse response) {
+		JSONObject object = new JSONObject();
+
+		try {
+			int idUser = Integer.parseInt(request.getParameter("id_usuario"));
+			int idCargo = Integer.parseInt(request.getParameter("id_cargo"));
+			String info = "";
+			if (idCargo == 1) { // si es estudiante
+				EstudiantesxequiposExample eeex = new EstudiantesxequiposExample();
+				eeex.createCriteria().andIdEstudianteEqualTo(idUser);
+				List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(eeex);
+				Semestre semestreActual = dao.getSemestreMapper().selectSemestreActual();
+
+				for (Estudiantesxequipos exe : exes) {
+					Equipo eq = dao.getEquipoMapper().selectByPrimaryKey(exe.getIdEquipo());
+					if (semestreActual.getIdSemestre() == eq.getIdSemestre()) {
+						info = "<label>Semestre Actual:</label> " + eq.getNombre();
+						break;
+					}
+				}
+				if (info.isEmpty()) {
+					info = "Sin equipo asignado";
+				}
+				info = "<div class='row'><div class='col-sm-12'>" + info + "</div></div>";
+			} else if (idCargo == 2) {
+				ProfesoresxasignaturasExample paex = new ProfesoresxasignaturasExample();
+				paex.createCriteria().andIdProfesorEqualTo(idUser);
+				List<Profesoresxasignaturas> pxas = dao.getProfesoresxasignaturasMapper().selectByExample(paex);
+				info = "<div id='asignaturas'>";
+				int cont = 0;
+				for (Profesoresxasignaturas pxa : pxas) {
+					cont++;
+					Asignatura asig = dao.getAsignaturaMapper().selectByPrimaryKey(pxa.getIdAsignatura());
+					info += "<div class='row' id='asignatura_" + cont + "'><div class='col-sm-12'>" + asig.getNombre()
+							+ "<input type='hidden' name='id_asignatura[" + cont + "]' id='id_asignatura_" + cont
+							+ "' value='" + asig.getIdAsignatura() + "'><a href='javascript:eliminarAsignatura(" + cont
+							+ ")'><i class='fa fa-remove fa-fw'></i></a></div></div>";
+				}
+				info += "</div><div class='row'><div class='col-sm-12'><a href='javascript:agregarAsignatura()' class='btn btn-success'><i class='fa fa-plus fa-fw'></i></a></div></div>";
+			}
+
+			object.put("status", "ok");
+			object.put("info", info);
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
 			object.put("message", "Ocurrió un error guardando el cuadrante");
 		}
-		writeObject(object, response);
 
+		response.setCharacterEncoding("UTF-8");
+		writeObject(object, response);
 	}
-	
-	
+
 	public void writeObject(JSONObject object, HttpServletResponse response) {
 		try {
 			object.writeJSONString(response.getWriter());

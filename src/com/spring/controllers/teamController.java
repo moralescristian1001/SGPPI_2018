@@ -32,6 +32,7 @@ import com.mybatis.models.EquipoExample;
 import com.mybatis.models.Estudiantesxequipos;
 import com.mybatis.models.EstudiantesxequiposExample;
 import com.mybatis.models.Profesoresxasignaturas;
+import com.mybatis.models.ProfesoresxasignaturasExample;
 import com.mybatis.models.Semestre;
 import com.mybatis.models.SolicitudAsesoria;
 import com.mybatis.models.SolicitudAsesoriaExample;
@@ -67,11 +68,18 @@ public class teamController {
 			estEx.createCriteria().andIdUsuarioIn(estudiantesxequipos.stream().map(Estudiantesxequipos::getIdEstudiante)
 					.collect(Collectors.toList()));
 
+			UsuariosExample estSinEquipoEx = new UsuariosExample();
+			estSinEquipoEx.createCriteria().andEstadoEqualTo(true).andIdCargoEqualTo(1)
+					.andIdUsuarioNotIn(estudiantesxequipos.stream().map(Estudiantesxequipos::getIdEstudiante)
+							.collect(Collectors.toList()));
+
+			List<Usuarios> estudiantesSinEquipo = dao.getUsuariosMapper().selectByExample(estSinEquipoEx);
 			List<Usuarios> estudiantes = dao.getUsuariosMapper().selectByExample(estEx);
 
 			request.setAttribute("equipos", equipos);
 			request.setAttribute("estudiantesxequipos", estudiantesxequipos);
 			request.setAttribute("estudiantes", estudiantes);
+			request.setAttribute("estudiantesSinEquipo", estudiantesSinEquipo);
 			request.setAttribute("asignaturas", asignaturas);
 
 			response.setCharacterEncoding("UTF-8");
@@ -101,31 +109,32 @@ public class teamController {
 			int lastRow = sheet.getLastRowNum();
 			for (r = 1; r <= lastRow; r++) {
 				XSSFRow row = sheet.getRow(r);
-				int codigo = (int)row.getCell(0).getNumericCellValue();
+				int codigo = (int) row.getCell(0).getNumericCellValue();
 				String nombre = row.getCell(1).getStringCellValue();
 				String codigoAsignatura = row.getCell(2).getStringCellValue();
 				String cedulas = row.getCell(3).getStringCellValue();
 
 				String errors = "";
-//				if (codigo.isEmpty()) {
-//					errors += "Código,";
-//				}
-				if(nombre.isEmpty()){
+				// if (codigo.isEmpty()) {
+				// errors += "Código,";
+				// }
+				if (nombre.isEmpty()) {
 					errors += "Nombre,";
 				}
-				if(codigoAsignatura.isEmpty()){
+				if (codigoAsignatura.isEmpty()) {
 					errors += "Código asignatura,";
 				}
-				if(cedulas.isEmpty()){
+				if (cedulas.isEmpty()) {
 					errors += "Cédulas,";
 				}
-				
-				if(!errors.isEmpty()){
+
+				if (!errors.isEmpty()) {
 					response.getWriter();
 					errors = errors.trim();
-					response.getWriter().write("<script>location.href='../team.html?errors=Error(s) en la fila "+r+" "+ errors+ ".';</script>");
+					response.getWriter().write("<script>location.href='../team.html?errors=Error(s) en la fila " + r
+							+ " " + errors + ".';</script>");
 				}
-				
+
 				Equipo eq = new Equipo();
 
 				// nextVaal
@@ -168,9 +177,9 @@ public class teamController {
 			// el archivo';</script>");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			
-				e.printStackTrace();
-			
+
+			e.printStackTrace();
+
 		}
 	}
 
@@ -184,9 +193,7 @@ public class teamController {
 			String nombre = request.getParameter("nombre");
 			int idSemestre = dao.getSemestreMapper().selectSemestreActual().getIdSemestre();
 			String idAsignatura = request.getParameter("id_asignatura");
-
 			Equipo equipo = new Equipo();
-
 			String idEquipo = request.getParameter("id_equipo");
 
 			equipo.setCodigo(Integer.parseInt(codigo));
@@ -199,6 +206,24 @@ public class teamController {
 					&& !idEquipo.equals("null")) {
 				equipo.setIdEquipo(Integer.parseInt(idEquipo));
 				dao.getEquipoMapper().updateByPrimaryKey(equipo);
+
+				String idEstudiantesStr = request.getParameter("id_usuario");
+				String[] estudiantesArrStr = idEstudiantesStr.split(",");
+				int[] estudiantes = new int[estudiantesArrStr.length];
+				for (int i = 0; i < estudiantes.length; i++) {
+					estudiantes[i] = Integer.parseInt(estudiantesArrStr[i]);
+				}
+
+				EstudiantesxequiposExample estxeqEx = new EstudiantesxequiposExample();
+				dao.getEstudiantesxequiposMapper().deleteByExample(estxeqEx);
+
+				for (int idEstudiante : estudiantes) {
+					Estudiantesxequipos exe = new Estudiantesxequipos();
+					exe.setIdEquipo(equipo.getIdEquipo());
+					exe.setIdEstudiante(idEstudiante);
+					dao.getEstudiantesxequiposMapper().insert(exe);
+				}
+
 			} else {
 				object.put("status", "errors");
 				object.put("message", "Ha ocurrido un error inesperado");

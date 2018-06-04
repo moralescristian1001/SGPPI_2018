@@ -5,19 +5,30 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.mybatis.mappers.AsesoriasMapper;
 import com.mybatis.mappers.AsignaturaMapper;
+import com.mybatis.mappers.CalificacionMapper;
 import com.mybatis.mappers.CargoMapper;
 import com.mybatis.mappers.CuadranteMapper;
 import com.mybatis.mappers.EquipoMapper;
 import com.mybatis.mappers.EstudiantesxequiposMapper;
+import com.mybatis.mappers.EventoMapper;
 import com.mybatis.mappers.ProfesoresxasignaturasMapper;
+import com.mybatis.mappers.RubricaMapper;
 import com.mybatis.mappers.RubricaxitemMapper;
+import com.mybatis.mappers.SalonMapper;
+import com.mybatis.mappers.SalonxequipoMapper;
+import com.mybatis.mappers.SalonxprofesoresMapper;
 import com.mybatis.mappers.SeguimientoAsistenciaMapper;
 import com.mybatis.mappers.SeguimientoMapper;
 import com.mybatis.mappers.SemestreMapper;
+import com.mybatis.mappers.SocializacionAsistenciaMapper;
+import com.mybatis.mappers.SocializacionMapper;
 import com.mybatis.mappers.SolicitudAsesoriaMapper;
+import com.mybatis.mappers.TipoEventoMapper;
+import com.mybatis.mappers.TipoRubricaMapper;
 import com.mybatis.mappers.UsuariosMapper;
 import com.mybatis.models.SeguimientoAsistencia;
 import com.mybatis.models.SolicitudAsesoria;
+import com.mybatis.models.TipoEventoExample;
 
 public class daoHelper {
 	
@@ -34,6 +45,16 @@ public class daoHelper {
 	private SolicitudAsesoriaMapper solicitudAsesoriaMapper;
 	private SeguimientoMapper seguimientoMapper;
 	private SeguimientoAsistenciaMapper seguimientoAsistenciaMapper;
+	private EventoMapper eventoMapper;
+	private TipoEventoMapper tipoEventoMapper;
+	private RubricaMapper rubricaMapper;
+	private TipoRubricaMapper tipoRubricaMapper;
+	private SocializacionMapper socializacionMapper;
+	private SocializacionAsistenciaMapper socializacionAsistenciaMapper;
+	private SalonMapper salonMapper;
+	private SalonxequipoMapper salonxequipoMapper;
+	private SalonxprofesoresMapper salonxprofesoresMapper;
+	private CalificacionMapper calificacionMapper; 
 	
 	public daoHelper(){
 		ApplicationContext context = new ClassPathXmlApplicationContext("/spring_myBatis_config.xml");
@@ -50,6 +71,16 @@ public class daoHelper {
 		solicitudAsesoriaMapper = (SolicitudAsesoriaMapper) context.getBean("solicitudAsesoriaMapper");
 		seguimientoMapper = (SeguimientoMapper) context.getBean("seguimientoMapper");
 		seguimientoAsistenciaMapper = (SeguimientoAsistenciaMapper) context.getBean("seguimientoAsistenciaMapper");
+		eventoMapper = (EventoMapper) context.getBean("eventoMapper");
+		tipoEventoMapper = (TipoEventoMapper) context.getBean("tipoEventoMapper");
+		rubricaMapper = (RubricaMapper) context.getBean("rubricaMapper");
+		tipoRubricaMapper = (TipoRubricaMapper) context.getBean("tipoRubricaMapper");
+		socializacionMapper = (SocializacionMapper) context.getBean("socializacionMapper");
+		socializacionAsistenciaMapper = (SocializacionAsistenciaMapper) context.getBean("socializacionAsistenciaMapper");
+		salonMapper = (SalonMapper) context.getBean("salonMapper");
+		salonxequipoMapper = (SalonxequipoMapper) context.getBean("salonxequipoMapper");
+		salonxprofesoresMapper = (SalonxprofesoresMapper) context.getBean("salonxprofesoresMapper");
+		calificacionMapper = (CalificacionMapper) context.getBean("calificacionMapper");
 	}
 
 	public AsignaturaMapper getAsignaturaMapper() {
@@ -123,7 +154,7 @@ public class daoHelper {
 	public void setSemestreMapper(SemestreMapper semestreMapper) {
 		this.semestreMapper = semestreMapper;
 	}
-	
+
 	public AsesoriasMapper getAsesoriasMapper() {
 		return asesoriasMapper;
 	}
@@ -131,15 +162,15 @@ public class daoHelper {
 	public void setAsesoriasMapper(AsesoriasMapper asesoriasMapper) {
 		this.asesoriasMapper = asesoriasMapper;
 	}
-	
+
 	public SolicitudAsesoriaMapper getSolicitudAsesoriaMapper() {
 		return solicitudAsesoriaMapper;
 	}
 
 	public void setSolicitudAsesoriaMapper(SolicitudAsesoriaMapper solicitudAsesoriaMapper) {
 		this.solicitudAsesoriaMapper = solicitudAsesoriaMapper;
-	}	
-	
+	}
+
 	public SeguimientoMapper getSeguimientoMapper() {
 		return seguimientoMapper;
 	}
@@ -147,12 +178,93 @@ public class daoHelper {
 	public void setSeguimientoMapper(SeguimientoMapper seguimientoMapper) {
 		this.seguimientoMapper = seguimientoMapper;
 	}
-	
+
 	public SeguimientoAsistenciaMapper getSeguimientoAsistenciaMapper() {
 		return seguimientoAsistenciaMapper;
 	}
 
-	public void setSeguimientoMapper(SeguimientoAsistenciaMapper seguimientoAsistenciaMapper) {
+	public void setSeguimientoAsistenciaMapper(SeguimientoAsistenciaMapper seguimientoAsistenciaMapper) {
 		this.seguimientoAsistenciaMapper = seguimientoAsistenciaMapper;
 	}
+
+	public EventoMapper getEventoMapper() {
+		return eventoMapper;
+	}
+
+	public void setEventoMapper(EventoMapper eventoMapper) {
+		this.eventoMapper = eventoMapper;
+	}
+
+	public TipoEventoMapper getTipoEventoMapper() {
+		return tipoEventoMapper;
+	}
+
+	public void setTipoEventoMapper(TipoEventoMapper tipoEventoMapper) {
+		this.tipoEventoMapper = tipoEventoMapper;
+	}
+
+	public RubricaMapper getRubricaMapper() {
+		return rubricaMapper;
+	}
+
+	public void setRubricaMapper(RubricaMapper rubricaMapper) {
+		this.rubricaMapper = rubricaMapper;
+	}
+
+	public TipoRubricaMapper getTipoRubricaMapper() {
+		return tipoRubricaMapper;
+	}
+
+	public void setTipoRubricaMapper(TipoRubricaMapper tipoRubricaMapper) {
+		this.tipoRubricaMapper = tipoRubricaMapper;
+	}
+
+	public SocializacionMapper getSocializacionMapper() {
+		return socializacionMapper;
+	}
+
+	public void setSocializacionMapper(SocializacionMapper socializacionMapper) {
+		this.socializacionMapper = socializacionMapper;
+	}
+
+	public SocializacionAsistenciaMapper getSocializacionAsistenciaMapper() {
+		return socializacionAsistenciaMapper;
+	}
+
+	public void setSocializacionAsistenciaMapper(SocializacionAsistenciaMapper socializacionAsistenciaMapper) {
+		this.socializacionAsistenciaMapper = socializacionAsistenciaMapper;
+	}
+
+	public SalonMapper getSalonMapper() {
+		return salonMapper;
+	}
+
+	public void setSalonMapper(SalonMapper salonMapper) {
+		this.salonMapper = salonMapper;
+	}
+
+	public SalonxequipoMapper getSalonxequipoMapper() {
+		return salonxequipoMapper;
+	}
+
+	public void setSalonxequipoMapper(SalonxequipoMapper salonxequipoMapper) {
+		this.salonxequipoMapper = salonxequipoMapper;
+	}
+
+	public SalonxprofesoresMapper getSalonxprofesoresMapper() {
+		return salonxprofesoresMapper;
+	}
+
+	public void setSalonxprofesoresMapper(SalonxprofesoresMapper salonxprofesoresMapper) {
+		this.salonxprofesoresMapper = salonxprofesoresMapper;
+	}
+
+	public CalificacionMapper getCalificacionMapper() {
+		return calificacionMapper;
+	}
+
+	public void setCalificacionMapper(CalificacionMapper calificacionMapper) {
+		this.calificacionMapper = calificacionMapper;
+	}
+
 }

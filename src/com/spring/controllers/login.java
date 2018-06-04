@@ -46,7 +46,6 @@ public class login {
 				//obtenemos el semestre actual
 				Semestre semestreActual =dao.getSemestreMapper().selectSemestreActual(); 
 				request.getSession().setAttribute("semestre", semestreActual);
-
 				//equipos del semestra actual
 				EquipoExample eEx = new EquipoExample();
 				eEx.createCriteria().andIdSemestreEqualTo(semestreActual.getIdSemestre());

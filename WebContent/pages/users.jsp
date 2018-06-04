@@ -32,7 +32,7 @@
 			<button type="button" class="close">
 				<span aria-hidden="true">&times;</span> <span class="sr-only">Close</span>
 			</button>
-			
+
 			<span class="alert-content">${errors}<%=request.getParameter("errors")%></span>
 		</div>
 		<div class="alert alert-success" role="alert" id="successDiv"
@@ -82,7 +82,7 @@
 														thAdicional = "<th>Asignaturas</th>";
 														break;
 													case 4 ://Evaluador
-														thAdicional = "<th>Salones</th>";
+														// 														thAdicional = "<th>Salones</th>";
 														break;
 												}
 										%>
@@ -111,8 +111,9 @@
 										<%=usu.getUsuario()%>
 										<td><%=estado%></td>
 										<td><input type="button" data-toggle="modal"
-											data-target="#myModalEditar" class="btn btn-default pull-left"
-											onclick="updateUserForm(<%=usu.getIdUsuario()%>,<%=usu.getCorreo()%>,'<%=usu.getNombre()%>','<%=usu.getApellidos()%>','<%=usu.getCedula()%>','<%=fechaFormateada%>', <%=usu.getEstado() ? 1 : 0%>)"
+											data-target="#myModalEditar"
+											class="btn btn-default pull-left"
+											onclick="updateUserForm(<%=usu.getIdUsuario()%>,'<%=usu.getCorreo()%>','<%=usu.getNombre()%>','<%=usu.getApellidos()%>','<%=usu.getCedula()%>','<%=fechaFormateada%>', <%=usu.getIdCargo()%>, <%=usu.getEstado() ? 1 : 0%>)"
 											value="Actualizar" />
 									</tr>
 									<%
@@ -169,7 +170,7 @@
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default"
 								data-dismiss="modal">Close</button>
-							<input type="submit" class="btn btn-default pull-left"
+							<input type="submit" class="btn btn-primary pull-left"
 								name="guardar" value="Guardar"></input>
 						</div>
 					</form>
@@ -187,50 +188,94 @@
 
 
 					<div class="modal-body">
-
-						<input type='hidden' id="idUser" name="idUser"
-							class="form-control" />
-						<div class="form-group">
-							<label for="nombre">*Nombre:</label>
-							<div class='input-group col-lg-12'>
-								<input type="text" class="form-control" name="nombre"
-									id="nombre" placeholder="Ingrese el nombre del usuario">
+						<form id="form-editar-usuario">
+							<input type='hidden' id="id_usuario" name="id_usuario"
+								class="form-control" />
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label for="nombre">*Nombre:</label>
+										<div class='input-group col-lg-12'>
+											<input type="text" class="form-control" name="nombre"
+												id="nombre" placeholder="Ingrese el nombre del usuario">
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label for="apellidos">*Apellidos:</label>
+										<div class='input-group col-lg-12'>
+											<input type="text" class="form-control" name="apellidos"
+												id="apellidos" placeholder="Ingrese el apellido del usuario">
+										</div>
+									</div>
+								</div>
 							</div>
-						</div>
-
-						<div class="form-group">
-							<label for="apellidos">*Apellidos:</label>
-							<div class='input-group col-lg-12'>
-								<input type="text" class="form-control" name="apellidos"
-									id="apellidos" placeholder="Ingrese el apellido del usuario">
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label for="cedula">*Cédula:</label>
+										<div class='input-group col-lg-12'>
+											<input type="text" class="form-control" name="cedula"
+												id="cedula" placeholder="Ingrese la cédula del usuario">
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label for="correo">*Correo:</label>
+										<div class='input-group col-lg-12'>
+											<input type="text" class="form-control" name="correo"
+												id="correo" placeholder="Ingrese el correo del usuario">
+										</div>
+									</div>
+								</div>
 							</div>
-						</div>
-						<div class="form-group">
-							<label for="cedula">*Cédula:</label>
-							<div class='input-group col-lg-12'>
-								<input type="text" class="form-control" name="cedula"
-									id="cedula" placeholder="Ingrese la cédula del usuario">
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label for="fecha_nac">*Fecha de nacimiento:</label>
+										<div class='input-group col-lg-12'>
+											<input type="date" class="form-control" name="fecha_nac"
+												id="fecha_nac"
+												placeholder="Ingrese la fecha de nacimiento del usuario">
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label for="estado">*Cargo:</label>
+										<div class='input-group col-lg-12'>
+											<select class="form-control" name="id_cargo" id="id_cargo"
+												onchange="cambioCargo(this.value)">
+												<option value="-1">Seleccione el cargo...</option>
+												<c:forEach items="${cargos}" var="cargo">
+													<option value="${cargo.idCargo}">${cargo.descripcion}</option>
+												</c:forEach>
+											</select>
+										</div>
+									</div>
+								</div>
 							</div>
-						</div>
-
-						<div class="form-group">
-							<label for="correo">*Correo:</label>
-							<div class='input-group col-lg-12'>
-								<input type="text" class="form-control" name="correo"
-									id="correo" placeholder="Ingrese el correo del usuario">
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label for="estado">*Estado:</label>
+										<div class='input-group col-lg-12'>
+											<select class="form-control" name="estado" id="estado">
+												<option value="1">Activo</option>
+												<option value="0">Inactivo</option>
+											</select>
+										</div>
+									</div>
+								</div>
 							</div>
-						</div>
-						<div class="form-group">
-							<label for="correo">*Fecha de nacimiento:</label>
-							<div class='input-group col-lg-12'>
-								<input type="text" class="form-control" name="fecha_nac"
-									id="fecha_nac" placeholder="Ingrese la fecha de nacimiento del usuario">
-							</div>
-						</div>
+							<div id="info_adicional_usuario"></div>
+						</form>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						<input type="button" class="btn btn-default pull-left"
+						<input type="button" class="btn btn-primary pull-left"
 							name="guardar" value="Guardar" onclick="updateUser();">
 					</div>
 				</div>
@@ -246,5 +291,8 @@
 <!-- /#wrapper -->
 <script src="../pagesJs/users.js"></script>
 
-
+<template id="asignaturas_options"> <c:forEach
+	items="${asignaturas}" var="asig">
+	<option value="${asig.idAsignatura}">${asig.nombre}</option>
+</c:forEach> </template>
 <jsp:include page="footer.jsp" />
