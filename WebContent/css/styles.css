@@ -28,3 +28,14 @@ textarea {
 /* 	border: 1px solid #196844 !important; */
 	color: #196844 !important;
 }
+
+.item-activo{
+	background-color: #286090;
+	color: white;
+}
+.items_rubrica:hover{
+	background-color: #95c4ed;
+}
+.item-seleccionable{
+	cursor:pointer;	
+}

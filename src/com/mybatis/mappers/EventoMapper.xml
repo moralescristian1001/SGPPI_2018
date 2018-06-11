@@ -207,6 +207,14 @@
     	THEN (select id_evento + 1 from evento order by id_evento desc limit 1) 
     	ELSE 1 END AS id_ev
   </select>
+  <select id="selectEventosActuales" parameterType="com.mybatis.models.EventoExample" resultMap="BaseResultMap">
+  		SELECT
+  			*
+  		FROM
+  			evento
+  		WHERE
+  			CURRENT_TIMESTAMP() BETWEEN fecha AND DATE_ADD(fecha, INTERVAL duracion_horas HOUR)
+  </select>
   <update id="updateByExampleSelective" parameterType="map">
     <!--
       WARNING - @mbg.generated

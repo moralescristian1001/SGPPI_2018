@@ -76,4 +76,6 @@ public interface EventoMapper {
      * This method will to get the next id
      * */
     int getNextId();
+    
+    List<Evento> selectEventosActuales();
 }

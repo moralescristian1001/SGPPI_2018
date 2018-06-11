@@ -6,11 +6,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import com.mybatis.mappers.AsesoriasMapper;
 import com.mybatis.mappers.AsignaturaMapper;
 import com.mybatis.mappers.CalificacionMapper;
+import com.mybatis.mappers.CalifxsocMapper;
 import com.mybatis.mappers.CargoMapper;
 import com.mybatis.mappers.CuadranteMapper;
 import com.mybatis.mappers.EquipoMapper;
 import com.mybatis.mappers.EstudiantesxequiposMapper;
 import com.mybatis.mappers.EventoMapper;
+import com.mybatis.mappers.NotasxcalifxsocMapper;
 import com.mybatis.mappers.ProfesoresxasignaturasMapper;
 import com.mybatis.mappers.RubricaMapper;
 import com.mybatis.mappers.RubricaxitemMapper;
@@ -26,6 +28,8 @@ import com.mybatis.mappers.SolicitudAsesoriaMapper;
 import com.mybatis.mappers.TipoEventoMapper;
 import com.mybatis.mappers.TipoRubricaMapper;
 import com.mybatis.mappers.UsuariosMapper;
+import com.mybatis.models.Califxsoc;
+import com.mybatis.models.Notasxcalifxsoc;
 import com.mybatis.models.SeguimientoAsistencia;
 import com.mybatis.models.SolicitudAsesoria;
 import com.mybatis.models.TipoEventoExample;
@@ -54,7 +58,9 @@ public class daoHelper {
 	private SalonMapper salonMapper;
 	private SalonxequipoMapper salonxequipoMapper;
 	private SalonxprofesoresMapper salonxprofesoresMapper;
-	private CalificacionMapper calificacionMapper; 
+	private CalificacionMapper calificacionMapper;
+	private CalifxsocMapper califxsocMapper;
+	private NotasxcalifxsocMapper notasxcalifxsocMapper;
 	
 	public daoHelper(){
 		ApplicationContext context = new ClassPathXmlApplicationContext("/spring_myBatis_config.xml");
@@ -81,6 +87,8 @@ public class daoHelper {
 		salonxequipoMapper = (SalonxequipoMapper) context.getBean("salonxequipoMapper");
 		salonxprofesoresMapper = (SalonxprofesoresMapper) context.getBean("salonxprofesoresMapper");
 		calificacionMapper = (CalificacionMapper) context.getBean("calificacionMapper");
+		califxsocMapper= (CalifxsocMapper) context.getBean("califxsocMapper");
+		notasxcalifxsocMapper = (NotasxcalifxsocMapper) context.getBean("notasxcalifxsocMapper");
 	}
 
 	public AsignaturaMapper getAsignaturaMapper() {
@@ -265,6 +273,22 @@ public class daoHelper {
 
 	public void setCalificacionMapper(CalificacionMapper calificacionMapper) {
 		this.calificacionMapper = calificacionMapper;
+	}
+
+	public CalifxsocMapper getCalifxsocMapper() {
+		return califxsocMapper;
+	}
+
+	public void setCalifxsocMapper(CalifxsocMapper califxsocMapper) {
+		this.califxsocMapper = califxsocMapper;
+	}
+
+	public NotasxcalifxsocMapper getNotasxcalifxsocMapper() {
+		return notasxcalifxsocMapper;
+	}
+
+	public void setNotasxcalifxsocMapper(NotasxcalifxsocMapper notasxcalifxsocMapper) {
+		this.notasxcalifxsocMapper = notasxcalifxsocMapper;
 	}
 
 }

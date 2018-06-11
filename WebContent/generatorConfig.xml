@@ -7,6 +7,6 @@
     <javaModelGenerator targetPackage="com.mybatis.models" targetProject="SGPPI_2018/src" />
     <sqlMapGenerator targetPackage="com.mybatis.mappers" targetProject="SGPPI_2018/src" />
     <javaClientGenerator targetPackage="com.mybatis.mappers" targetProject="SGPPI_2018/src" type="XMLMAPPER" />
-    <table schema="socializacion" tableName="socializacion"/>
+    <table schema="califsoc" tableName="califxsoc"/>
   </context>
 </generatorConfiguration>
