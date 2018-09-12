@@ -101,7 +101,7 @@ public class teamController {
 	public void saveSaleTeam(HttpServletRequest request, HttpServletResponse response) {
 		int r = 1;
 		try {
-			InputStream myxls = new FileInputStream("C:\\Users\\USER\\workspace\\SGPPI_2018\\equipos_subida.xls");
+			InputStream myxls = new FileInputStream("E:\\PPI\\SGPPI_2018\\equipos_subida.xls");
 			XSSFWorkbook wb = new XSSFWorkbook(myxls);
 
 			XSSFSheet sheet = wb.getSheetAt(0);
@@ -225,12 +225,26 @@ public class teamController {
 				}
 
 			} else {
-				object.put("status", "errors");
-				object.put("message", "Ha ocurrido un error inesperado");
+				dao.getEquipoMapper().insert(equipo);
+				
+				String idEstudiantesStr = request.getParameter("id_usuario");
+				String[] estudiantesArrStr = idEstudiantesStr.split(",");
+				int[] estudiantes = new int[estudiantesArrStr.length];
+				
+				for (int i = 0; i < estudiantes.length; i++) {
+					estudiantes[i] = Integer.parseInt(estudiantesArrStr[i]);
+				}
+
+				for (int idEstudiante : estudiantes) {
+					Estudiantesxequipos exe = new Estudiantesxequipos();
+					exe.setIdEquipo(equipo.getIdEquipo());
+					exe.setIdEstudiante(idEstudiante);
+					dao.getEstudiantesxequiposMapper().insert(exe);
+				}
 			}
 
 			object.put("status", "ok");
-			object.put("message", "Se ha creado el equipo correctamente");
+			object.put("message", "Se ha guardado la información correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");

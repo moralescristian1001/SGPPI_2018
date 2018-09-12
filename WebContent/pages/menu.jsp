@@ -193,7 +193,7 @@
 
 					ArrayList<Modulo> usuarios = new ArrayList<Modulo>();
 					usuarios.add(new Modulo("Gestionar Usuarios", "users", 5, "user-plus"));
-					usuarios.add(new Modulo("Gestionar Equipos", "team", 5, "group"));
+					usuarios.add(new Modulo("Gestionar Equipos de Trabajo", "team", 5, "group"));
 
 					ArrayList<Modulo> asesorias = new ArrayList<Modulo>();
 					asesorias.add(new Modulo("Agendar", "schedule", 3, "calendar-check-o"));

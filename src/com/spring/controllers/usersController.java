@@ -287,19 +287,16 @@ public class usersController {
 				}
 
 			} else {
-				object.put("status", "errors");
-				object.put("message", "Ha ocurrido un error inesperado");
+				dao.getUsuariosMapper().insert(usuario);
 			}
-
 			object.put("status", "ok");
-			object.put("message", "Se ha modificado el usuario correctamente");
+			object.put("message", "Se ha guardado la información correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
 			object.put("message", "Ocurrió un error modificando el usuario");
 		}
 		writeObject(object, response);
-
 	}
 
 	@RequestMapping("pages/users/getInfoAdicional")

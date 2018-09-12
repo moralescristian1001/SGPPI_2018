@@ -165,8 +165,11 @@
 					<!-- /.panel -->
 				</div>
 				<!-- /.col-lg-12 -->
-				<input type="button" data-toggle="modal" data-target="#myModal"
-					class="btn btn-default pull-left" name="guardar" value="Nuevo"></input>
+				<input type="button" data-toggle="modal" data-target="#myModalEditar"
+					class="btn btn-default pull-left" name="guardar" value="Nuevo equipo"></input>
+					<input type="button" data-toggle="modal" data-target="#myModal"
+					class="btn btn-default pull-right" name="guardar" value="Cargar equipos"></input>
+					<br><br><br><br><br><br>
 			</div>
 		</form>
 		<!-- Modal -->
@@ -211,12 +214,9 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Modificar Equipo</h4>
+						<h4 class="modal-title">Equipo</h4>
 					</div>
-
-
 					<div class="modal-body">
-
 						<input type='hidden' id="id_equipo" name="id_equipo"
 							class="form-control" />
 						<div class="form-group">
