@@ -1,6 +1,5 @@
 package com.spring.controllers;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.io.UnsupportedEncodingException;
@@ -8,10 +7,11 @@ import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
+import org.apache.tomcat.jni.User;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.mybatis.models.Equipo;
 import com.mybatis.models.EquipoExample;
@@ -33,66 +33,72 @@ public class login {
 		try {
 			String email = request.getParameter("email");
 			String password = request.getParameter("password");
-			
-			
-			
+
 			Usuarios user = new Usuarios();
-			
+
 			user.setClave(password);
 			user.setCorreo(email);
-			
-			if(new UsuariosExample().validateLogin(user)){
-				
-				//obtenemos el semestre actual
-				Semestre semestreActual =dao.getSemestreMapper().selectSemestreActual(); 
+
+			if (new UsuariosExample().validateLogin(user)) {
+
+				// obtenemos el semestre actual
+				Semestre semestreActual = dao.getSemestreMapper().selectSemestreActual();
 				request.getSession().setAttribute("semestre", semestreActual);
-				//equipos del semestra actual
+				// equipos del semestra actual
 				EquipoExample eEx = new EquipoExample();
 				eEx.createCriteria().andIdSemestreEqualTo(semestreActual.getIdSemestre());
 				List<Equipo> equipos = dao.getEquipoMapper().selectByExample(eEx);
-				
-				if(user.getIdCargo() == 1 || user.getIdCargo() == 6){
-					
-					//obteniendo el equipo del usuario
-					EstudiantesxequiposExample axeEx = new EstudiantesxequiposExample();
-					axeEx.createCriteria().andIdEstudianteEqualTo(user.getIdUsuario())
-							.andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
-					List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(axeEx);
-					if (!exes.isEmpty() && exes.size() == 1) {
-						Equipo equipoEstudiante = dao.getEquipoMapper().selectByPrimaryKey(exes.get(0).getIdEquipo());
-						request.getSession().setAttribute("team", equipoEstudiante);
-					}else{
+
+				if (user.getIdCargo() == 1 || user.getIdCargo() == 6) {
+
+					if (equipos.isEmpty()) {
 						request.getSession().setAttribute("team", null);
+					} else {
+
+						// obteniendo el equipo del usuario
+						EstudiantesxequiposExample axeEx = new EstudiantesxequiposExample();
+						axeEx.createCriteria().andIdEstudianteEqualTo(user.getIdUsuario())
+								.andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
+
+						List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(axeEx);
+						if (!exes.isEmpty() && exes.size() == 1) {
+							Equipo equipoEstudiante = dao.getEquipoMapper()
+									.selectByPrimaryKey(exes.get(0).getIdEquipo());
+							request.getSession().setAttribute("team", equipoEstudiante);
+						} else {
+							request.getSession().setAttribute("team", null);
+						}
 					}
 				}
 				request.getSession().setAttribute("user", user);
 				object.put("status", "ok");
-			}else{
+			} else {
 				object.put("status", "errors");
-				object.put("message", "Correo o contraseña no válidas");
+				object.put("message", "Correo o contraseÃ±a no validas");
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error validando los datos");
+			object.put("message", "Ocurriï¿½ un error validando los datos");
 		}
 		response.setCharacterEncoding("UTF-8");
 
 		writeObject(object, response);
 	}
+
 	@RequestMapping("pages/logout")
-	public void logOut(HttpServletRequest request, HttpServletResponse response) {
-		
-		try {						
+	public ModelAndView logOut(HttpServletRequest request, HttpServletResponse response) {
+
+		try {
 			request.getSession().setAttribute("user", null);
 			response.setCharacterEncoding("UTF-8");
-			request.getRequestDispatcher("../index.html").forward(request, response);
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+		return new ModelAndView("index");
 	}
 
 	public void writeObject(JSONObject object, HttpServletResponse response) {

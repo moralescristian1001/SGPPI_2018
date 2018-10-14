@@ -87,14 +87,16 @@
 										List<Asesorias> asesorias = (List<Asesorias>) request.getAttribute("listAsesorias");
 										List<SolicitudAsesoria> solicitudes = (List<SolicitudAsesoria>) request.getAttribute("listSolicitudes");
 										Equipo equipoEstudiante = (Equipo) request.getAttribute("equipoEstudiante");
-										for (int hora = 6; hora < 22; hora++) {
+										for (double hora = 6; hora < 22; hora += 0.5) {
 									%>
 									<tr>
-										<td><%=hora == 12 ? hora + "PM" : ((hora % 12) + "" + (hora > 12 ? "PM" : "AM"))%></td>
+										<td><%=hora == 12 || hora == 12.5 ? ((int) hora) + ":" + (hora % 1 == 0 ? "00" : "30") + "PM"
+						: (((int) hora % 12) + ":" + (hora % 1 == 0 ? "00" : "30") + (hora > 12 ? "PM" : "AM"))%></td>
 										<%
 											for (int dia = 1; dia < 7; dia++) {
 										%>
-										<td class="schedule-td" id="td-<%=dia + "-" + hora%>">
+										<td class="schedule-td"
+											id="td-<%=dia + "-" + ((int) hora) + ":" + (hora % 1 == 0 ? 0 : 30)%>">
 											<%
 												boolean encontrado = false;
 														List<Integer> asesoresEncontrados = new ArrayList();
@@ -105,31 +107,33 @@
 																	if (a.getIdEquipo() == equipoEstudiante.getIdEquipo()) {
 																		String nombreAsesor = "";
 																		for (Usuarios asesor : asesores) {
-																			nombreAsesor = asesor.getNombre() + " " + asesor.getApellidos();
-																		}
-											%><a
-											href="javascript:verMiAsesoria(<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>', '<%=nombreAsesor%>')"><i
-												class='fa fa-calendar-check-o fa-fw'></i></a>
-											<%
-												encontrado = true;
-																		asesoresEncontrados.add(a.getIdAsesor());
-																	} else {
-											%> No esta disponible <%
-												}
-
-																} else { // no esta ocupada por otro equipo
-
-																	asesoresEncontrados.add(a.getIdAsesor());
-																	if (!encontrado) {
-																		boolean yaSolicito = false;
-																		for (SolicitudAsesoria s : solicitudes) {
-																			if (s.getHoraSemana() == hora && s.getDiaSemana() == dia) {
-																				yaSolicito = true;
+																			if(asesor.getIdUsuario() == a.getIdAsesor()){
+																				nombreAsesor = asesor.getNombre() + " " + asesor.getApellidos();
 																				break;
 																			}
 																		}
-																		if (!yaSolicito) {
-											%> <a
+											%><a
+											href="javascript:verMiAsesoria(<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>', '<%=nombreAsesor%>')"><i
+												class='fa fa-calendar-check-o fa-fw'></i></a> <%
+ 	encontrado = true;
+ 							asesoresEncontrados.add(a.getIdAsesor());
+ 						} else {
+ %> No esta disponible <%
+ 	}
+
+ 					} else { // no esta ocupada por otro equipo
+
+ 						asesoresEncontrados.add(a.getIdAsesor());
+ 						if (!encontrado) {
+ 							boolean yaSolicito = false;
+ 							for (SolicitudAsesoria s : solicitudes) {
+ 								if (s.getHoraSemana() == hora && s.getDiaSemana() == dia) {
+ 									yaSolicito = true;
+ 									break;
+ 								}
+ 							}
+ 							if (!yaSolicito) {
+ %> <a
 											href="javascript:solicitarCitaForm(<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>')"><i
 												class='fa fa-calendar-plus-o fa-fw'></i></a> <%
  	}
@@ -160,8 +164,7 @@
  			}
  			for (SolicitudAsesoria s : solicitudes) {
  				if (s.getHoraSemana() == hora && s.getDiaSemana() == dia) {
- %> <a
-											href="javascript:deleteSolicitud(<%=s.getIdSolicitud()%>)"><i
+ %> <a href="javascript:deleteSolicitud(<%=s.getIdSolicitud()%>)"><i
 												class='fa fa-calendar-times-o fa-fw'></i></a> <%
  	}
  			}

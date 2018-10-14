@@ -90,18 +90,64 @@ public class tracingController {
 
 					AsesoriasExample aEx = new AsesoriasExample();
 					aEx.createCriteria().andIdSemestreEqualTo(
-							((Semestre) request.getSession().getAttribute("semestre")).getIdSemestre());
+							((Semestre) request.getSession().getAttribute("semestre")).getIdSemestre()).andIdEquipoEqualTo(equipoEstudiante.getIdEquipo());
 					List<Asesorias> asesorias = dao.getAsesoriasMapper().selectByExample(aEx);
 
-					SolicitudAsesoriaExample saEx = new SolicitudAsesoriaExample();
-					saEx.createCriteria().andAceptadaEqualTo(false).andIdEquipoEqualTo(equipoEstudiante.getIdEquipo());
+					SeguimientoExample segEx = new SeguimientoExample();
+					segEx.createCriteria().andIdAsesoriaIn(asesorias.stream().map(Asesorias::getIdAsesoria).collect(Collectors.toList()));
+					List<Seguimiento> seguimientos = dao.getSeguimientoMapper().selectByExample(segEx);
 
-					List<SolicitudAsesoria> solicitudes = dao.getSolicitudAsesoriaMapper().selectByExample(saEx);
+					EstudiantesxequiposExample eeEx = new EstudiantesxequiposExample();
+					eeEx.createCriteria().andIdEquipoEqualTo(equipoEstudiante.getIdEquipo());
 
+					List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(eeEx);
+
+					JSONArray estudiantes = new JSONArray();
+					for (Estudiantesxequipos exe : exes) {
+						Usuarios est = dao.getUsuariosMapper().selectByPrimaryKey(exe.getIdEstudiante());
+						JSONObject estObj = new JSONObject();
+						estObj.put("id_usuario", est.getIdUsuario());
+						estObj.put("nombre_completo", est.getNombre() + " " + est.getApellidos());
+						estudiantes.add(estObj);
+					}
+					JSONArray jsonSeguimientos = new JSONArray();
+					DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+					for (Seguimiento seg : seguimientos) {
+						JSONObject segObj = new JSONObject();
+						segObj.put("fecha", df.format(seg.getFecha()));
+						segObj.put("observaciones", seg.getObservaciones());
+						segObj.put("id_asesoria", seg.getIdAsesoria());
+
+						// searching estudiantes faltantes
+						SeguimientoAsistenciaExample saEx = new SeguimientoAsistenciaExample();
+						saEx.createCriteria().andIdSeguimientoEqualTo(seg.getIdSeguimiento());
+						List<Integer> estAsistencia = dao.getSeguimientoAsistenciaMapper().selectByExample(saEx).stream()
+								.map(SeguimientoAsistencia::getIdEstudiante).collect(Collectors.toList());
+
+						String noAsistentes = "";
+						for (Estudiantesxequipos exe : exes) {
+							if (!estAsistencia.contains(exe.getIdEstudiante())) {
+
+								Usuarios est = dao.getUsuariosMapper().selectByPrimaryKey(exe.getIdEstudiante());
+								noAsistentes += "<li>" + est.getNombre() + " " + est.getApellidos() + "</li>";
+							}
+						}
+						if (!noAsistentes.isEmpty()) {
+							noAsistentes = "<ul>" + noAsistentes + "</ul>";
+						} else {
+							noAsistentes = "Sin Faltantes";
+						}
+						segObj.put("estudiantes_faltaron", noAsistentes);
+						jsonSeguimientos.add(segObj);
+					}
+					
+					
+					
 					model.addAttribute("equipoEstudiante", equipoEstudiante);
 					model.addAttribute("listAsesorias", asesorias);
-					model.addAttribute("listSolicitudes", solicitudes);
 					model.addAttribute("listAsesores", asesores);
+					model.addAttribute("jsonSeguimientos", jsonSeguimientos);
 					request.setCharacterEncoding("UTF-8");
 					response.setCharacterEncoding("UTF-8");
 					return new ModelAndView("pages/tracing");
@@ -123,25 +169,27 @@ public class tracingController {
 		}
 	}
 
+	
+	
 	@RequestMapping("pages/tracing/verTracing")
 	public void verTracing(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
 
 		int idAsesoria = Integer.parseInt(request.getParameter("id_asesoria"));
-		
+
 		Asesorias asesoria = dao.getAsesoriasMapper().selectByPrimaryKey(idAsesoria);
-		
+
 		SeguimientoExample segEx = new SeguimientoExample();
 		segEx.createCriteria().andIdAsesoriaEqualTo(idAsesoria);
 		List<Seguimiento> seguimientos = dao.getSeguimientoMapper().selectByExample(segEx);
-		
+
 		EstudiantesxequiposExample eeEx = new EstudiantesxequiposExample();
 		eeEx.createCriteria().andIdEquipoEqualTo(asesoria.getIdEquipo());
-		
+
 		List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(eeEx);
-		
+
 		JSONArray estudiantes = new JSONArray();
-		for(Estudiantesxequipos exe : exes){
+		for (Estudiantesxequipos exe : exes) {
 			Usuarios est = dao.getUsuariosMapper().selectByPrimaryKey(exe.getIdEstudiante());
 			JSONObject estObj = new JSONObject();
 			estObj.put("id_usuario", est.getIdUsuario());
@@ -149,30 +197,30 @@ public class tracingController {
 			estudiantes.add(estObj);
 		}
 		JSONArray jsonSeguimientos = new JSONArray();
-		DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm"); 
-		
-		
-		for(Seguimiento seg : seguimientos){
+		DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+		for (Seguimiento seg : seguimientos) {
 			JSONObject segObj = new JSONObject();
 			segObj.put("fecha", df.format(seg.getFecha()));
 			segObj.put("observaciones", seg.getObservaciones());
-			
-			//searching estudiantes faltantes
+
+			// searching estudiantes faltantes
 			SeguimientoAsistenciaExample saEx = new SeguimientoAsistenciaExample();
 			saEx.createCriteria().andIdSeguimientoEqualTo(seg.getIdSeguimiento());
-			List<Integer> estAsistencia = dao.getSeguimientoAsistenciaMapper().selectByExample(saEx).stream().map(SeguimientoAsistencia::getIdEstudiante).collect(Collectors.toList());
-			
+			List<Integer> estAsistencia = dao.getSeguimientoAsistenciaMapper().selectByExample(saEx).stream()
+					.map(SeguimientoAsistencia::getIdEstudiante).collect(Collectors.toList());
+
 			String noAsistentes = "";
-			for(Estudiantesxequipos exe : exes){
-				if(!estAsistencia.contains(exe.getIdEstudiante())){
-					
+			for (Estudiantesxequipos exe : exes) {
+				if (!estAsistencia.contains(exe.getIdEstudiante())) {
+
 					Usuarios est = dao.getUsuariosMapper().selectByPrimaryKey(exe.getIdEstudiante());
-					noAsistentes += "<li>" +est.getNombre() + " " + est.getApellidos() + "</li>"; 
+					noAsistentes += "<li>" + est.getNombre() + " " + est.getApellidos() + "</li>";
 				}
 			}
-			if(!noAsistentes.isEmpty()){
+			if (!noAsistentes.isEmpty()) {
 				noAsistentes = "<ul>" + noAsistentes + "</ul>";
-			}else{
+			} else {
 				noAsistentes = "Sin Faltantes";
 			}
 			segObj.put("estudiantes_faltaron", noAsistentes);
@@ -187,31 +235,33 @@ public class tracingController {
 	@RequestMapping("pages/tracing/saveTracing")
 	public void saveTracing(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
-		try {	
-		
+		try {
+
 			int idAsesoria = Integer.parseInt(request.getParameter("id_asesoria"));
 			String observaciones = request.getParameter("observaciones");
 			String asistencia = request.getParameter("asistencia");
-			
+
 			String[] asistenciaArray = asistencia.split(",");
-			
+
 			Seguimiento seguimiento = new Seguimiento();
-			
+
 			int idSeguimiento = dao.getSeguimientoMapper().getNextId();
-			
+
 			seguimiento.setIdSeguimiento(idSeguimiento);
 			seguimiento.setIdAsesoria(idAsesoria);
 			seguimiento.setFecha(new Date());
 			seguimiento.setObservaciones(observaciones);
-			
-			
+
 			dao.getSeguimientoMapper().insert(seguimiento);
-			
-			for(String idEstudiante : asistenciaArray){
-				SeguimientoAsistencia sa = new SeguimientoAsistencia();
-				sa.setIdEstudiante(Integer.parseInt(idEstudiante));
-				sa.setIdSeguimiento(idSeguimiento);
-				dao.getSeguimientoAsistenciaMapper().insert(sa);
+			if (asistenciaArray.length > 0) {
+				for (String idEstudiante : asistenciaArray) {
+					if (!idEstudiante.isEmpty()) {
+						SeguimientoAsistencia sa = new SeguimientoAsistencia();
+						sa.setIdEstudiante(Integer.parseInt(idEstudiante));
+						sa.setIdSeguimiento(idSeguimiento);
+						dao.getSeguimientoAsistenciaMapper().insert(sa);
+					}
+				}
 			}
 
 			object.put("status", "ok");
@@ -219,11 +269,10 @@ public class tracingController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando el seguimiento");
+			object.put("message", "Ocurriï¿½ un error guardando el seguimiento");
 		}
 		writeObject(object, response);
 	}
-
 
 	public void writeObject(JSONObject object, HttpServletResponse response) {
 		try {

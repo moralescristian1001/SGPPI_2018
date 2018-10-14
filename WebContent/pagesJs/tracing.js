@@ -1,9 +1,8 @@
 var puerto = '8080';
 function verSeguimientoForm(dia, hora, diaString, idAsesoria, nombreEquipo,
 		diaHoy) {
+	jQuery('#dia-hora-asesoria').html(diaString + " de " + (Math.floor(hora)) + ":" + (hora % 1 == 0 ? "00" : "30") + " a " + (Math.floor(hora + 0.5)) + ":" + ((hora + 0.5) % 1 == 0 ? "00" : "30"));
 	jQuery("#id_asesoria").val(idAsesoria);
-	jQuery('#dia-hora-asesoria').html(
-			diaString + " de " + hora + ":00 a " + (hora + 1) + ":00");
 	jQuery('#equipo-nombre').html(nombreEquipo);
 	$("#seguimientos-tabla tbody").empty();
 	$("#asistencia").empty();

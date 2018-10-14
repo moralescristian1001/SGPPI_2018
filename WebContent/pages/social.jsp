@@ -75,7 +75,7 @@
 										data-target="#myModal" class="btn btn-default pull-left"
 										onclick="updateSocializacionForm(<%=evento.getIdEvento()%>,<%=evento.getIdTipoEvento()%>,
 										'<%=df2.format(evento.getFecha())%>',<%=evento.getDuracionHoras()%>)"
-										value="Actualizar" /> <input type="button"
+										value="Ver" /> <input type="button"
 										class="btn btn-default pull-left"
 										onclick="confirmationSocializacion(<%=evento.getIdEvento()%>);" value="Eliminar" /></td>
 								</tr>
@@ -90,7 +90,7 @@
 					<!-- /.panel -->
 				</div>
 				<input type="button" data-toggle="modal" data-target="#myModal"
-					class="btn btn-default pull-left" name="guardar" value="Nuevo"></input>
+					class="btn btn-default pull-left" name="guardar" value="Nuevo" onclick="$('#boton-guardar').show();"></input>
 			</div>
 		</form>
 		<!-- Modal -->
@@ -158,7 +158,7 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						<input type="button" class="btn btn-default pull-left"
+						<input type="button" id="boton-guardar" class="btn btn-default pull-left"
 							value="Guardar" onclick="saveSocializacion();">
 					</div>
 				</div>

@@ -1,8 +1,6 @@
 var puerto = '8080';
 function asignarCitaForm(dia, hora, diaString) {
-
-	jQuery('#dia-hora-asesoria').html(
-			diaString + " de " + hora + ":00 a " + (hora + 1) + ":00");
+	jQuery('#dia-hora-asesoria').html(diaString + " de " + (Math.floor(hora)) + ":" + (hora % 1 == 0 ? "00" : "30") + " a " + (Math.floor(hora + 0.5)) + ":" + ((hora + 0.5) % 1 == 0 ? "00" : "30"));
 	jQuery("#dia_semana").val(dia);
 	jQuery("#hora_semana").val(hora);
 	jQuery("#myModal").modal("show");

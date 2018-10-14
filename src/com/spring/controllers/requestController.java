@@ -97,7 +97,7 @@ public class requestController {
 			Equipo equipoEstudiante = (Equipo)request.getSession().getAttribute("team");
 			
 			int diaSemana = Integer.parseInt(request.getParameter("dia_semana"));
-			int horaSemana = Integer.parseInt(request.getParameter("hora_semana"));
+			double horaSemana = Double.parseDouble(request.getParameter("hora_semana"));
 
 			SolicitudAsesoria solicitud = new SolicitudAsesoria();
 			solicitud.setIdEquipo(equipoEstudiante.getIdEquipo());
@@ -114,7 +114,7 @@ public class requestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando la solicitud");
+			object.put("message", "Ocurriï¿½ un error guardando la solicitud");
 		}
 		writeObject(object, response);
 	}
@@ -136,15 +136,15 @@ public class requestController {
 					object.put("message", "Se ha eliminado la solicitud correctamente");
 				} else {
 					object.put("status", "errors");
-					object.put("message", "No se encontró la solicitud a eliminar");
+					object.put("message", "No se encontrï¿½ la solicitud a eliminar");
 				}
 			} else {
 				object.put("status", "errors");
-				object.put("message", "Ocurrió un error eliminando la solicitud");
+				object.put("message", "Ocurriï¿½ un error eliminando la solicitud");
 			}
 		} catch (Exception e) {
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error eliminando la asesoria");
+			object.put("message", "Ocurriï¿½ un error eliminando la asesoria");
 		}
 		writeObject(object, response);
 	}

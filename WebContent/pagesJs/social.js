@@ -32,7 +32,7 @@ function agregarEvaluador(id_salon) {
 			: 1;
 	var evaluadorTemplate = $("#template-evaluador").html();
 	evaluadorTemplate = evaluadorTemplate.replace(/\{id_salon\}/g, id_salon)
-			.replace(/\{cont\}/g, cont[id_salon]);
+			.replace(/\{cont\}/g, contEv[id_salon]);
 
 	$("#evaluadores_div_" + id_salon).append(evaluadorTemplate);
 
@@ -48,6 +48,7 @@ function updateSocializacionForm(idEvento, idTipoEvento, fecha, duracionHoras) {
 	$("#fecha").val(fecha);
 	$("#duracion_horas").val(duracionHoras);
 	$("#salones_informacion").empty();
+	$("#boton-guardar").hide();
 	cont = [];
 	contEv = [];
 	jQuery.ajax({
@@ -82,8 +83,7 @@ function updateSocializacionForm(idEvento, idTipoEvento, fecha, duracionHoras) {
 						}
 						for (var j = 0; j < evaluadores.length; j++) {
 							agregarEvaluador(salon.idSalon);
-							$(
-									"#id_evaluador_" + salon.idSalon + "_"
+							$("#id_evaluador_" + salon.idSalon + "_"
 											+ contEv[salon.idSalon]).val(
 									evaluadores[j]);
 						}
@@ -250,9 +250,15 @@ function saveSocializacion() {
 								location.reload();
 							}, 500);
 						} else {
-							jQuery('errorDiv').html(
-									"Ocurrió un error guardando el evento");
-							jQuery('errorDiv').css('display', 'block');
+							if(typeof data.message !== "undefined"){
+								jQuery('errorDiv').html(data.message);
+							}else{
+								jQuery('errorDiv').html(
+								"Ocurrió un error guardando el evento");
+							}
+							
+							
+					jQuery('errorDiv').css('display', 'block');
 						}
 					} catch (err) {
 						jQuery('errorDiv').html(

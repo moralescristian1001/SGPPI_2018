@@ -1,3 +1,8 @@
+<%@page import="org.json.simple.JSONObject"%>
+<%@page import="org.json.simple.JSONArray"%>
+<%@page import="com.mybatis.models.Usuarios"%>
+<%@page import="com.mybatis.models.Asesorias"%>
+<%@page import="java.util.List"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ page contentType="text/html;charset=UTF-8"%>
@@ -7,7 +12,7 @@
 	<div id="page-wrapper">
 		<div class="row">
 			<div class="col-lg-12">
-				<h1 class="page-header">Cuadrantes</h1>
+				<h1 class="page-header">Seguimiento Asesorias</h1>
 			</div>
 			<!-- /.col-lg-12 -->
 		</div>
@@ -29,7 +34,7 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="panel panel-default">
-						<div class="panel-heading">Cuadrantes</div>
+						<div class="panel-heading">Asesorias equipo ${equipoEstudiante.nombre}</div>
 						<!-- /.panel-heading -->
 						<div class="panel-body">
 							<table width="100%"
@@ -37,29 +42,51 @@
 								id="dataTables-example">
 								<thead>
 									<tr>
-										<th>Número</th>
-										<th>Nombre</th>
-										<th>Descripción</th>
-										<th>Asignatura asociada</th>
-										<th>Acción</th>
+										<th>Fecha Asesoria</th>
+										<th>Fecha Seguimiento</th>
+										<th>Asesor</th>
+										<th>Observaciones</th>
+										<th>Faltantes</th>
 									</tr>
 								</thead>
 								<tbody>
-									<c:forEach items="${listCuadrantes}" var="listCuad">
+									<%
+									
+										List<Asesorias> asesorias = (List<Asesorias>) request.getAttribute("listAsesorias");
+										List<Usuarios> asesores = (List<Usuarios>) request.getAttribute("listAsesores");
+										JSONArray seguimientos = (JSONArray) request.getAttribute("jsonSeguimientos");
+										
+										for(int i = 0; i < seguimientos.size(); i++){
+											JSONObject seguimiento = (JSONObject)seguimientos.get(i);
+											
+											Asesorias asesoria = null;
+											for(Asesorias asesoriaObj : asesorias){
+												if((Integer)seguimiento.get("id_asesoria") == asesoriaObj.getIdAsesoria()){
+													asesoria = asesoriaObj;
+													break;
+												}
+											}
+											Usuarios asesor = null;
+											
+											for(Usuarios asesorObj : asesores){
+												
+												if(asesoria.getIdAsesor() == asesorObj.getIdUsuario()){
+													asesor = asesorObj;
+													break;
+												}
+											}
+											double hora = asesoria.getHoraSemana();
+											 
+									%>
 										<tr>
-											<td><c:out value="${listCuad.numero}" /></td>
-											<td><c:out value="${listCuad.nombre}" /></td>
-											<td><c:out value="${listCuad.descripcion}" /></td>
-											<td><c:out value="${listCuad.nombreAsig}" /></td>
-											<td><input type="button" data-toggle="modal"
-												data-target="#myModal" class="btn btn-default pull-left"
-												onclick="updateCuadrantes(${listCuad.id_cuadrante},${listCuad.numero},'${listCuad.nombre}','${listCuad.descripcion}','${listCuad.nombreAsig}')"
-												value="Actualizar" /> <input type="button"
-												class="btn btn-default pull-left"
-												onclick="confirmationCuadra(${listCuad.id_cuadrante});"
-												value="Eliminar" /></td>
+											<td><%=asesoria.getDiaSemana() + hora == 12 || hora == 12.5 ? ((int)hora) + ":" + (hora%1 == 0 ? "00" : "30") + "PM" : (((int)hora % 12) + ":" + (hora%1 == 0 ? "00" : "30") + (hora > 12 ? "PM" : "AM"))%></td>
+											<td><%=seguimiento.get("fecha").toString()%></td>
+											<td><%=asesor.getNombre() + " " + asesor.getApellidos()%></td>
+											<td><%=seguimiento.get("observaciones").toString()%></td>
+											<td><%=seguimiento.get("estudiantes_faltaron").toString()%></td>
 										</tr>
-									</c:forEach>
+										<%} 
+										%>
 								</tbody>
 							</table>
 							<!-- /.table-responsive -->

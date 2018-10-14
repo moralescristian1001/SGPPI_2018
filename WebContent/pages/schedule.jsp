@@ -67,14 +67,14 @@
 										String scriptsColor = "";
 										DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-										for (int hora = 6; hora < 22; hora++) {
+										for (double hora = 6; hora < 22; hora+=0.5) {
 									%>
 									<tr>
-										<td><%=hora == 12 ? hora + "PM" : ((hora % 12) + "" + (hora > 12 ? "PM" : "AM"))%></td>
+										<td><%=hora == 12 || hora == 12.5 ? ((int)hora) + ":" + (hora%1 == 0 ? "00" : "30") + "PM" : (((int)hora % 12) + ":" + (hora%1 == 0 ? "00" : "30") + (hora > 12 ? "PM" : "AM"))%></td>
 										<%
 											for (int dia = 1; dia < 7; dia++) {
 										%>
-										<td class="schedule-td" id="td-<%=dia + "-" + hora%>">
+										<td class="schedule-td" id="td-<%=dia + "-" + ((int)hora) + ":" + (hora%1 == 0 ? 0 : 30)%>">
 											
 											<%
 												boolean encontrado = false;

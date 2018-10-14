@@ -2,6 +2,7 @@ package com.spring.controllers;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,15 +44,18 @@ public class scheduleController {
 			eEx.createCriteria().andIdSemestreEqualTo(idSemestreActual);
 			List<Equipo> equipos = dao.getEquipoMapper().selectByExample(eEx);
 
-			AsesoriasExample aEx = new AsesoriasExample();
-			aEx.createCriteria().andIdSemestreEqualTo(idSemestreActual).andIdAsesorEqualTo(usu.getIdUsuario());
-			List<Asesorias> asesorias = dao.getAsesoriasMapper().selectByExample(aEx);
-
-			SolicitudAsesoriaExample sEx = new SolicitudAsesoriaExample();
-			sEx.createCriteria().andAceptadaEqualTo(false)
-					.andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
-			List<SolicitudAsesoria> solicitudes = dao.getSolicitudAsesoriaMapper().selectByExample(sEx);
-
+			List<SolicitudAsesoria> solicitudes = new ArrayList<>();
+			List<Asesorias> asesorias = new ArrayList<>();
+			
+			if (!equipos.isEmpty()) {
+				AsesoriasExample aEx = new AsesoriasExample();
+				aEx.createCriteria().andIdSemestreEqualTo(idSemestreActual).andIdAsesorEqualTo(usu.getIdUsuario());
+				asesorias = dao.getAsesoriasMapper().selectByExample(aEx);
+				SolicitudAsesoriaExample sEx = new SolicitudAsesoriaExample();
+				sEx.createCriteria().andAceptadaEqualTo(false)
+						.andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
+				solicitudes = dao.getSolicitudAsesoriaMapper().selectByExample(sEx);
+			}
 			model.addAttribute("listRequests", solicitudes);
 			model.addAttribute("listSchedules", asesorias);
 			model.addAttribute("listTeams", equipos);
@@ -84,7 +88,7 @@ public class scheduleController {
 			Integer idEquipo = request.getParameter("id_equipo").equals("-1") ? null
 					: Integer.parseInt(request.getParameter("id_equipo"));
 			int diaSemana = Integer.parseInt(request.getParameter("dia_semana"));
-			int horaSemana = Integer.parseInt(request.getParameter("hora_semana"));
+			double horaSemana = Double.parseDouble(request.getParameter("hora_semana"));
 			String idSolicitud = request.getParameter("id_solicitud");
 
 			Asesorias asesoria = new Asesorias();
@@ -117,7 +121,7 @@ public class scheduleController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando el asesoria");
+			object.put("message", "Ocurriï¿½ un error guardando el asesoria");
 		}
 		writeObject(object, response);
 	}
@@ -139,15 +143,15 @@ public class scheduleController {
 					object.put("message", "Se ha eliminado la asesoria correctamente");
 				} else {
 					object.put("status", "errors");
-					object.put("message", "No se encontró la asesoria a eliminar");
+					object.put("message", "No se encontrï¿½ la asesoria a eliminar");
 				}
 			} else {
 				object.put("status", "errors");
-				object.put("message", "Ocurrió un error eliminando la asesoria");
+				object.put("message", "Ocurriï¿½ un error eliminando la asesoria");
 			}
 		} catch (Exception e) {
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error eliminando la asesoria");
+			object.put("message", "Ocurriï¿½ un error eliminando la asesoria");
 		}
 		writeObject(object, response);
 	}
