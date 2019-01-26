@@ -1,6 +1,10 @@
 var puerto = '8080';
 var cont = 0;
 var contReal = 0;
+var insertar = false;
+function guardarTeamForm(){
+	insertar = true;
+}
 function updateTeam() {
 	jQuery('#errorDiv').css('display', 'none');
 	var codigo = jQuery("#codigo").val();
@@ -47,6 +51,7 @@ function updateTeam() {
 					var data;
 					try {
 						data = jQuery.parseJSON(o);
+						
 						if (data.status != undefined && data.status == 'errors') {
 							jQuery('#errorDiv').html(data.message);
 							jQuery('#errorDiv').css('display', 'block');
@@ -55,6 +60,10 @@ function updateTeam() {
 							jQuery('#successDiv').html(data.message);
 							jQuery('#successDiv').css('display', 'block');
 							clear();
+							if(insertar){
+								var idEquipo = data.id_equipo;
+								$("#id_equipo").val(idEquipo);
+							}
 //							setTimeout(function() {
 //								location.reload();
 //							}, 500);
@@ -118,6 +127,7 @@ function saveUser() {
 					var data;
 					try {
 						data = jQuery.parseJSON(o);
+						
 						if (data.status != undefined && data.status == 'errors') {
 							jQuery('#errorDiv').html(data.message);
 							jQuery('#errorDiv').css('display', 'block');

@@ -166,7 +166,7 @@
 				</div>
 				<!-- /.col-lg-12 -->
 				<input type="button" data-toggle="modal" data-target="#myModalEditar"
-					class="btn btn-default pull-left" name="guardar" value="Nuevo equipo"></input>
+					class="btn btn-default pull-left" name="guardar" value="Nuevo equipo" onclick="guardarTeamForm()"></input>
 					<input type="button" data-toggle="modal" data-target="#myModal"
 					class="btn btn-default pull-right" name="guardar" value="Cargar equipos"></input>
 					<br><br><br><br><br><br>

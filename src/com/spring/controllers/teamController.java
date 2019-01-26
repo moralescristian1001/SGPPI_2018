@@ -3,6 +3,7 @@ package com.spring.controllers;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +39,7 @@ import com.mybatis.models.SolicitudAsesoria;
 import com.mybatis.models.SolicitudAsesoriaExample;
 import com.mybatis.models.Usuarios;
 import com.mybatis.models.UsuariosExample;
+import com.mysql.fabric.xmlrpc.base.Array;
 import com.springMybatis.persistence.daoHelper;
 
 @Controller
@@ -57,21 +59,32 @@ public class teamController {
 			EquipoExample eEx = new EquipoExample();
 			eEx.createCriteria().andIdSemestreEqualTo(semestreActual.getIdSemestre());
 			List<Equipo> equipos = dao.getEquipoMapper().selectByExample(eEx);
-
-			EstudiantesxequiposExample eeEx = new EstudiantesxequiposExample();
-			eeEx.createCriteria().andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
-			List<Estudiantesxequipos> estudiantesxequipos = dao.getEstudiantesxequiposMapper().selectByExample(eeEx);
+			List<Estudiantesxequipos> estudiantesxequipos = new ArrayList<>();
+			
+			UsuariosExample estEx = new UsuariosExample();
+			UsuariosExample estSinEquipoEx = new UsuariosExample();
+			if(!equipos.isEmpty()) {
+				EstudiantesxequiposExample eeEx = new EstudiantesxequiposExample();
+				eeEx.createCriteria().andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
+				estudiantesxequipos = dao.getEstudiantesxequiposMapper().selectByExample(eeEx);
+				
+				estEx.createCriteria().andIdUsuarioIn(estudiantesxequipos.stream().map(Estudiantesxequipos::getIdEstudiante)
+						.collect(Collectors.toList()));
+				
+				estSinEquipoEx.createCriteria().andEstadoEqualTo(true).andIdCargoEqualTo(1)
+						.andIdUsuarioNotIn(estudiantesxequipos.stream().map(Estudiantesxequipos::getIdEstudiante)
+								.collect(Collectors.toList()));
+			}else{
+				estEx.createCriteria().andIdCargoLessThan(0);
+				estSinEquipoEx.createCriteria().andEstadoEqualTo(true).andIdCargoEqualTo(1);
+			}
+			
 
 			List<Asignatura> asignaturas = dao.getAsignaturaMapper().selectByExample(new AsignaturaExample());
 
-			UsuariosExample estEx = new UsuariosExample();
-			estEx.createCriteria().andIdUsuarioIn(estudiantesxequipos.stream().map(Estudiantesxequipos::getIdEstudiante)
-					.collect(Collectors.toList()));
+			
 
-			UsuariosExample estSinEquipoEx = new UsuariosExample();
-			estSinEquipoEx.createCriteria().andEstadoEqualTo(true).andIdCargoEqualTo(1)
-					.andIdUsuarioNotIn(estudiantesxequipos.stream().map(Estudiantesxequipos::getIdEstudiante)
-							.collect(Collectors.toList()));
+			
 
 			List<Usuarios> estudiantesSinEquipo = dao.getUsuariosMapper().selectByExample(estSinEquipoEx);
 			List<Usuarios> estudiantes = dao.getUsuariosMapper().selectByExample(estEx);
@@ -116,16 +129,16 @@ public class teamController {
 
 				String errors = "";
 				// if (codigo.isEmpty()) {
-				// errors += "Código,";
+				// errors += "Cï¿½digo,";
 				// }
 				if (nombre.isEmpty()) {
 					errors += "Nombre,";
 				}
 				if (codigoAsignatura.isEmpty()) {
-					errors += "Código asignatura,";
+					errors += "Cï¿½digo asignatura,";
 				}
 				if (cedulas.isEmpty()) {
-					errors += "Cédulas,";
+					errors += "Cï¿½dulas,";
 				}
 
 				if (!errors.isEmpty()) {
@@ -195,7 +208,12 @@ public class teamController {
 			String idAsignatura = request.getParameter("id_asignatura");
 			Equipo equipo = new Equipo();
 			String idEquipo = request.getParameter("id_equipo");
-
+			boolean update = true;
+			if(idEquipo.isEmpty()) {
+				idEquipo = String.valueOf(dao.getEquipoMapper().getNextId());
+				update = false;
+			}
+			
 			equipo.setCodigo(Integer.parseInt(codigo));
 			equipo.setNombre(nombre);
 			equipo.setIdSemestre(idSemestre);
@@ -205,7 +223,14 @@ public class teamController {
 			if (idEquipo != null && !idEquipo.isEmpty() && !idEquipo.equals("0") && !idEquipo.equals("undefined")
 					&& !idEquipo.equals("null")) {
 				equipo.setIdEquipo(Integer.parseInt(idEquipo));
-				dao.getEquipoMapper().updateByPrimaryKey(equipo);
+				if(update) {
+					
+					dao.getEquipoMapper().updateByPrimaryKey(equipo);
+				}else {
+					dao.getEquipoMapper().insert(equipo);
+				}
+				
+				
 
 				String idEstudiantesStr = request.getParameter("id_usuario");
 				String[] estudiantesArrStr = idEstudiantesStr.split(",");
@@ -244,11 +269,12 @@ public class teamController {
 			}
 
 			object.put("status", "ok");
-			object.put("message", "Se ha guardado la información correctamente");
+			object.put("id_equipo", idEquipo);
+			object.put("message", "Se ha guardado la informaciï¿½n correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando el equipo");
+			object.put("message", "Ocurriï¿½ un error guardando el equipo");
 		}
 		writeObject(object, response);
 
@@ -271,15 +297,15 @@ public class teamController {
 					object.put("message", "Se ha eliminado el equipo correctamente");
 				} else {
 					object.put("status", "errors");
-					object.put("message", "No se encontró el equipo a eliminar");
+					object.put("message", "No se encontrï¿½ el equipo a eliminar");
 				}
 			} else {
 				object.put("status", "errors");
-				object.put("message", "Ocurrió un error eliminando el equipo");
+				object.put("message", "Ocurriï¿½ un error eliminando el equipo");
 			}
 		} catch (Exception e) {
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error eliminando el equipo");
+			object.put("message", "Ocurriï¿½ un error eliminando el equipo");
 		}
 		writeObject(object, response);
 	}
