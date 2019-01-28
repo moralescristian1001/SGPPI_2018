@@ -1,6 +1,11 @@
 var puerto = '8080';
 var cont = [];
 var contEv = [];
+var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
+
+function irInformeNotas(idEvento){
+	location.href = urlFull + "/pages/qualifyGradeReport.html?id_socializacion=" + idEvento;
+}
 
 function agregarSalon(id, descripcion) {
 	var salonTemplate = $("#template-salon").html();
@@ -203,22 +208,132 @@ function saveSocializacion() {
 		jQuery('#errorDiv').css('display', 'block');
 		return;
 	}
-	var idEquipos = [];
-	jQuery("input[name*='id_equipo'],select[name*='id_equipo']").each(
-			function(element) {
-				idEquipos.push(jQuery(this).attr("id").split("_")[2] + "_"
-						+ jQuery(this).val());
-			});
+	var cantidadSalones = 0;
+	idEquipos = [];
+	idEvaluadores = [];
+	idEquiposGeneral = [];
+	idEvaluadoresGeneral = [];
+	var errorAsignandoEquipo = false;
+	var errorAsignandoEvaluador = false;
+	$("input[name*='salones']").each(function(){
+		if($(this).is(":checked")){
+			cantidadSalones++;
+			var salon = $(this).val();
+			var descripcionSalon = $(this).data("descripcion");
+			var inserto = false; 
+			//equipos
+			
+			
+			jQuery("input[id*='id_equipo_" + salon + "'],select[id*='id_equipo_"+salon+"']").each(
+					function(element) {
+						var equipo = jQuery(this).val();
+						if(equipo == "0"){
+							jQuery('#errorDiv').html("Debe seleccionar el equipo en el salon " + descripcionSalon);
+							jQuery('#errorDiv').css('display', 'block');
+							errorAsignandoEquipo = true;
+							return;
+						}
+						if(idEquipos.indexOf(equipo) >= 0){
+							jQuery('#errorDiv').html("No puedes repetir equipo en el salón " + descripcionSalon);
+							jQuery('#errorDiv').css('display', 'block');
+							errorAsignandoEquipo = true;
+							return;
+						}
+						
+						if(idEquiposGeneral.indexOf(equipo) >= 0){
+							jQuery('#errorDiv').html("Hay 2 o más salones con el equipo " + $(this).find("option:selected").html());
+							jQuery('#errorDiv').css('display', 'block');
+							errorAsignandoEquipo = true;
+							return;
+						}
+						
+						idEquipos.push(salon + "_"
+								+ equipo);
+						idEquiposGeneral.push(equipo);
+						inserto = true;
+					});
+			if(errorAsignandoEquipo){
+				return;
+			}
+			if(!inserto){
+				jQuery('#errorDiv').html("Debe agregar al menos un equipo del salón " + descripcionSalon);
+				jQuery('#errorDiv').css('display', 'block');
+				return;
+			}
+			inserto = false;
+			//end equipos
+			
+			//evaluadores
+			
+			jQuery("input[id*='id_evaluador_" + salon + "'],select[id*='id_evaluador_" + salon + "']").each(
+					function(element) {
+						var ev = jQuery(this).val()
+						if(ev == "0"){
+							jQuery('#errorDiv').html("Debe seleccionar el evaluador en el salon " + descripcionSalon);
+							jQuery('#errorDiv').css('display', 'block');
+							errorAsignandoEvaluador = true;
+							return;
+						}
+						if(idEvaluadores.indexOf(ev) >= 0){
+							jQuery('#errorDiv').html("No puedes repetir evaluador en el salón " + descripcionSalon);
+							jQuery('#errorDiv').css('display', 'block');
+							errorAsignandoEvaluador = true;
+							return;
+						}
+						
+						if(idEvaluadoresGeneral.indexOf(ev) >= 0){
+							jQuery('#errorDiv').html("Hay 2 o más salones con el evaluador " + $(this).find("option:selected").html());
+							jQuery('#errorDiv').css('display', 'block');
+							errorAsignandoEvaluador = true;
+							return;
+						}
+						idEvaluadores.push(salon + "_"
+								+ ev);
+						idEvaluadoresGeneral.push(ev);
+						inserto = true;
+						
+					});
+			if(errorAsignandoEvaluador){
+				return;
+			}
+			if(!inserto){
+				jQuery('#errorDiv').html("Debe agregar al menos un evaluador del salón " + descripcionSalon);
+				jQuery('#errorDiv').css('display', 'block');
+				return;
+			}
+			//end evaluadores
+		}
+	})
+	
+	if(cantidadSalones == 0){
+		jQuery('#errorDiv').html("Debe seleccionar al menos un salon");
+		jQuery('#errorDiv').css('display', 'block');
+		return;
+	}
+	
+	if(errorAsignandoEquipo){
+		return;
+	}
+	if(idEquipos.length == 0){
+		jQuery('#errorDiv').html("Debe seleccionar al menos un equipo en cada uno de los salones");
+		jQuery('#errorDiv').css('display', 'block');
+		return;
+	}
 	idEquipos = idEquipos.join(",");
-
-	var idEvaluadores = [];
-	jQuery("input[name*='id_evaluador'],select[name*='id_evaluador']").each(
-			function(element) {
-				idEvaluadores.push(jQuery(this).attr("id").split("_")[2] + "_"
-						+ jQuery(this).val());
-			})
+	
+	
+	if(errorAsignandoEvaluador){
+		return;
+	}
+	if(idEvaluadores.length == 0){
+		jQuery('#errorDiv').html("Debe seleccionar al menos un evaluador en cada uno de los salones");
+		jQuery('#errorDiv').css('display', 'block');
+		return;
+	}
 	idEvaluadores = idEvaluadores.join(",");
-
+	
+	
+	
 	jQuery
 			.ajax({
 				url : 'http://localhost:' + puerto

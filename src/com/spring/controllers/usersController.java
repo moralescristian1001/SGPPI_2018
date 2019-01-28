@@ -93,13 +93,7 @@ public class usersController {
 
 						break;
 					case 2:// Profesor
-						ProfesoresxasignaturasExample paex = new ProfesoresxasignaturasExample();
-						paex.createCriteria().andIdProfesorEqualTo(usu.getIdUsuario());
-						List<Profesoresxasignaturas> pxas = dao.getProfesoresxasignaturasMapper().selectByExample(paex);
-						for (Profesoresxasignaturas pxa : pxas) {
-							Asignatura asig = dao.getAsignaturaMapper().selectByPrimaryKey(pxa.getIdAsignatura());
-							info += asig.getNombre() + "<br>";
-						}
+						
 						break;
 					case 3:// Asesor
 
@@ -166,7 +160,7 @@ public class usersController {
 
 					if (!HSSFDateUtil.isCellDateFormatted(fechaNacCell)) {
 						response.getWriter()
-								.write("<script>location.href='../users.html?errors=La fecha de nacimiento de la página "
+								.write("<script>location.href='../users.html?errors=La fecha de nacimiento de la pï¿½gina "
 										+ idCargo + " en la fila " + r + " no es fecha';</script>");
 						return;
 					}
@@ -248,6 +242,13 @@ public class usersController {
 			String cedula = request.getParameter("cedula");
 			String idUser = request.getParameter("id_usuario");
 			int estado = Integer.parseInt(request.getParameter("estado"));
+			String minimoAsesoriasStr = request.getParameter("minimo_asesorias");
+			Integer minimoAsesorias = null;
+			
+			if(idCargo == 3) { //Si es asesor
+				minimoAsesorias = Integer.parseInt(minimoAsesoriasStr);
+			}
+			
 			Usuarios usuario = new Usuarios();
 
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
@@ -260,41 +261,23 @@ public class usersController {
 			usuario.setCedula(cedula);
 			usuario.setUsuario(correo);
 			usuario.setClave(cedula);
+			usuario.setCambioClave(false);
 			usuario.setEstado(estado == 1 ? true : false);
-
+			usuario.setMinimoAsesorias(minimoAsesorias);
+			
 			if (idUser != null && !idUser.isEmpty() && !idUser.equals("0") && !idUser.equals("undefined")
 					&& !idUser.equals("null")) {
 				usuario.setIdUsuario(Integer.parseInt(idUser));
 				dao.getUsuariosMapper().updateByPrimaryKey(usuario);
-
-				if (usuario.getIdCargo() == 2) {
-					String idAsignaturaStr = request.getParameter("id_asignatura");
-					String[] asignaturasArrStr = idAsignaturaStr.split(",");
-					int[] asignaturas = new int[asignaturasArrStr.length];
-					for (int i = 0; i < asignaturas.length; i++) {
-						asignaturas[i] = Integer.parseInt(asignaturasArrStr[i]);
-					}
-
-					ProfesoresxasignaturasExample proxasigEx = new ProfesoresxasignaturasExample();
-					dao.getProfesoresxasignaturasMapper().deleteByExample(proxasigEx);
-
-					for (int idAsignatura : asignaturas) {
-						Profesoresxasignaturas pxa = new Profesoresxasignaturas();
-						pxa.setIdAsignatura(idAsignatura);
-						pxa.setIdProfesor(usuario.getIdUsuario());
-						dao.getProfesoresxasignaturasMapper().insert(pxa);
-					}
-				}
-
 			} else {
 				dao.getUsuariosMapper().insert(usuario);
 			}
 			object.put("status", "ok");
-			object.put("message", "Se ha guardado la información correctamente");
+			object.put("message", "Se ha guardado la informaciï¿½n correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error modificando el usuario");
+			object.put("message", "Ocurriï¿½ un error modificando el usuario");
 		}
 		writeObject(object, response);
 	}
@@ -346,7 +329,7 @@ public class usersController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando el cuadrante");
+			object.put("message", "Ocurriï¿½ un error guardando el cuadrante");
 		}
 
 		response.setCharacterEncoding("UTF-8");

@@ -167,8 +167,6 @@
 				<!-- /.col-lg-12 -->
 				<input type="button" data-toggle="modal" data-target="#myModalEditar"
 					class="btn btn-default pull-left" name="guardar" value="Nuevo equipo" onclick="guardarTeamForm()"></input>
-					<input type="button" data-toggle="modal" data-target="#myModal"
-					class="btn btn-default pull-right" name="guardar" value="Cargar equipos"></input>
 					<br><br><br><br><br><br>
 			</div>
 		</form>
@@ -251,12 +249,6 @@
 							<legend>Estudiantes</legend>
 							<div class="row">
 								<div class="col-sm-12" id="div_tabla_estudiantes"></div>
-							</div>
-							<div class="row">
-								<div class="col-sm-12">
-									<a href='javascript:agregarEstudiante()'
-										class='btn btn-success'><i class='fa fa-plus fa-fw'></i></a>
-								</div>
 							</div>
 						</fieldset>
 

@@ -48,7 +48,7 @@
 					<div class="panel panel-default">
 						<div class="panel-heading">Gestionar Usuarios</div>
 						<!-- /.panel-heading -->
-						<div class="panel-body">
+						<div class="panel-body" style="overflow-x: auto;">
 
 
 							<%
@@ -77,9 +77,6 @@
 												switch (cargo.getIdCargo()) {
 													case 1 : //Estudiante
 														thAdicional = "<th>Equipos</th>";
-														break;
-													case 2 ://Profesor
-														thAdicional = "<th>Asignaturas</th>";
 														break;
 													case 4 ://Evaluador
 														// 														thAdicional = "<th>Salones</th>";
@@ -113,7 +110,7 @@
 										<td><input type="button" data-toggle="modal"
 											data-target="#myModalEditar"
 											class="btn btn-default pull-left"
-											onclick="updateUserForm(<%=usu.getIdUsuario()%>,'<%=usu.getCorreo()%>','<%=usu.getNombre()%>','<%=usu.getApellidos()%>','<%=usu.getCedula()%>','<%=fechaFormateada%>', <%=usu.getIdCargo()%>, <%=usu.getEstado() ? 1 : 0%>)"
+											onclick="updateUserForm(<%=usu.getIdUsuario()%>,'<%=usu.getCorreo()%>','<%=usu.getNombre()%>','<%=usu.getApellidos()%>','<%=usu.getCedula()%>','<%=fechaFormateada%>', <%=usu.getIdCargo()%>, <%=usu.getEstado() ? 1 : 0%>, '<%=usu.getMinimoAsesorias()%>')"
 											value="Actualizar" />
 									</tr>
 									<%
@@ -123,9 +120,7 @@
 							</table>
 							<script>
 					         					        	
-					             $("#dataTables-example-<%=cargo.getIdCargo()%>").DataTable({
-					                 responsive: true
-					             });
+					             $("#dataTables-example-<%=cargo.getIdCargo()%>").DataTable();
 					         
 							</script>
 							<%
@@ -269,6 +264,16 @@
 												<option value="1">Activo</option>
 												<option value="0">Inactivo</option>
 											</select>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-6" id="div_minimo_asesorias" style="display:none;">
+									<div class="form-group">
+										<label for="estado">Mínimo de Asesorias*:</label>
+										<div class='input-group col-lg-12'>
+											<input type="number" class="form-control" name="minimo_asesorias"
+												id="minimo_asesorias"
+												placeholder="Ingrese el minimo de asesorias" min="1" max="186">
 										</div>
 									</div>
 								</div>
