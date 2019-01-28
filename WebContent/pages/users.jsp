@@ -27,6 +27,20 @@
 			</div>
 			<!-- /.col-lg-12 -->
 		</div>
+		<div class="alert alert-danger" role="alert" id="errorDivForm"
+			style="display: none; width: 100%;">
+			<button type="button" class="close">
+				<span aria-hidden="true">&times;</span> <span class="sr-only">Close</span>
+			</button>
+			<span class="alert-content" id="errorDivFormMessage"></span>
+		</div>
+		<div class="alert alert-success" role="alert" id="successDivForm"
+			style="display: none; width: 100%;">
+			<button type="button" class="close">
+				<span aria-hidden="true">&times;</span> <span class="sr-only">Close</span>
+			</button>
+			<span class="alert-content" id="successDivFormMessage"></span>
+		</div>
 		<div class="alert alert-danger" role="alert" id="errorDiv"
 			style="display: <%=request.getParameter("errors") != null ? "block" : "none"%>; width: 100%;">
 			<button type="button" class="close">
@@ -49,8 +63,6 @@
 						<div class="panel-heading">Gestionar Usuarios</div>
 						<!-- /.panel-heading -->
 						<div class="panel-body">
-
-
 							<%
 								Map<Cargo, List<Usuarios>> usuariosXCargo = (Map<Cargo, List<Usuarios>>) request.getAttribute("users");
 								SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
@@ -138,11 +150,14 @@
 					<!-- /.panel -->
 				</div>
 				<!-- /.col-lg-12 -->
-				<input type="button" data-toggle="modal" data-target="#myModalEditar"
-					class="btn btn-default pull-left" name="guardar" value="Nuevo usuario"></input>
-				<input type="button" data-toggle="modal" data-target="#myModal"
-					class="btn btn-default pull-right" name="guardar" value="Cargar usuarios"></input>
-					<br><br><br><br><br><br>
+				<div class="row" style="padding: 50px">
+					<input type="button" data-toggle="modal" data-target="#myModalEditar"
+						class="btn btn-default pull-left" name="guardar" value="Nuevo usuario"></input>
+					<!--  <input type="button" data-toggle="modal" data-target="#myModal"
+						class="btn btn-default pull-right" name="guardar" value="Cargar usuarios"></input>
+						<br><br><br><br><br><br>-->
+				</div>
+				
 			</div>
 		</form>
 		<!-- Modal -->
@@ -188,9 +203,11 @@
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
 						<h4 class="modal-title">Usuario</h4>
 					</div>
-
-
 					<div class="modal-body">
+						<div id="errorModal" class="alert alert-danger alert-dismissible" role="alert" style="display: none">
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						  <strong id="messageErrorModal"></strong>
+						</div>
 						<form id="form-editar-usuario">
 							<input type='hidden' id="id_usuario" name="id_usuario"
 								class="form-control" />
@@ -217,18 +234,25 @@
 							<div class="row">
 								<div class="col-sm-6">
 									<div class="form-group">
-										<label for="cedula">*Cédula:</label>
+										<label class="col-6" for="cedula">
+										<li style="list-style: none; display: inline-flex;">
+										<span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" 
+										title="El campo cédula solo admite caracteres númericos, por ejemplo: 65235200"></span>
+										</li> *Cédula: </label>
 										<div class='input-group col-lg-12'>
-											<input type="text" class="form-control" name="cedula"
+											<input type="number" pattern="[0123456789]" class="form-control" name="cedula"
 												id="cedula" placeholder="Ingrese la cédula del usuario">
 										</div>
 									</div>
 								</div>
 								<div class="col-sm-6">
 									<div class="form-group">
-										<label for="correo">*Correo:</label>
+										<label class="col-6" for="correo"><li style="list-style: none; display: inline-flex;">
+										<span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" 
+										title="El campo correo solo admite correos institucionales, por ejemplo: example@elpoli.edu.co"></span>
+										</li> *Correo:</label>
 										<div class='input-group col-lg-12'>
-											<input type="text" class="form-control" name="correo"
+											<input type="email" class="form-control" name="correo"
 												id="correo" placeholder="Ingrese el correo del usuario">
 										</div>
 									</div>
@@ -237,7 +261,10 @@
 							<div class="row">
 								<div class="col-sm-6">
 									<div class="form-group">
-										<label for="fecha_nac">*Fecha de nacimiento:</label>
+										<label class="col-6" for="fecha_nac"><li style="list-style: none; display: inline-flex;">
+										<span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" 
+										title="El campo fecha de nacimiento solo admite fechas menores a la fecha actual."></span>
+										</li> *Fecha de nacimiento:</label>
 										<div class='input-group col-lg-12'>
 											<input type="date" class="form-control" name="fecha_nac"
 												id="fecha_nac"
@@ -277,12 +304,11 @@
 						</form>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 						<input type="button" class="btn btn-primary pull-left"
 							name="guardar" value="Guardar" onclick="updateUser();">
 					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
@@ -299,3 +325,8 @@
 	<option value="${asig.idAsignatura}">${asig.nombre}</option>
 </c:forEach> </template>
 <jsp:include page="footer.jsp" />
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip(); 
+});
+</script>

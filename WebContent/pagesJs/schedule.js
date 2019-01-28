@@ -49,24 +49,25 @@ function saveAsesoria() {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
 					clear();
+					jQuery("html, body").animate({ scrollTop: 0 }, 600);
+					jQuery('#myModal').modal('hide');
+					jQuery('.modal-backdrop').removeClass('in');
 					setTimeout(function() {
-						location.reload();
-					}, 500);
+							location.reload();
+					}, 2000);
 				} else {
-					jQuery('errorDiv').html(
-							"Ocurrió un error guardando la asesoria");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html("Ocurrió un error guardando la asesoria");
+					jQuery('#errorModal').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
-						"Ocurrió un error guardando la asesoria");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#messageErrorModal').html("Ocurrió un error guardando la asesoria");
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}
@@ -102,24 +103,25 @@ function deleteAsesoria(id) {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
 					clear();
+					jQuery("html, body").animate({ scrollTop: 0 }, 600);
+					jQuery('#myModal').modal('hide');
+					jQuery('.modal-backdrop').removeClass('in');
 					setTimeout(function() {
-						location.reload();
-					}, 500);
+							location.reload();
+					}, 2000);
 				} else {
-					jQuery('errorDiv').html(
-							"Ocurri&oacute; un error eliminando la asesoria");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html("Ocurrió un error eliminando la asesoria");
+					jQuery('#errorModal').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
-						"Ocurrió un error eliminando la asesoria");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#messageErrorModal').html("Ocurrió un error eliminando la asesoria");
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}

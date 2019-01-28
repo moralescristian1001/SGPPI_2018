@@ -94,7 +94,7 @@ public class socialController {
 		}
 
 	}
-
+	@SuppressWarnings("unchecked")
 	@RequestMapping("pages/social/getInfoAdicional")
 	public void getInfoAdicional(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
@@ -166,6 +166,7 @@ public class socialController {
 		writeObject(object, response);
 	}
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping("pages/social/saveSocial")
 	public void saveSaleSchedule(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
@@ -259,6 +260,7 @@ public class socialController {
 			object.put("status", "errors");
 			object.put("message", "Ocurri� un error guardando el asesoria");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 
@@ -323,6 +325,7 @@ public class socialController {
 			object.put("status", "errors");
 			object.put("message", "Ocurri� un error eliminando el evento");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 

@@ -193,6 +193,10 @@
 						<h4 class="modal-title">Programación de Asesorias</h4>
 					</div>
 					<div class="modal-body">
+						<div id="errorModal" class="alert alert-danger alert-dismissible" role="alert" style="display: none">
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						  <strong id="messageErrorModal"></strong>
+						</div>
 						<input type='hidden' id="id_asesoria" name="id_asesoria"
 							class="form-control" /> <input type='hidden' id="dia_semana"
 							name="dia_semana" class="form-control" /> <input type='hidden'
@@ -206,7 +210,11 @@
 						<div class="row">
 							<div class="col-sm-12">
 								<div class="form-group">
-									<label for="id_equipo">*Equipo:</label>
+									<label for="id_equipo"><li style="list-style: none; display: inline-flex;">
+										<span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" 
+										title="Si guardas una asesoria sin equipo programado, cualquier otro equipo puede tomar dicha asesoria en el horario programado,
+										si escoges un equipo, la asesoria quedará ocupada por el equipo seleccionado."></span>
+										</li> Equipo:</label>
 									<div class='input-group'>
 										<select class="form-control" id="id_equipo" name="id_equipo"
 											required>
@@ -254,6 +262,11 @@
 			responsive : true
 		});
 	});
+</script>
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip(); 
+});
 </script>
 <%
 	if(!scriptsColor.equals("")){
