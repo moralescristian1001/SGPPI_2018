@@ -3,6 +3,7 @@ package com.spring.controllers;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.mybatis.models.Asesorias;
 import com.mybatis.models.AsesoriasExample;
 import com.mybatis.models.Asignatura;
+import com.mybatis.models.CalificacionExample;
 import com.mybatis.models.Califxsoc;
 import com.mybatis.models.CalifxsocExample;
 import com.mybatis.models.Equipo;
@@ -29,6 +31,8 @@ import com.mybatis.models.Estudiantesxequipos;
 import com.mybatis.models.EstudiantesxequiposExample;
 import com.mybatis.models.Evento;
 import com.mybatis.models.EventoExample;
+import com.mybatis.models.Notasxcalifxsoc;
+import com.mybatis.models.NotasxcalifxsocExample;
 import com.mybatis.models.Profesoresxasignaturas;
 import com.mybatis.models.ProfesoresxasignaturasExample;
 import com.mybatis.models.Salon;
@@ -72,7 +76,23 @@ public class socialController {
 			UsuariosExample usuEx = new UsuariosExample();
 			usuEx.createCriteria().andIdCargoIn(Arrays.asList(new Integer[] { 2, 4, 6}));
 			List<Usuarios> evaluadores = dao.getUsuariosMapper().selectByExample(usuEx);
-
+			
+			List<Salonxequipo> salonesxequipo = new ArrayList<>();
+			List<Califxsoc> calificaciones = new ArrayList<>();
+			if(!eventos.isEmpty()) {
+				SalonxequipoExample sxeEx = new SalonxequipoExample();
+				sxeEx.createCriteria().andIdSocializacionIn(eventos.stream().map(Evento::getIdEvento).collect(Collectors.toList()));
+				salonesxequipo = dao.getSalonxequipoMapper().selectByExample(sxeEx);
+				if(!salonesxequipo.isEmpty()){
+					CalifxsocExample cxsEx = new CalifxsocExample();
+					cxsEx.createCriteria().andIdSalonxequipoIn(salonesxequipo.stream().map(Salonxequipo::getIdSalonxequipo).collect(Collectors.toList()));
+					calificaciones = dao.getCalifxsocMapper().selectByExample(cxsEx);
+				}
+			}
+				
+				
+			model.addAttribute("salonesXEequipo", salonesxequipo);
+			model.addAttribute("calificaciones", calificaciones);
 			model.addAttribute("tiposEvento", tiposEvento);
 			model.addAttribute("eventos", eventos);
 			model.addAttribute("salones", salones);

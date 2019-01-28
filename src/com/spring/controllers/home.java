@@ -24,8 +24,19 @@ public class home {
 	public ModelAndView sale(HttpServletRequest request, ModelMap model, HttpServletResponse response)
 			throws UnsupportedEncodingException {
 		if(request.getSession().getAttribute("user") != null){
-			model.addAttribute("user", (Usuarios)request.getSession().getAttribute("user"));
-			return new ModelAndView("pages/home");
+			Usuarios usuario = (Usuarios)request.getSession().getAttribute("user");
+			if(!usuario.getCambioClave()) {
+				try {
+				response.getWriter().write("<script>location.href='./changePassword.html';</script>");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return null;
+			}else {
+				model.addAttribute("user", (Usuarios)request.getSession().getAttribute("user"));
+				return new ModelAndView("pages/home");
+			}
 		}else{
 			
 			try {

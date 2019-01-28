@@ -161,7 +161,10 @@
  				if (asesoresEncontrados.size() == 1) {
  					coloresAgregados += ", #" + coloresXAsesor.get(asesoresEncontrados.get(0));
  				}
- 				scriptColores += "$('#td-" + dia + "-" + hora + "').css({background: 'linear-gradient(to right"
+ 				String horaStr = hora == 12 || hora == 12.5 ? ((int) hora) + "\\:" + (hora % 1 == 0 ? "00" : "30") + "PM"
+						: (((int) hora % 12) + "\\:" + (hora % 1 == 0 ? "00" : "30"));
+ 				%><script>console.log('<%=dia +"-"+ horaStr + " " + coloresAgregados%>')</script><%
+ 				scriptColores += "$('#td-" + dia + "-" + horaStr + "').css({background: 'linear-gradient(to right"
  						+ coloresAgregados + ")'});";
  			}
  			for (SolicitudAsesoria s : solicitudes) {

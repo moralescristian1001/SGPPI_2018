@@ -1,3 +1,4 @@
+<%@page import="com.mybatis.models.Usuarios"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.text.DateFormat"%>
 <%@page import="com.mybatis.models.SolicitudAsesoria"%>
@@ -39,6 +40,29 @@
 						<div class="panel-heading">Asesoria</div>
 						<!-- /.panel-heading -->
 						<div class="panel-body">
+							<div align="center">
+								<%
+								
+								List<Asesorias> asesorias = (List<Asesorias>) request.getAttribute("listSchedules");
+								List<Equipo> equipos = (List<Equipo>) request.getAttribute("listTeams");
+								List<SolicitudAsesoria> listRequests = (List<SolicitudAsesoria>)request.getAttribute("listRequests");
+								Usuarios usu = (Usuarios) request.getAttribute("user");
+								Integer minimoAsesorias = usu.getMinimoAsesorias();
+								
+								%>
+							
+								<h4>Tienes un minimo de asesorias de <%=minimoAsesorias%></h4>
+								<%
+								String mensajeAsesoriasPendiente = "";
+								if(!asesorias.isEmpty() && asesorias.size() == minimoAsesorias){
+									mensajeAsesoriasPendiente = "Ya has asignado todas las asesorias";
+								}else{
+									mensajeAsesoriasPendiente = "Tienes pendiente asignar <span id='titulo_asesorias_pendientes'>"+ (minimoAsesorias - asesorias.size() < 0 ? 0 : minimoAsesorias - asesorias.size())+" asesorias.</span>";
+								}
+								%>
+								<h4><%=mensajeAsesoriasPendiente%></h4>
+							</div>
+							
 							<table width="100%" class="table table-bordered"
 								id="dataTables-example">
 								<thead>
@@ -60,9 +84,7 @@
 								<tbody>
 									<%
 										//desde las 6am hasta las
-										List<Asesorias> asesorias = (List<Asesorias>) request.getAttribute("listSchedules");
-										List<Equipo> equipos = (List<Equipo>) request.getAttribute("listTeams");
-										List<SolicitudAsesoria> listRequests = (List<SolicitudAsesoria>)request.getAttribute("listRequests");
+										
 										
 										String scriptsColor = "";
 										DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
