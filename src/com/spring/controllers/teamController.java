@@ -240,6 +240,7 @@ public class teamController {
 				}
 
 				EstudiantesxequiposExample estxeqEx = new EstudiantesxequiposExample();
+				estxeqEx.createCriteria().andIdEquipoEqualTo(equipo.getIdEquipo());
 				dao.getEstudiantesxequiposMapper().deleteByExample(estxeqEx);
 
 				for (int idEstudiante : estudiantes) {

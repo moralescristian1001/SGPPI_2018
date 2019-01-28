@@ -1,3 +1,9 @@
+<%@page import="java.util.stream.Collectors"%>
+<%@page import="com.mybatis.models.SalonxequipoExample"%>
+<%@page import="com.mybatis.models.Salonxequipo"%>
+<%@page import="com.mybatis.models.CalifxsocExample"%>
+<%@page import="com.springMybatis.persistence.daoHelper"%>
+<%@page import="com.mybatis.models.Califxsoc"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.text.DateFormat"%>
 <%@page import="com.mybatis.models.TipoEvento"%>
@@ -50,9 +56,12 @@
 									</tr>
 								</thead>
 								<%
+									daoHelper dao = new daoHelper();
 									List<Evento> eventos = (List<Evento>) request.getAttribute("eventos");
 									List<TipoEvento> tiposEvento = (List<TipoEvento>) request.getAttribute("tiposEvento");
-
+									List<Salonxequipo> salonesXEequipo = (List<Salonxequipo>) request.getAttribute("salonesXEequipo");
+									List<Califxsoc> calificaciones = (List<Califxsoc>) request.getAttribute("calificaciones");
+									
 									DateFormat df = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 									DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm");
 
@@ -75,9 +84,31 @@
 										data-target="#myModal" class="btn btn-default pull-left"
 										onclick="updateSocializacionForm(<%=evento.getIdEvento()%>,<%=evento.getIdTipoEvento()%>,
 										'<%=df2.format(evento.getFecha())%>',<%=evento.getDuracionHoras()%>)"
-										value="Ver" /> <input type="button"
+										value="Ver" /> 
+										<input type="button"
 										class="btn btn-default pull-left"
-										onclick="confirmationSocializacion(<%=evento.getIdEvento()%>);" value="Eliminar" /></td>
+										onclick="confirmationSocializacion(<%=evento.getIdEvento()%>);" value="Eliminar" />
+										<%
+										outerloop:
+										for(Salonxequipo sxe : salonesXEequipo){
+											if(sxe.getIdSocializacion() == evento.getIdEvento()){
+												for(Califxsoc calif : calificaciones){
+													if(calif.getIdSalonxequipo() == sxe.getIdSalonxequipo()){
+													%>
+													<input type="button"
+													class="btn btn-default pull-left"
+													onclick="irInformeNotas(<%=evento.getIdEvento()%>);" value="Informe Notas" />
+													<%
+													break outerloop;
+													}
+												}
+											}
+										}
+											
+											%>
+										
+										
+										</td>
 								</tr>
 								<%
 									}
@@ -146,7 +177,7 @@
 
 							<c:forEach items="${salones}" var="salon">
 								<label class="checkbox-inline"><input type="checkbox"
-									value="${salon.idSalon}" id="salon_${salon.idSalon}"
+									value="${salon.idSalon}" id="salon_${salon.idSalon}" data-descripcion="${salon.descripcion}"
 									name="salones[]"
 									onclick="if(this.checked){agregarSalon(${salon.idSalon},'${salon.descripcion}')}else{eliminarSalon(${salon.idSalon})}">${salon.descripcion}</label>
 							</c:forEach>

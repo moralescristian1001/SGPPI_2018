@@ -2,9 +2,23 @@ var puerto = '8080';
 var cont = 0;
 var contReal = 0;
 var insertar = false;
+
+
 function guardarTeamForm(){
 	insertar = true;
+	cont = 0;
+	$("#codigo").val("");
+	$("#nombre").val("");
+	$("#id_asignatura").val("-1");
+	$("#nombre").val("");
+	
+	$("#div_tabla_estudiantes").empty();
+	for(var i = 0; i < 3; i++){
+		agregarEstudiante();
+	}
+	
 }
+
 function updateTeam() {
 	jQuery('#errorDiv').css('display', 'none');
 	var codigo = jQuery("#codigo").val();
@@ -28,10 +42,25 @@ function updateTeam() {
 		return;
 	}
 	var idUsuario = [];
+	var errorAsignandoEquipo = false;
 	jQuery("input[name*='id_usuario'],select[name*='id_usuario']").each(
-			function(element) {
-				idUsuario.push(jQuery(this).val());
-			})
+	function(id) {
+		id += 1;
+		if(id == "1" && jQuery(this).val() == "-1"){
+			jQuery('#errorDiv').html("Debe seleccionar un estudiante en el primer campo obligatoriamente, el resto son opcionales");
+			jQuery('#errorDiv').css('display', 'block');
+			errorAsignandoEquipo = true;
+		}else if(idUsuario.indexOf(jQuery(this).val()) >= 0){
+			jQuery('#errorDiv').html("No puedes repetir estudiante");
+			jQuery('#errorDiv').css('display', 'block');
+			errorAsignandoEquipo = true;
+		}else if(jQuery(this).val() != "-1"){
+			idUsuario.push(jQuery(this).val());
+		}
+	});
+	if(errorAsignandoEquipo){
+		return;
+	}
 	idUsuario = idUsuario.join(",");
 	jQuery
 			.ajax({
@@ -166,9 +195,9 @@ function updateTeamForm(id, codigo, nombre, idAsignatura, estudiantes) {
 	jQuery('#nombre').val(nombre);
 	jQuery('#id_asignatura').val(idAsignatura);
 	var i = 1;
+	$("#div_tabla_estudiantes").empty();
 	for (i = 1; i <= estudiantes.length; i++) {
 		var est = estudiantes[i - 1];
-
 		$("#div_tabla_estudiantes")
 				.append(
 						"<div class='row' id='est_div_"
@@ -185,25 +214,57 @@ function updateTeamForm(id, codigo, nombre, idAsignatura, estudiantes) {
 								+ i
 								+ ")'><i class='fa fa-remove fa-fw'></i></a></div></div>")
 	}
-	cont = i;
-	contReal = i;
+	
+	cont = i - 1;
+	contReal = i - 1;
+	for(var i = estudiantes.length; i < 3; i++){
+		agregarEstudiante();
+	}
 }
-function agregarEstudiante() {
+
+function actualizarEstudiante(contSelect){
+	
+	var idEstudiante = jQuery("#id_usuario_" + contSelect).val();
+	
+	
+	
+	var prev = $("#id_usuario_" + contSelect).data("prev");
+	
+	if(idEstudiante != "-1"){
+		$("select[id^='id_usuario_']:not(#id_usuario_"+contSelect + ") option[value='"+idEstudiante+"']").hide();
+		$("select[id^='id_usuario_']:not(#id_usuario_"+contSelect + ") option[value='"+prev+"']").show();
+	}else{
+		$("select[id^='id_usuario_']:not(#id_usuario_"+contSelect + ") option[value='"+prev+"']").show();
+	}
+	
+	
+	jQuery("#id_usuario_" + contSelect).data("prev", idEstudiante);
+}
+
+function agregarEstudiante(row) {
 	cont++;
-	contReal++;
+	
+	if(row == undefined){
+		row = cont;
+	}
 	var options = jQuery("#template-sin-equipo").html();
+	var mensaje = row == 1 ? "Estudiante obligatorio" : "Estudiante opcional";
+
 	jQuery("#div_tabla_estudiantes").append(
-			"<div class='row' id='est_div_" + cont
-					+ "'><div class='col-sm-12'><select name='id_usuario["
-					+ cont + "]' id='id_usuario_" + cont
-					+ "' class='form-control'>" + options + "</select>")
+			"<div class='row' id='est_div_" + row
+					+ "'><div class='col-sm-12'>" +
+							"<select name='id_usuario["
+					+ row + "]' id='id_usuario_" + row
+					+ "' class='form-control' onchange='actualizarEstudiante("+row+")'><option value='-1'>"+mensaje+"</option>" + options + "</select>")
+	jQuery("#id_usuario_" + row).data("prev", "-1");
 }
 function eliminarEstudiante(row) {
 	if (contReal > 1) {
 		$("#est_div_" + row).remove();
+		agregarEstudiante(row);
 		contReal--;
 	}
-
+	
 }
 
 function deleteTeam(id) {

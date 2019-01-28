@@ -56,9 +56,11 @@ public class scheduleController {
 						.andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
 				solicitudes = dao.getSolicitudAsesoriaMapper().selectByExample(sEx);
 			}
+			
 			model.addAttribute("listRequests", solicitudes);
 			model.addAttribute("listSchedules", asesorias);
 			model.addAttribute("listTeams", equipos);
+			
 			request.setCharacterEncoding("UTF-8");
 			response.setCharacterEncoding("UTF-8");
 			return new ModelAndView("pages/schedule");

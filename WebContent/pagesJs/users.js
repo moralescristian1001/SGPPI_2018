@@ -10,14 +10,9 @@ function updateUser() {
 	var idCargo = jQuery("#id_cargo").val();
 	var cedula = jQuery("#cedula").val();
 	var estado = jQuery("#estado").val();
-	var idAsignatura = [];
+	var minimo_asesorias =  jQuery("#minimo_asesorias").val();
 	var idUsuario = jQuery("#id_usuario").val();
-	var asignaturas = jQuery(
-			"input[name*='id_asignatura'], select[name*='id_asignatura']")
-			.each(function(element) {
-				idAsignatura.push(jQuery(this).val());
-			});
-	idAsignatura = idAsignatura.join(",");
+	
 	if (correo == "" || correo == "0") {
 		jQuery('#errorDiv').html("Debe ingresar el correo");
 		jQuery('#errorDiv').css('display', 'block');
@@ -39,15 +34,22 @@ function updateUser() {
 		return;
 	}
 	if (idCargo == "-1") {
-		jQuery('#errorDv').html("Debe ingresar el cargo");
+		jQuery('#errorDiv').html("Debe ingresar el cargo");
 		jQuery('#errorDiv').css('display', 'block');
 		return;
 	}
 	if (cedula == "" || cedula == "0") {
-		jQuery('#errorDv').html("Debe ingresar la cédula");
+		jQuery('#errorDiv').html("Debe ingresar la cédula");
 		jQuery('#errorDiv').css('display', 'block');
 		return;
 	}
+	if (idCargo == 3 && (isNaN(minimo_asesorias) || minimo_asesorias == "" || minimo_asesorias == "0")) {
+		jQuery('#errorDiv').html("Debe ingresar un minimo de asesorias y debe ser mayor a 0");
+		jQuery('#errorDiv').css('display', 'block');
+		return;
+	}
+	
+	
 	jQuery.ajax({
 		url : 'http://localhost:' + puerto
 				+ '/SGPPI_2018/pages/users/updateUser.html',
@@ -60,7 +62,7 @@ function updateUser() {
 			id_cargo : idCargo,
 			cedula : cedula,
 			estado : estado,
-			id_asignatura : idAsignatura
+			minimo_asesorias: minimo_asesorias
 		},
 		success : function(o) {
 			if (o == "") {
@@ -93,6 +95,13 @@ function updateUser() {
 		}
 	});
 }
+function mostrarYOcultarMinimoAsesorias(cargo){
+	if(cargo == 3){
+		$("#div_minimo_asesorias").show();
+	}else{
+		$("#div_minimo_asesorias").hide();
+	}
+}
 function agregarAsignatura() {
 	contAsig++;
 	var options = jQuery("#asignaturas_options").html();
@@ -108,33 +117,36 @@ function agregarAsignatura() {
 							+ options + "</select></div></div>");
 }
 function cambioCargo(idCargo) {
-	if (idCargo == 2) {
-		$("#info_adicional_usuario")
-				.html(
-						"<div class='row'><div class='col-sm-12'><a href='javascript:agregarAsignatura()' class='btn btn-success'><i class='fa fa-plus fa-fw'></i></a></div></div>");
-	} else {
-		$("#info_adicional_usuario").empty();
-	}
+	
+	$("#info_adicional_usuario").empty();
+	
+	mostrarYOcultarMinimoAsesorias(idCargo);
 }
 function eliminarAsignatura(row) {
 	$("#asignatura_" + row).remove();
 }
 function updateUserForm(id_usuario, correo, nombre, apellidos, cedula,
-		fechaNac, idCargo, estado) {
+		fechaNac, idCargo, estado, minimoAsesorias) {
 	contAsig = 1;
 	jQuery('#id_usuario').val(id_usuario);
 	jQuery('#correo').val(correo);
 	jQuery('#nombre').val(nombre);
 	jQuery('#apellidos').val(apellidos);
 	jQuery('#cedula').val(cedula);
-
+	
 	var fechaNacSplit = fechaNac.split("/");
 	fechaNacSplit.reverse();
 	jQuery('#fecha_nac').val(fechaNacSplit.join("-"));
 	jQuery('#id_cargo').val(idCargo);
 	jQuery('#estado').val(estado)
 	jQuery("#info_adicional_usuario").empty();
-	if (idCargo == 1 || idCargo == 2) {
+	
+	if(idCargo == 3){
+		$("#div_minimo_asesorias").show();
+		$("#minimo_asesorias").val(minimoAsesorias);
+	}
+	
+	if (idCargo == 1) {
 		jQuery
 				.ajax({
 					url : 'http://localhost:' + puerto

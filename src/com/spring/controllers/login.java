@@ -37,7 +37,7 @@ public class login {
 			Usuarios user = new Usuarios();
 
 			user.setClave(password);
-			user.setCorreo(email);
+			user.setUsuario(email);
 
 			if (new UsuariosExample().validateLogin(user)) {
 
