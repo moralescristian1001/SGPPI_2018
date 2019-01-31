@@ -49,9 +49,12 @@ function guardarRubricaForm(){
 	}
 }
 function agregarRubrica(){
-	var rubricaFila1 = rubricaFila.replace(/\{numeroRubrica\}/g, ++numeroRubrica);
-	$("#table_rubricas").append(rubricaFila1);
-	
+	if(numeroRubrica + 1> 10){
+		alert("Máximo pueden ser agregadas 10 rúbricas");
+	}else{
+		var rubricaFila1 = rubricaFila.replace(/\{numeroRubrica\}/g, ++numeroRubrica);
+		$("#table_rubricas").append(rubricaFila1);
+	}
 }
 
 function save() {
