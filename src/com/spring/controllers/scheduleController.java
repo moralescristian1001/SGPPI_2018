@@ -76,7 +76,7 @@ public class scheduleController {
 			return null;
 		}
 	}
-
+	@SuppressWarnings("unchecked")
 	@RequestMapping("pages/schedule/saveSchedule")
 	public void saveSaleSchedule(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
@@ -117,14 +117,14 @@ public class scheduleController {
 				}
 
 			}
-
 			object.put("status", "ok");
-			object.put("message", "Se ha creado la asesoria correctamente");
+			object.put("message", "Se ha guardado la asesoria correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurriï¿½ un error guardando el asesoria");
+			object.put("message", "Ocurrió un error guardando el asesoria");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 
@@ -136,6 +136,7 @@ public class scheduleController {
 			String idAsesoria = request.getParameter("id_asesoria");
 			if (idAsesoria != null && !idAsesoria.isEmpty() && !idAsesoria.equals("0")
 					&& !idAsesoria.equals("undefined") && !idAsesoria.equals("null")) {
+				
 				AsesoriasExample aseEx = new AsesoriasExample();
 				aseEx.createCriteria().andIdAsesoriaEqualTo(Integer.parseInt(idAsesoria));
 				List<Asesorias> aseList = dao.getAsesoriasMapper().selectByExample(aseEx);
@@ -145,16 +146,17 @@ public class scheduleController {
 					object.put("message", "Se ha eliminado la asesoria correctamente");
 				} else {
 					object.put("status", "errors");
-					object.put("message", "No se encontrï¿½ la asesoria a eliminar");
+					object.put("message", "No se encontró la asesoria a eliminar");
 				}
 			} else {
 				object.put("status", "errors");
-				object.put("message", "Ocurriï¿½ un error eliminando la asesoria");
+				object.put("message", "Ocurrió un error eliminando la asesoria");
 			}
 		} catch (Exception e) {
 			object.put("status", "errors");
-			object.put("message", "Ocurriï¿½ un error eliminando la asesoria");
+			object.put("message", "Ocurrió un error eliminando la asesoria");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 

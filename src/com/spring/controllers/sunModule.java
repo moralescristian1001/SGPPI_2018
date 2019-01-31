@@ -73,12 +73,18 @@ public class sunModule {
 			}
 			
 			object.put("status", "ok");
-			object.put("message", "Se ha creado correctamente la asignatura");
+			object.put("message", "Se ha guardado la información correctamente");
 		} catch (Exception e) {
-			e.printStackTrace();
-			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando asignatura");
+			String cause = e.getLocalizedMessage();
+			if(cause.contains("Duplicate entry")) {
+				object.put("status", "errors");
+				object.put("message", "El código de la asignatura ya existe, por favor digite otro código");
+			}else {
+				object.put("status", "errors");
+				object.put("message", "Ocurrió un error guardando asignatura");
+			}
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 
@@ -107,9 +113,16 @@ public class sunModule {
 				object.put("message", "Ocurrió un error eliminando la asignatura");
 			}
 		} catch (Exception e) {
-			object.put("status", "errors");
-			object.put("message", "Ocurrió un error eliminando la asignatura");
+			String cause = e.getLocalizedMessage();
+			if(cause.contains("foreign key constraint")) {
+				object.put("status", "errors");
+				object.put("message", "La asignatura está asociada con alguna entidad del sistema, no es posible eliminarla");
+			}else {
+				object.put("status", "errors");
+				object.put("message", "Ocurrió un error eliminando la asignatura");				
+			}
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 
