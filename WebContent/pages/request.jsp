@@ -114,7 +114,8 @@
 																		}
 											%><a
 											href="javascript:verMiAsesoria(<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>', '<%=nombreAsesor%>')"><i
-												class='fa fa-calendar-check-o fa-fw'></i></a> <%
+												class='fa fa-calendar-check-o fa-fw' data-toggle="tooltip" 
+										title="Tienes una asesoría programada, click aquí para más información"></i></a> <%
  	encontrado = true;
  							asesoresEncontrados.add(a.getIdAsesor());
  						} else {
@@ -135,7 +136,8 @@
  							if (!yaSolicito) {
  %> <a
 											href="javascript:solicitarCitaForm(<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>')"><i
-												class='fa fa-calendar-plus-o fa-fw'></i></a> <%
+												class='fa fa-calendar-plus-o fa-fw' data-toggle="tooltip" 
+										title="Puedes solicitar esta asesoria."></i></a> <%
  	}
 
  							encontrado = true;
@@ -168,7 +170,8 @@
  			for (SolicitudAsesoria s : solicitudes) {
  				if (s.getHoraSemana() == hora && s.getDiaSemana() == dia) {
  %> <a href="javascript:deleteSolicitud(<%=s.getIdSolicitud()%>)"><i
-												class='fa fa-calendar-times-o fa-fw'></i></a> <%
+												class='fa fa-calendar-times-o fa-fw' data-toggle="tooltip" 
+										title="La solicitud de la asesoría aun esta pendiente por aprobación, click aquí si desea eliminar la solicitud."></i></a> <%
  	}
  			}
  %>
@@ -202,6 +205,10 @@
 						<h4 class="modal-title">Solicitud de Asesorias</h4>
 					</div>
 					<div class="modal-body">
+						<div id="errorModal" class="alert alert-danger alert-dismissible" role="alert" style="display: none">
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						  <strong id="messageErrorModal"></strong>
+						</div>
 						<input type='hidden' id="id_solicitud" name="id_solicitud"
 							class="form-control" /> <input type='hidden' id="dia_semana"
 							name="dia_semana" class="form-control" /> <input type='hidden'
@@ -240,5 +247,9 @@
 <%
 	}
 %>
-
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip(); 
+});
+</script>
 <jsp:include page="footer.jsp" />

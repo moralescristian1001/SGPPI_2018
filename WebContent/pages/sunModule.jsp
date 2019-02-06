@@ -7,7 +7,7 @@
 	<div id="page-wrapper">
 		<div class="row">
 			<div class="col-lg-12">
-				<h1 class="page-header">Módulo sol</h1>
+				<h1 class="page-header">Asignatura</h1>
 			</div>
 			<!-- /.col-lg-12 -->
 		</div>
@@ -29,7 +29,7 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="panel panel-default">
-						<div class="panel-heading">Módulo sol</div>
+						<div class="panel-heading">Asignaturas</div>
 						<!-- /.panel-heading -->
 						<div class="panel-body">
 							<table width="100%"
@@ -66,8 +66,10 @@
 					</div>
 					<!-- /.panel -->
 				</div>
+				<div class="row" style="padding: 50px">
 				<input type="button" data-toggle="modal" data-target="#myModal"
 					class="btn btn-default pull-left" name="guardar" value="Nuevo"></input>
+				</div>
 			</div>
 		</form>
 		<!-- Modal -->
@@ -77,15 +79,22 @@
                   <div class="modal-content">
                      <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Modal Header</h4>
+                        <h4 class="modal-title">Asignaturas</h4>
                      </div>
                      <div class="modal-body">
+                     	<div id="errorModal" class="alert alert-danger alert-dismissible" role="alert" style="display: none">
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						  <strong id="messageErrorModal"></strong>
+						</div>
                         <input type='hidden' id="idAsig" name="idAsig"
                            class="form-control" value="${idAsignatura}" />
                         <div class="form-group">
-                           <label for="cliente">*Código:</label>
+                           <label class="col-6" for="cliente"><li style="list-style: none; display: inline-flex;">
+							<span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" 
+							title="El campo código de asignatura tiene un limite de 8 caracteres."></span>
+							</li> *Código:</label>
                            <div class='input-group col-lg-12' id='fecha'>
-                              <input type="text" class="form-control" name="code" id="code" placeholder="Ingrese el codigo de la asignatura">
+                              <input type="text" class="form-control" name="code" id="code" placeholder="Ingrese el codigo de la asignatura" maxlength="8">
                            </div>
                         </div>
                         <div class="form-group">
@@ -101,7 +110,7 @@
                               <span class="input-group-addon"><i class="glyphicon glyphicon-ok"></i></span> 
                               <select
                                  class="form-control" id="semes" name="semes">
-                                 <option>Seleccione</option>
+                                 <option value="0">Seleccione</option>
                                  <option>1</option>
                                  <option>2</option>
                                  <option>3</option>
@@ -111,7 +120,7 @@
                         </div>
                      </div>
                      <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                         <input type="button" class="btn btn-default pull-left"
                            value="Guardar" onclick="save();"></input>
                      </div>
@@ -134,6 +143,7 @@
              $('#dataTables-example').DataTable({
                  responsive: true
              });
+             $('[data-toggle="tooltip"]').tooltip(); 
          });
       </script>
 </body>

@@ -12,35 +12,53 @@ function updateUser() {
 	var estado = jQuery("#estado").val();
 	var minimo_asesorias =  jQuery("#minimo_asesorias").val();
 	var idUsuario = jQuery("#id_usuario").val();
-	
-	if (correo == "" || correo == "0") {
-		jQuery('#errorDiv').html("Debe ingresar el correo");
-		jQuery('#errorDiv').css('display', 'block');
+	var asignaturas = jQuery(
+			"input[name*='id_asignatura'], select[name*='id_asignatura']")
+			.each(function(element) {
+				idAsignatura.push(jQuery(this).val());
+			});
+	idAsignatura = idAsignatura.join(",");
+	if (correo == null || correo == undefined || correo == "") {
+		jQuery("#messageErrorModal").html("Debe ingresar el correo");
+		jQuery('#errorModal').css('display', 'block');
+		return;
+	}else{
+		if(!correo.includes("@elpoli.edu.co")){
+			jQuery("#messageErrorModal").html("El correo debe ser institucional");
+			jQuery('#errorModal').css('display', 'block');
+			return;
+		}
+	}
+	if (nombre == null || nombre == undefined || nombre == "") {
+		jQuery("#messageErrorModal").html("Debe ingresar el nombre");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
-	if (nombre == "" || nombre == "0") {
-		jQuery('#errorDiv').html("Debe ingresar el nombre");
-		jQuery('#errorDiv').css('display', 'block');
+	if (apellidos == null || apellidos == undefined || apellidos == "") {
+		jQuery("#messageErrorModal").html("Debe ingresar los apellidos");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
-	if (apellidos == "" || apellidos == "0") {
-		jQuery('#errorDiv').html("Debe ingresar los apellidos");
-		jQuery('#errorDiv').css('display', 'block');
+	if (fechaNac == null || fechaNac == "") {
+		jQuery("#messageErrorModal").html("Debe ingresar la fecha de nacimiento");
+		jQuery('#errorModal').css('display', 'block');
 		return;
-	}
-	if (fechaNac == "" || fechaNac == "0") {
-		jQuery('#errorDiv').html("Debe ingresar la fecha de nacimiento");
-		jQuery('#errorDiv').css('display', 'block');
-		return;
+	}else{
+		var today = formatDate(new Date());
+		if(today <= fechaNac){
+			jQuery("#messageErrorModal").html("La fecha seleccionada no es valida");
+			jQuery('#errorModal').css('display', 'block');
+			return;
+		}
 	}
 	if (idCargo == "-1") {
-		jQuery('#errorDiv').html("Debe ingresar el cargo");
-		jQuery('#errorDiv').css('display', 'block');
+		jQuery("#messageErrorModal").html("Debe ingresar el cargo");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
-	if (cedula == "" || cedula == "0") {
-		jQuery('#errorDiv').html("Debe ingresar la cédula");
-		jQuery('#errorDiv').css('display', 'block');
+	if (cedula == null || cedula == undefined || cedula == "" || cedula == "0") {
+		jQuery("#messageErrorModal").html("Debe ingresar la cédula");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
 	if (idCargo == 3 && (isNaN(minimo_asesorias) || minimo_asesorias == "" || minimo_asesorias == "0")) {
@@ -71,24 +89,26 @@ function updateUser() {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
-					jQuery('#successDiv').html(data.message);
-					jQuery('#successDiv').css('display', 'block');
-					clear();
+					jQuery('#successDivFormMessage').html(data.message);
+					jQuery('#successDivForm').css('display', 'block');
+					jQuery("html, body").animate({ scrollTop: 0 }, 600);
+					jQuery('#myModalEditar').modal('hide');
+					jQuery('.modal-backdrop').removeClass('in');
 					setTimeout(function() {
-						location.reload();
-					}, 500);
+							location.reload();
+					}, 2000);
 				} else {
-					jQuery('errorDiv').html(
+					jQuery('messageErrorModal').html(
 							"Ocurrió un error modificando el usuario");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('errorModal').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
+				jQuery('messageErrorModal').html(
 						"Ocurrió un error modificando el usuario");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('errorModal').css('display', 'block');
 				return;
 			}
 		}
@@ -191,4 +211,16 @@ function clear() {
 	jQuery('#nomCuadra').val("");
 	jQuery('#desCuadra').val("");
 	jQuery('#asigAso').val("");
+}
+
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
 }

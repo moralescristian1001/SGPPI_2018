@@ -16,23 +16,21 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.json.simple.JSONArray;
-//import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.mybatis.models.Asesorias;
 import com.mybatis.models.AsesoriasExample;
@@ -253,7 +251,7 @@ public class usersController {
 
 					if (!HSSFDateUtil.isCellDateFormatted(fechaNacCell)) {
 						response.getWriter()
-								.write("<script>location.href='../users.html?errors=La fecha de nacimiento de la p�gina "
+								.write("<script>location.href='../users.html?errors=La fecha de nacimiento de la pï¿½gina "
 										+ idCargo + " en la fila " + r + " no es fecha';</script>");
 						return;
 					}
@@ -311,7 +309,7 @@ public class usersController {
 				}
 
 			}
-
+			response.setCharacterEncoding("UTF-8");
 			response.getWriter()
 					.write("<script>location.href='../users.html?success=Se han guardado el/los usuarios';</script>");
 			// request.getRequestDispatcher("../users.html?err=true").forward(request,
@@ -322,6 +320,7 @@ public class usersController {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping("pages/users/updateUser")
 	public void updateSaleUser(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
@@ -366,15 +365,22 @@ public class usersController {
 				dao.getUsuariosMapper().insert(usuario);
 			}
 			object.put("status", "ok");
-			object.put("message", "Se ha guardado la informaci�n correctamente");
+			object.put("message", "Se ha guardado la informaciï¿½n correctamente");
 		} catch (Exception e) {
-			e.printStackTrace();
-			object.put("status", "errors");
-			object.put("message", "Ocurri� un error modificando el usuario");
+			String cause = e.getLocalizedMessage();
+			if(cause.contains("Duplicate entry")) {
+				object.put("status", "errors");
+				object.put("message", "El correo electrónico ya existe, por favor digite otro correo");
+			}else {
+				object.put("status", "errors");
+				object.put("message", "Ocurrió un error guardando el usuario");
+			}
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping("pages/users/getInfoAdicional")
 	public void getInfoAdicional(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
@@ -422,7 +428,7 @@ public class usersController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurri� un error guardando el cuadrante");
+			object.put("message", "Ocurriï¿½ un error guardando el cuadrante");
 		}
 
 		response.setCharacterEncoding("UTF-8");

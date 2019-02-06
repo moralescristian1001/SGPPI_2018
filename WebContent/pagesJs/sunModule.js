@@ -6,19 +6,26 @@ function save() {
 	var asig = jQuery('#asig').val();
 	var semes = jQuery('#semes').val();
 
-	if (code == "" || code == "0") {
-		jQuery('#errorDiv').html("Debe ingresar el código");
-		jQuery('#errorDiv').css('display', 'block');
+	if (code == null || code == undefined || code == "") {
+		jQuery("#messageErrorModal").html("Debe ingresar el código");
+		jQuery('#errorModal').css('display', 'block');
+		return;
+	}else{
+		var lengthCode = code.length;
+		if(lengthCode > 8){
+			jQuery("#messageErrorModal").html("El código no puede tener más de 8 caractares");
+			jQuery('#errorModal').css('display', 'block');
+			return;
+		}
+	}
+	if (asig == null || asig == undefined || asig == "") {
+		jQuery("#messageErrorModal").html("Debe ingresar el nombre de la asignatura");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
-	if (asig == "" || asig == "0") {
-		jQuery('#errorDiv').html("Debe nngresar el nombre de la asignatura");
-		jQuery('#errorDiv').css('display', 'block');
-		return;
-	}
-	if (semes == "" || semes == "0") {
-		jQuery('#errorDiv').html("Debe ingresar el semestre");
-		jQuery('#errorDiv').css('display', 'block');
+	if (semes == null || semes == undefined || semes == "" || semes == "0") {
+		jQuery("#messageErrorModal").html("Debe ingresar el semestre");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
 
@@ -38,24 +45,26 @@ function save() {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
 					clear();
+					jQuery("html, body").animate({ scrollTop: 0 }, 600);
+					jQuery('#myModal').modal('hide');
+					jQuery('.modal-backdrop').removeClass('in');
 					setTimeout(function() {
-						location.reload();
-					}, 500);
+							location.reload();
+					}, 2000);
 				} else {
-					jQuery('errorDiv').html(
-							"Ocurrió un error guardando la asignatura");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html("Ocurrió un error guardando la asignatura");
+					jQuery('#errorModal').css('display', 'block');
+					return;
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
-						"Ocurrió un error guardando la asignatura");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#messageErrorModal').html("Ocurrió un error guardando la asignatura");
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}
@@ -103,10 +112,13 @@ function deleteSale(id) {
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
+					jQuery("html, body").animate({ scrollTop: 0 }, 600);
+					jQuery('#myModal').modal('hide');
+					jQuery('.modal-backdrop').removeClass('in');
 					clear();
 					setTimeout(function() {
 						location.reload();
-					}, 500);
+					}, 2000);
 				} else {
 					jQuery('errorDiv').html(
 							"Ocurrió un error eliminando la asignatura");

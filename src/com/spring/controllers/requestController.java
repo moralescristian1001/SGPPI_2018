@@ -88,7 +88,7 @@ public class requestController {
 			return null;
 		}
 	}
-
+	@SuppressWarnings("unchecked")
 	@RequestMapping("pages/request/saveRequest")
 	public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
@@ -116,6 +116,7 @@ public class requestController {
 			object.put("status", "errors");
 			object.put("message", "Ocurriï¿½ un error guardando la solicitud");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 
@@ -136,15 +137,15 @@ public class requestController {
 					object.put("message", "Se ha eliminado la solicitud correctamente");
 				} else {
 					object.put("status", "errors");
-					object.put("message", "No se encontrï¿½ la solicitud a eliminar");
+					object.put("message", "No se encontró la solicitud a eliminar");
 				}
 			} else {
 				object.put("status", "errors");
-				object.put("message", "Ocurriï¿½ un error eliminando la solicitud");
+				object.put("message", "Ocurrió un error eliminando la solicitud");
 			}
 		} catch (Exception e) {
 			object.put("status", "errors");
-			object.put("message", "Ocurriï¿½ un error eliminando la asesoria");
+			object.put("message", "Ocurrió un error eliminando la asesoria");
 		}
 		writeObject(object, response);
 	}
