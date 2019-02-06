@@ -1,3 +1,4 @@
+var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
 var puerto = '8080';
 var numeroRubrica = 0;
 var opened = false;
@@ -66,8 +67,7 @@ function save() {
 	}
 
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/rubric/saveRubric.html',
+		url : urlFull + '/pages/rubric/saveRubric.html',
 		data : $("#rubricas_form").serialize(),
 		success : function(o) {
 			if (o == "") {
@@ -109,8 +109,7 @@ function viewRubricForm(idAsignatura, version, nombreAsignatura) {
 	$("#version").html(version);
 	
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/qualify/getInfoAdicional.html',
+		url : urlFull + '/pages/qualify/getInfoAdicional.html',
 		data : {
 			id_asignatura : idAsignatura,
 			version : version
@@ -157,8 +156,7 @@ function updateRubricForm(idAsignatura, version, nombreAsignatura) {
 	$("#version").html(version);
 	
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/qualify/getInfoAdicionalEditable.html',
+		url : urlFull + '/pages/qualify/getInfoAdicionalEditable.html',
 		data : {
 			id_asignatura : idAsignatura,
 			version : version

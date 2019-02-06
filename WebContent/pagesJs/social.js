@@ -1,4 +1,4 @@
-var puerto = '8080';
+
 var cont = [];
 var contEv = [];
 var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
@@ -57,8 +57,7 @@ function updateSocializacionForm(idEvento, idTipoEvento, fecha, duracionHoras) {
 	cont = [];
 	contEv = [];
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/social/getInfoAdicional.html',
+		url : urlFull + '/pages/social/getInfoAdicional.html',
 		data : {
 			id_evento : idEvento
 		},
@@ -145,8 +144,7 @@ function updateSocializacion() {
 
 	jQuery
 			.ajax({
-				url : 'http://localhost:' + puerto
-						+ '/SGPPI_2018/pages/social/updateSocial.html',
+				url : urlFull + '/pages/social/updateSocial.html',
 				data : {
 					id_evento : id_evento,
 					fecha : fecha,
@@ -336,8 +334,7 @@ function saveSocializacion() {
 	
 	jQuery
 			.ajax({
-				url : 'http://localhost:' + puerto
-						+ '/SGPPI_2018/pages/social/saveSocial.html',
+				url : urlFull + '/pages/social/saveSocial.html',
 				data : {
 					fecha : fecha,
 					id_tipo_evento : id_tipo_evento,
@@ -403,8 +400,7 @@ function deleteSocializacion(id) {
 	}
 	jQuery
 			.ajax({
-				url : 'http://localhost:' + puerto
-						+ '/SGPPI_2018/pages/social/deleteSocial.html',
+				url : urlFull + '/pages/social/deleteSocial.html',
 				data : {
 					id_evento : idSocializacion
 				},

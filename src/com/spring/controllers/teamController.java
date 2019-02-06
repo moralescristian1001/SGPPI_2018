@@ -3,8 +3,10 @@ package com.spring.controllers;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,21 +22,29 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.mybatis.models.Asesorias;
+import com.mybatis.models.AsesoriasExample;
 import com.mybatis.models.Asignatura;
 import com.mybatis.models.AsignaturaExample;
+import com.mybatis.models.Cargo;
+import com.mybatis.models.CargoExample;
 import com.mybatis.models.Equipo;
 import com.mybatis.models.EquipoExample;
 import com.mybatis.models.Estudiantesxequipos;
 import com.mybatis.models.EstudiantesxequiposExample;
 import com.mybatis.models.Profesoresxasignaturas;
 import com.mybatis.models.ProfesoresxasignaturasExample;
+import com.mybatis.models.Rubrica;
+import com.mybatis.models.RubricaExample;
 import com.mybatis.models.Semestre;
+import com.mybatis.models.SemestreExample;
 import com.mybatis.models.SolicitudAsesoria;
 import com.mybatis.models.SolicitudAsesoriaExample;
 import com.mybatis.models.Usuarios;
@@ -47,6 +57,132 @@ public class teamController {
 
 	daoHelper dao = new daoHelper();
 
+	@RequestMapping("pages/teamReporte")
+	public ModelAndView reporte(HttpServletRequest request, ModelMap model, HttpServletResponse response)
+			throws UnsupportedEncodingException {
+		if (request.getSession().getAttribute("user") != null) {
+			
+			JSONArray arrayUsuarios = new JSONArray();
+			int idSemestre = -1;
+			if(request.getParameter("id_semestre") != null) {
+				idSemestre = Integer.parseInt(request.getParameter("id_semestre"));
+			}
+			int estudiante = -1;
+			if(request.getParameter("id_estudiante") != null) {
+				estudiante = Integer.parseInt(request.getParameter("id_estudiante"));
+			}
+			
+			List<Cargo> cargos = dao.getCargoMapper().selectByExample(new CargoExample());
+			EquipoExample usuEx = new EquipoExample();
+			if(idSemestre >= 1 && estudiante >= 1) {
+				EstudiantesxequiposExample eeex = new EstudiantesxequiposExample();
+				eeex.createCriteria().andIdEstudianteEqualTo(estudiante);
+				List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(eeex);
+				
+				usuEx.createCriteria().andIdEquipoIn(exes.stream().map(Estudiantesxequipos::getIdEquipo).collect(Collectors.toList())).andIdSemestreEqualTo(idSemestre);
+			}else if(estudiante >= 1){
+				EstudiantesxequiposExample eeex = new EstudiantesxequiposExample();
+				eeex.createCriteria().andIdEstudianteEqualTo(estudiante);
+				List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(eeex);
+				
+				usuEx.createCriteria().andIdEquipoIn(exes.stream().map(Estudiantesxequipos::getIdEquipo).collect(Collectors.toList()));
+			}else if(idSemestre >= 1) {
+				usuEx.createCriteria().andIdSemestreEqualTo(idSemestre);
+			}
+			
+			
+						
+			String orderClause = "nombre";
+			usuEx.setOrderByClause(orderClause);
+
+			List<Equipo> usuarios = dao.getEquipoMapper().selectByExample(usuEx);
+			int idSemestreActual = dao.getSemestreMapper().selectSemestreActual().getIdSemestre();
+			for (Equipo usu : usuarios) {
+				
+				String integrantes = "";
+				EstudiantesxequiposExample eeex = new EstudiantesxequiposExample();
+				eeex.createCriteria().andIdEquipoEqualTo(usu.getIdEquipo());
+				
+				List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(eeex);
+				for(Estudiantesxequipos aexe : exes) {
+					Usuarios integrante = dao.getUsuariosMapper().selectByPrimaryKey(aexe.getIdEstudiante());
+					integrantes += integrante.getNombre() + " " + integrante.getApellidos() + "<br>";
+				}
+				
+				String asesoriasStr = "";
+				AsesoriasExample aEx = new AsesoriasExample();
+				aEx.createCriteria().andIdEquipoEqualTo(usu.getIdEquipo());
+				List<Asesorias> asesorias = dao.getAsesoriasMapper().selectByExample(aEx);
+				ArrayList<String> arrayDias = new ArrayList<String>(){
+					{
+						add(0,"Lunes");
+						add(1,"Martes");
+						add(2,"Miércoles");
+						add(3,"Jueves");
+						add(4,"Viernes");
+						add(5,"Sábado");
+					}
+				};
+				
+				
+				for(Asesorias asesoria : asesorias) {
+					
+					String diaSemana = arrayDias.get(asesoria.getDiaSemana() - 1);
+					Usuarios asesor = dao.getUsuariosMapper().selectByPrimaryKey(asesoria.getIdAsesor());
+					double hora = asesoria.getHoraSemana();
+					
+					String horaSemana = hora == 12 || hora == 12.5 ? ((int) hora) + ":" + (hora % 1 == 0 ? "00" : "30") + "PM"
+							: (((int) hora % 12) + ":" + (hora % 1 == 0 ? "00" : "30") + (hora > 12 ? "PM" : "AM"));
+					asesoriasStr += diaSemana + " " + horaSemana + " - " + asesor.getNombre() + " " + asesor.getApellidos() + "<br>";
+				}
+				
+				
+				Asignatura asig = dao.getAsignaturaMapper().selectByPrimaryKey(usu.getIdAsignatura());
+				Semestre sem = dao.getSemestreMapper().selectByPrimaryKey(usu.getIdSemestre());
+				Integer nota = 0;
+				JSONObject usuJSON = new JSONObject();
+				usuJSON.put("codigo", usu.getCodigo());
+				usuJSON.put("nombre", usu.getNombre());
+				usuJSON.put("asignatura", asig.getNombre());
+				usuJSON.put("semestre", sem.getAno() + " - " + sem.getNumero());
+				usuJSON.put("integrantes", integrantes);
+				usuJSON.put("asesorias", asesoriasStr);
+				arrayUsuarios.add(usuJSON);
+			}
+			
+			// System.out.println(dao.getAsignaturaMapper().selectByExample(new
+			// AsignaturaExample()));
+			UsuariosExample estEx = new UsuariosExample();
+			estEx.createCriteria().andIdCargoEqualTo(1);
+			List<Usuarios> estudiantes = dao.getUsuariosMapper().selectByExample(estEx);
+			SemestreExample semEx = new SemestreExample();
+			short numeroSemestre = Calendar.getInstance().get(Calendar.MONTH) <= 6 ? (short)1 : (short)2;
+			semEx.createCriteria().andAnoLessThan(Calendar.getInstance().get(Calendar.YEAR) + 1).andNumeroLessThanOrEqualTo(numeroSemestre);
+			List<Semestre> semestres = dao.getSemestreMapper().selectByExample(semEx);
+			
+			Usuarios user = (Usuarios) request.getSession().getAttribute("user");
+			model.addAttribute("user", user);
+			request.setAttribute("semestres", semestres);
+			request.setAttribute("estudiantes", estudiantes);
+			request.setAttribute("equipos", arrayUsuarios);
+			
+			request.setCharacterEncoding("UTF-8");
+			response.setCharacterEncoding("UTF-8");
+			return new ModelAndView("pages/teamsReporte");
+		} else {
+			// return new ModelAndView("index");
+			try {
+				response.getWriter().write("<script>location.href='../index.jsp';</script>");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return null;
+		}
+
+	}
+	
 	@RequestMapping("pages/team")
 	public ModelAndView sale(HttpServletRequest request, ModelMap model, HttpServletResponse response) {
 
@@ -79,8 +215,11 @@ public class teamController {
 				estSinEquipoEx.createCriteria().andEstadoEqualTo(true).andIdCargoEqualTo(1);
 			}
 			
-
-			List<Asignatura> asignaturas = dao.getAsignaturaMapper().selectByExample(new AsignaturaExample());
+			List<Rubrica> rubricas = dao.getRubricaMapper().selectByExample(new RubricaExample());
+			
+			AsignaturaExample asig = new AsignaturaExample();
+			asig.createCriteria().andIdAsignaturaIn(rubricas.stream().map(Rubrica::getIdAsignatura).collect(Collectors.toList()));
+			List<Asignatura> asignaturas = dao.getAsignaturaMapper().selectByExample(asig);
 
 			
 

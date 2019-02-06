@@ -1,4 +1,4 @@
-var puerto = '8080';
+var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
 function save() {
 	jQuery('#errorDiv').css('display', 'none');
 	var idAsig = jQuery('#idAsig').val();
@@ -23,8 +23,7 @@ function save() {
 	}
 
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/sunModule/saveSunModulo.html',
+		url : urlFull + '/pages/sunModule/saveSunModulo.html',
 		data : {
 			idAsig : idAsig,
 			code : code,
@@ -87,8 +86,7 @@ function deleteSale(id) {
 		return;
 	}
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/sunModule/deleteSunModule.html',
+		url : urlFull + '/pages/sunModule/deleteSunModule.html',
 		data : {
 			idAsig : idAsig
 		},

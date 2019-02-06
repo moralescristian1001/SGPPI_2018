@@ -53,7 +53,7 @@
 									<%
 										List<Equipo> equipos = (List<Equipo>) request.getAttribute("equipos");
 										List<Asignatura> asignaturas = (List<Asignatura>) request.getAttribute("asignaturas");
-										Map<Integer, Integer> notas = (Map<Integer, Integer>)request.getAttribute("notas");
+										Map<Integer, Double> notas = (Map<Integer, Double>)request.getAttribute("notas");
 										for (Equipo equipo : equipos) {
 											String asignatura = "";
 											String nota = "";

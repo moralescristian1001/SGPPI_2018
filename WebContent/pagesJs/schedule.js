@@ -1,4 +1,5 @@
-var puerto = '8080';
+var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
+
 function asignarCitaForm(dia, hora, diaString) {
 	jQuery('#dia-hora-asesoria').html(diaString + " de " + (Math.floor(hora)) + ":" + (hora % 1 == 0 ? "00" : "30") + " a " + (Math.floor(hora + 0.5)) + ":" + ((hora + 0.5) % 1 == 0 ? "00" : "30"));
 	jQuery("#dia_semana").val(dia);
@@ -32,8 +33,7 @@ function saveAsesoria() {
 	}
 
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/schedule/saveSchedule.html',
+		url : urlFull + '/pages/schedule/saveSchedule.html',
 		data : {
 			id_asesoria : idAsesoria,
 			id_equipo : idEquipo,
@@ -89,8 +89,7 @@ function deleteAsesoria(id) {
 		return;
 	}
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/schedule/deleteSchedule.html',
+		url : urlFull + '/pages/schedule/deleteSchedule.html',
 		data : {
 			id_asesoria : idAsesoria
 		},

@@ -1,4 +1,4 @@
-var puerto = '8080';
+var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
 function saveQualify() {
 	jQuery('#errorDiv').css('display', 'none');
 	var id_equipo = jQuery('#id_equipo').val();
@@ -18,8 +18,7 @@ function saveQualify() {
 		return;
 	}
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/qualify/saveQualify.html',
+		url : urlFull + '/pages/qualify/saveQualify.html',
 		data : {
 			id_equipo : id_equipo,
 			rubricas : items,

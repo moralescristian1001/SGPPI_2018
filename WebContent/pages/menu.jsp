@@ -58,9 +58,9 @@
 					events.add(new Modulo("Gestionar Cuadrantes", "quadrant", 5, "sticky-note-o"));
 
 					ArrayList<Modulo> reports = new ArrayList<Modulo>();
-					reports.add(new Modulo("Informe Usuarios", "usersReport", 5, "user-plus"));
-					reports.add(new Modulo("Informe Equipo", "teamReport", 5, "group"));
-					reports.add(new Modulo("Informe Asesorias", "advisoryReport", 5, "calendar-check-o"));
+					reports.add(new Modulo("Informe Usuarios", "userReporte", 5, "user-plus"));
+					reports.add(new Modulo("Informe Equipo", "teamReporte", 5, "group"));
+					//reports.add(new Modulo("Informe Asesorias", "advisoryReport", 5, "calendar-check-o"));
 					
 // 					modulos.add(new Modulo("Perfiles y Seguridad", "profile", new int[] { 1, 2, 3, 4, 5 }));
 					modulos.add(new Modulo("Usuarios", usuarios, 5, "user"));
