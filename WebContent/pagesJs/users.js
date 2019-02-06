@@ -1,4 +1,4 @@
-var puerto = '8080';
+var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
 var contAsig = 0;
 function updateUser() {
 
@@ -69,8 +69,7 @@ function updateUser() {
 	
 	
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/users/updateUser.html',
+		url : urlFull + '/pages/users/updateUser.html',
 		data : {
 			id_usuario : idUsuario,
 			correo : correo,
@@ -169,8 +168,7 @@ function updateUserForm(id_usuario, correo, nombre, apellidos, cedula,
 	if (idCargo == 1) {
 		jQuery
 				.ajax({
-					url : 'http://localhost:' + puerto
-							+ '/SGPPI_2018/pages/users/getInfoAdicional.html',
+					url : urlFull + '/pages/users/getInfoAdicional.html',
 					data : {
 						id_usuario : id_usuario,
 						id_cargo : idCargo

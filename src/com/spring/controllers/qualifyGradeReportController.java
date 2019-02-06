@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,14 +74,17 @@ public class qualifyGradeReportController {
 				Usuarios usuario = (Usuarios)request.getSession().getAttribute("user");
 				
 				//capturamos la socializacion
-				SocializacionExample sEx = new SocializacionExample();
-				sEx.createCriteria().andIdSocializacionEqualTo(idSocializacion);
-				List<Socializacion> soc = dao.getSocializacionMapper().selectByExample(sEx);
-
+				
+				Socializacion soc = dao.getSocializacionMapper().selectByPrimaryKey(idSocializacion);
+				Evento evento = dao.getEventoMapper().selectByPrimaryKey(soc.getIdEvento());
 				//capturamos los profesores de esa socialización
 				SalonxprofesoresExample sxpEx = new SalonxprofesoresExample();
 				sxpEx.createCriteria().andIdSocializacionEqualTo(idSocializacion);
-				List<Salonxprofesores> sxp = dao.getSalonxprofesoresMapper().selectByExample(sxpEx);
+				List<Salonxprofesores> salonxprofesores = dao.getSalonxprofesoresMapper().selectByExample(sxpEx);
+				
+				UsuariosExample proEx = new UsuariosExample();
+				proEx.createCriteria().andIdUsuarioIn(salonxprofesores.stream().map(Salonxprofesores::getIdProfesor).collect(Collectors.toList()));
+				List<Usuarios> profesores = dao.getUsuariosMapper().selectByExample(proEx); 
 				
 				//capturamos los equipos
 				SalonxequipoExample sxeEx = new SalonxequipoExample();
@@ -89,33 +93,51 @@ public class qualifyGradeReportController {
 				
 				List<Salon> salones = dao.getSalonMapper().selectByExample(new SalonExample());
 
+				EquipoExample eEx = new EquipoExample();
+				eEx.createCriteria().andIdEquipoIn(salonxequipos.stream().map(Salonxequipo::getIdEquipo).collect(Collectors.toList()));
+				List<Equipo> equipos = dao.getEquipoMapper().selectByExample(eEx);
 				
-				List<Equipo> equipos = new ArrayList<>();
-				Map<Integer, Integer> notas = new HashMap<>();
-				for (Salonxequipo sxe : salonxequipos) {
-					Equipo equipo = dao.getEquipoMapper().selectByPrimaryKey(sxe.getIdEquipo());
-					equipos.add(equipo);
+				CalifxsocExample cxsEx = new CalifxsocExample();
+				cxsEx.createCriteria().andIdSalonxequipoIn(salonxequipos.stream().map(Salonxequipo::getIdSalonxequipo).collect(Collectors.toList()));
+				
+				List<Califxsoc> califxsoc = dao.getCalifxsocMapper().selectByExample(cxsEx);
+				
+				NotasxcalifxsocExample nxcxsEx = new NotasxcalifxsocExample();
+				nxcxsEx.createCriteria().andIdCalifxsocIn(califxsoc.stream().map(Califxsoc::getIdCalifxsoc).collect(Collectors.toList()));
+				
+				List<Notasxcalifxsoc> notasxcalifxsoc = dao.getNotasxcalifxsocMapper().selectByExample(nxcxsEx);
 					
-					CalifxsocExample cxsEx = new CalifxsocExample();;
-					List<Califxsoc> cxs = dao.getCalifxsocMapper().selectByExample(cxsEx);
-					if(!cxs.isEmpty() && cxs.size() == 1){
-						NotasxcalifxsocExample nxcxsEx = new NotasxcalifxsocExample();
-						nxcxsEx.createCriteria().andIdCalifxsocEqualTo(cxs.get(0).getIdCalifxsoc());
-						
-						List<Notasxcalifxsoc> nxcxss = dao.getNotasxcalifxsocMapper().selectByExample(nxcxsEx);
-						int nota = 0;
-						for(Notasxcalifxsoc nxcxs : nxcxss){
-							Rubricaxitem rxi = dao.getRubricaxitemMapper().selectByPrimaryKey(nxcxs.getIdRubricaxitem());
-							nota += rxi.getCalificacion();
-						}
-						nota = nota / nxcxss.size();
-						notas.put(equipo.getIdEquipo(), nota);
-					}
-				}
-
+				RubricaxitemExample rxiEx = new RubricaxitemExample(); 
+				rxiEx.createCriteria().andIdRubricaxitemIn(notasxcalifxsoc.stream().map(Notasxcalifxsoc::getIdRubricaxitem).collect(Collectors.toList()));
+				List<Rubricaxitem> rubricasxitem = dao.getRubricaxitemMapper().selectByExample(rxiEx);
+				
+				RubricaExample rubricaEx = new RubricaExample(); 
+				rubricaEx.createCriteria().andIdRubricaIn(rubricasxitem.stream().map(Rubricaxitem::getIdRubrica).collect(Collectors.toList()));
+				rubricaEx.setOrderByClause("numero ASC");
+				List<Rubrica> rubricas = dao.getRubricaMapper().selectByExample(rubricaEx);
+				
+				
 				List<Asignatura> asignaturas = dao.getAsignaturaMapper().selectByExample(new AsignaturaExample());
 				
 				
+				
+				model.addAttribute("soc", soc);
+				model.addAttribute("evento", evento);
+				
+				model.addAttribute("salonxprofesores", salonxprofesores);
+				model.addAttribute("salonxequipos", salonxequipos);
+				model.addAttribute("salones", salones);
+				model.addAttribute("profesores", profesores);
+				
+				
+				model.addAttribute("equipos", equipos);
+				model.addAttribute("califxsoc", califxsoc);
+				model.addAttribute("notasxcalifxsoc", notasxcalifxsoc);
+				
+				model.addAttribute("rubricasxitem", rubricasxitem);
+				model.addAttribute("rubricas", rubricas);
+				
+				model.addAttribute("asignaturas", asignaturas);
 				model.addAttribute("user", usuario);
 				
 				return new ModelAndView("pages/qualifyGradeReport");

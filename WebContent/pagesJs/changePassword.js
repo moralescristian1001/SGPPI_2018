@@ -1,4 +1,4 @@
-var puerto = '8080';
+
 
 function changePassword() {
 	jQuery('#errorDiv').css('display', 'none');

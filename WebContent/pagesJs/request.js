@@ -1,4 +1,5 @@
-var puerto = '8080';
+var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
+
 function solicitarCitaForm(dia, hora, diaString) {
 	jQuery('#dia-hora-asesoria').html(diaString + " de " + (Math.floor(hora)) + ":" + (hora % 1 == 0 ? "00" : "30") + " a " + (Math.floor(hora + 0.5)) + ":" + ((hora + 0.5) % 1 == 0 ? "00" : "30"));
 	jQuery("#dia_semana").val(dia);
@@ -29,7 +30,7 @@ function saveSolicitud(){
 		
 		
 	jQuery.ajax({
-		url : 'http://localhost:'+puerto+'/SGPPI_2018/pages/request/saveRequest.html',
+		url : urlFull + '/pages/request/saveRequest.html',
 		data: {dia_semana:diaSemana, hora_semana:horaSemana},
 		success: function(o) {
 			if(o=="") {
@@ -81,7 +82,7 @@ function deleteSolicitud(id) {
 	}
 	if(confirm("Esta seguro que desea eliminar su solicitd?")){
 		jQuery.ajax({
-			url : 'http://localhost:'+puerto+'/SGPPI_2018/pages/request/deleteRequest.html',
+			url : urlFull + '/pages/request/deleteRequest.html',
 			data: {id_solicitud:idSolicitud},
 			success: function(o) {
 				if(o=="") {

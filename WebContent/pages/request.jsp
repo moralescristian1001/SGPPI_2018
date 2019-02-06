@@ -43,7 +43,7 @@
 						<div class="panel-body">
 							<div class="row">
 								<%
-									String[] colores = new String[] { "fff3aa", "ffd0a8", "ffb1b1", "d9d1ff", "b7efff" };
+									String[] colores = new String[] { "fff3aa", "ffd0a8", "ffb1b1", "d9d1ff", "b7efff", "fff3aa", "ffd0a8", "ffb1b1", "d9d1ff", "b7efff", "fff3aa", "ffd0a8", "ffb1b1", "d9d1ff", "b7efff", "fff3aa", "ffd0a8", "ffb1b1", "d9d1ff", "b7efff" };
 
 									List<Usuarios> asesores = (List<Usuarios>) request.getAttribute("listAsesores");
 									Map<Integer, String> coloresXAsesor = new HashMap();

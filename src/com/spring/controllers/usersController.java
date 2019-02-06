@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,17 +17,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.json.simple.JSONArray;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-//import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.mybatis.models.Asesorias;
+import com.mybatis.models.AsesoriasExample;
 import com.mybatis.models.Asignatura;
 import com.mybatis.models.AsignaturaExample;
 import com.mybatis.models.Cargo;
@@ -85,18 +92,6 @@ public class usersController {
 						}
 
 						break;
-					case 2:// Profesor
-						
-						break;
-					case 3:// Asesor
-
-						break;
-					case 4:// Evaluador
-
-						break;
-					case 5:// Coordinador
-
-						break;
 					default:
 						break;
 					}
@@ -116,6 +111,109 @@ public class usersController {
 			request.setCharacterEncoding("UTF-8");
 			response.setCharacterEncoding("UTF-8");
 			return new ModelAndView("pages/users");
+		} else {
+			// return new ModelAndView("index");
+			try {
+				response.getWriter().write("<script>location.href='../index.jsp';</script>");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return null;
+		}
+
+	}
+	
+	@RequestMapping("pages/userReporte")
+	public ModelAndView reporte(HttpServletRequest request, ModelMap model, HttpServletResponse response)
+			throws UnsupportedEncodingException {
+		if (request.getSession().getAttribute("user") != null) {
+			
+			JSONArray arrayUsuarios = new JSONArray();
+			int idCargo = -1;
+			if(request.getParameter("id_cargo") != null) {
+				idCargo = Integer.parseInt(request.getParameter("id_cargo"));
+			}
+			int estado = -1;
+			if(request.getParameter("estado") != null) {
+				estado = Integer.parseInt(request.getParameter("estado"));
+			}
+			
+			List<Cargo> cargos = dao.getCargoMapper().selectByExample(new CargoExample());
+			UsuariosExample usuEx = new UsuariosExample();
+			if(idCargo >= 1 && estado > -1) {
+				usuEx.createCriteria().andIdCargoEqualTo(idCargo).andEstadoEqualTo(estado == 1);
+			}else if(idCargo >= 1){
+				usuEx.createCriteria().andIdCargoEqualTo(idCargo);
+			}else if(estado > -1) {
+				usuEx.createCriteria().andEstadoEqualTo(estado == 1);
+			}
+			
+			
+						
+			String orderClause = "nombre";
+			usuEx.setOrderByClause(orderClause);
+
+			List<Usuarios> usuarios = dao.getUsuariosMapper().selectByExample(usuEx);
+			int idSemestreActual = dao.getSemestreMapper().selectSemestreActual().getIdSemestre();
+			for (Usuarios usu : usuarios) {
+				String info = "";
+				String cargoUsu = "";
+				for(Cargo cargo : cargos) {
+					if(cargo.getIdCargo() == usu.getIdCargo()) {
+						cargoUsu = cargo.getDescripcion();
+						break;
+					}
+				}
+				String equiposStr = "";
+				
+				if(usu.getIdCargo() == 1) { // 1 es estudiante
+					EstudiantesxequiposExample exExE = new EstudiantesxequiposExample();
+					exExE.createCriteria().andIdEstudianteEqualTo(usu.getIdUsuario());
+					List<Estudiantesxequipos> estudiantexequipos = dao.getEstudiantesxequiposMapper().selectByExample(exExE);
+					if(estudiantexequipos.isEmpty()) {
+						equiposStr = "Sin equipo asignado";
+					}
+					for(Estudiantesxequipos exe : estudiantexequipos) {
+						Equipo equipo = dao.getEquipoMapper().selectByPrimaryKey(exe.getIdEquipo());
+						Semestre semestre = dao.getSemestreMapper().selectByPrimaryKey(equipo.getIdSemestre());
+						equiposStr += equipo.getNombre() + " - Semestre " + semestre.getAno() + " " + semestre.getNumero() + "<br>";
+					}
+					
+				}else {
+					equiposStr = "No aplica";
+				}
+				String asesoriasStr = "No aplica";
+				if(usu.getIdCargo() == 3) {
+					AsesoriasExample aEx = new AsesoriasExample(); 
+					aEx.createCriteria().andIdSemestreEqualTo(idSemestreActual).andIdAsesorEqualTo(usu.getIdUsuario());
+					List<Asesorias> asesorias = dao.getAsesoriasMapper().selectByExample(aEx);
+					int numeroAsesorias = asesorias.size();
+					asesoriasStr = numeroAsesorias + "/" + usu.getMinimoAsesorias();
+				}
+				
+				JSONObject usuJSON = new JSONObject();
+				usuJSON.put("usuario", usu.getUsuario());
+				usuJSON.put("nombre", usu.getNombre() + " " + usu.getApellidos());
+				usuJSON.put("cedula", usu.getCedula());
+				usuJSON.put("birthday", usu.getFechaNac().toString());
+				usuJSON.put("cargo", cargoUsu);
+				usuJSON.put("asesorias", asesoriasStr);
+				usuJSON.put("equipos", equiposStr);
+				usuJSON.put("estado", usu.getEstado() ? "Activo" : "Inactivo");
+				arrayUsuarios.add(usuJSON);
+			}
+			
+			// System.out.println(dao.getAsignaturaMapper().selectByExample(new
+			// AsignaturaExample()));
+			Usuarios user = (Usuarios) request.getSession().getAttribute("user");
+			model.addAttribute("user", user);
+			request.setAttribute("cargos", cargos);
+			request.setAttribute("usuarios", arrayUsuarios);
+			request.setCharacterEncoding("UTF-8");
+			response.setCharacterEncoding("UTF-8");
+			return new ModelAndView("pages/usersReporte");
 		} else {
 			// return new ModelAndView("index");
 			try {
@@ -153,7 +251,7 @@ public class usersController {
 
 					if (!HSSFDateUtil.isCellDateFormatted(fechaNacCell)) {
 						response.getWriter()
-								.write("<script>location.href='../users.html?errors=La fecha de nacimiento de la p�gina "
+								.write("<script>location.href='../users.html?errors=La fecha de nacimiento de la pï¿½gina "
 										+ idCargo + " en la fila " + r + " no es fecha';</script>");
 						return;
 					}
@@ -267,15 +365,15 @@ public class usersController {
 				dao.getUsuariosMapper().insert(usuario);
 			}
 			object.put("status", "ok");
-			object.put("message", "Se ha guardado la informaci�n correctamente");
+			object.put("message", "Se ha guardado la informaciï¿½n correctamente");
 		} catch (Exception e) {
 			String cause = e.getLocalizedMessage();
 			if(cause.contains("Duplicate entry")) {
 				object.put("status", "errors");
-				object.put("message", "El correo electr�nico ya existe, por favor digite otro correo");
+				object.put("message", "El correo electrónico ya existe, por favor digite otro correo");
 			}else {
 				object.put("status", "errors");
-				object.put("message", "Ocurri� un error guardando el usuario");
+				object.put("message", "Ocurrió un error guardando el usuario");
 			}
 		}
 		response.setCharacterEncoding("UTF-8");
@@ -330,7 +428,7 @@ public class usersController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurri� un error guardando el cuadrante");
+			object.put("message", "Ocurriï¿½ un error guardando el cuadrante");
 		}
 
 		response.setCharacterEncoding("UTF-8");

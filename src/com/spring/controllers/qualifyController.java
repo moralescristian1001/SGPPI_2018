@@ -95,7 +95,7 @@ public class qualifyController {
 
 					List<Salonxequipo> salonxequipos = dao.getSalonxequipoMapper().selectByExample(sxeEx);
 					List<Equipo> equipos = new ArrayList<>();
-					Map<Integer, Integer> notas = new HashMap<>();
+					Map<Integer, Double> notas = new HashMap<>();
 					for (Salonxequipo sxe : salonxequipos) {
 						Equipo equipo = dao.getEquipoMapper().selectByPrimaryKey(sxe.getIdEquipo());
 						equipos.add(equipo);
@@ -108,13 +108,21 @@ public class qualifyController {
 							nxcxsEx.createCriteria().andIdCalifxsocEqualTo(cxs.get(0).getIdCalifxsoc());
 							
 							List<Notasxcalifxsoc> nxcxss = dao.getNotasxcalifxsocMapper().selectByExample(nxcxsEx);
-							int nota = 0;
+							int puntaje = 0;
+							int cantidadRubricas = 0;
 							for(Notasxcalifxsoc nxcxs : nxcxss){
 								Rubricaxitem rxi = dao.getRubricaxitemMapper().selectByPrimaryKey(nxcxs.getIdRubricaxitem());
-								nota += rxi.getCalificacion();
+								puntaje += rxi.getCalificacion();
+								cantidadRubricas++;
 							}
-							nota = nota / nxcxss.size();
-							notas.put(equipo.getIdEquipo(), nota);
+
+							int X = cantidadRubricas * 3;
+							int Y = cantidadRubricas * 2;
+									
+							double notaParcial = puntaje < cantidadRubricas ? 0.0 : 3.0 + (((puntaje - Y ) * 2) / (X - Y));
+							
+							
+							notas.put(equipo.getIdEquipo(), notaParcial);
 						}
 					}
 

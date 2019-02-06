@@ -1,4 +1,5 @@
-var puerto = '8080';
+var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
+
 function verSeguimientoForm(dia, hora, diaString, idAsesoria, nombreEquipo,
 		diaHoy) {
 	jQuery('#dia-hora-asesoria').html(diaString + " de " + (Math.floor(hora)) + ":" + (hora % 1 == 0 ? "00" : "30") + " a " + (Math.floor(hora + 0.5)) + ":" + ((hora + 0.5) % 1 == 0 ? "00" : "30"));
@@ -7,8 +8,7 @@ function verSeguimientoForm(dia, hora, diaString, idAsesoria, nombreEquipo,
 	$("#seguimientos-tabla tbody").empty();
 	$("#asistencia").empty();
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/tracing/verTracing.html',
+		url : urlFull + '/pages/tracing/verTracing.html',
 		data : {
 			id_asesoria : idAsesoria
 		},
@@ -75,8 +75,7 @@ function saveTracing() {
 	var asistencia = asistencia.join();
 	
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/tracing/saveTracing.html',
+		url : urlFull + '/pages/tracing/saveTracing.html',
 		data : {
 			id_asesoria : idAsesoria,
 			observaciones: observaciones,

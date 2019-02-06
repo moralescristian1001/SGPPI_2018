@@ -1,4 +1,4 @@
-var puerto = '8080';
+var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
 var cont = 0;
 var contReal = 0;
 var insertar = false;
@@ -64,8 +64,7 @@ function updateTeam() {
 	idUsuario = idUsuario.join(",");
 	jQuery
 			.ajax({
-				url : 'http://localhost:' + puerto
-						+ '/SGPPI_2018/pages/team/updateTeam.html',
+				url : urlFull + '/pages/team/updateTeam.html',
 				data : {
 					codigo : codigo,
 					nombre : nombre,
@@ -140,8 +139,7 @@ function saveUser() {
 
 	jQuery
 			.ajax({
-				url : 'http://localhost:' + puerto
-						+ '/SGPPI_2018/pages/quadrant/saveQuadrant.html',
+				url : urlFull + '/pages/quadrant/saveQuadrant.html',
 				data : {
 					num : num,
 					nomCuadra : nomCuadra,
@@ -277,8 +275,7 @@ function deleteTeam(id) {
 		return;
 	}
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/team/deleteTeam.html',
+		url : urlFull + '/pages/team/deleteTeam.html',
 		data : {
 			id_equipo : idEquipo
 		},
