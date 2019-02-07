@@ -59,11 +59,12 @@ function agregarRubrica(){
 }
 
 function save() {
-	jQuery('#errorDiv').css('display', 'none');
+	jQuery('#errorModal').css('display', 'none');
 	if(jQuery("#id_asignatura").val() == "-1"){
-		jQuery('errorDiv').html(
+		jQuery('#messageErrorModal').html(
 		"Debe seleccionar la asignatura");
-		jQuery('errorDiv').css('display', 'block');
+		jQuery('#errorModal').css('display', 'block');
+		return;
 	}
 
 	jQuery.ajax({
@@ -78,24 +79,29 @@ function save() {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
 					clear();
+					jQuery("html, body").animate({ scrollTop: 0 }, 600);
+					jQuery('#myModal').modal('hide');
+					jQuery('.modal-backdrop').removeClass('in');
+					clear();
 					setTimeout(function() {
 						location.reload();
-					}, 500);
+					}, 2000);
 				} else {
-					jQuery('errorDiv').html(
+					jQuery('#messageErrorModal').html(
 							"Ocurrió un error guardando las rúbricas");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#errorModal').css('display', 'block');
+					return;
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
+				jQuery('#messageErrorModal').html(
 						"Ocurrió un error guardando las rúbricas");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}
@@ -122,8 +128,8 @@ function viewRubricForm(idAsignatura, version, nombreAsignatura) {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					$("#rubricas").html(
 							"<table class='table'>" + "<thead><tr>"
@@ -134,14 +140,15 @@ function viewRubricForm(idAsignatura, version, nombreAsignatura) {
 									+ "<td>Bueno(3)</td>" + "</tr></thead>"
 									+ data.info + "</table>");
 				} else {
-					jQuery('errorDiv').html(
+					jQuery('#messageErrorModal').html(
 							"Ocurrió un error guardando la calificación");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#errorModal').css('display', 'block');
+					return;
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
+				jQuery('#messageErrorModal').html(
 						"Ocurrió un error guardando la calificación");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}
@@ -169,8 +176,8 @@ function updateRubricForm(idAsignatura, version, nombreAsignatura) {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					$("#rubricas").html(
 							"<table class='table'>" + "<thead><tr>"
@@ -182,14 +189,15 @@ function updateRubricForm(idAsignatura, version, nombreAsignatura) {
 									+ "<td>Bueno(3)</td>" + "</tr></thead>"
 									+ data.info + "</table>");
 				} else {
-					jQuery('errorDiv').html(
+					jQuery('#messageErrorModal').html(
 							"Ocurrió un error guardando la calificación");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#errorModal').css('display', 'block');
+					return;
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
+				jQuery('#messageErrorModal').html(
 						"Ocurrió un error guardando la calificación");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}

@@ -19,7 +19,7 @@
 	<div id="page-wrapper">
 		<div class="row">
 			<div class="col-lg-12">
-				<h1 class="page-header">Socializaciones y Eventos</h1>
+				<h1 class="page-header">Socializaciones</h1>
 			</div>
 			<!-- /.col-lg-12 -->
 		</div>
@@ -41,7 +41,7 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="panel panel-default">
-						<div class="panel-heading">Eventos</div>
+						<div class="panel-heading">Socializaciones</div>
 						<!-- /.panel-heading -->
 						<div class="panel-body">
 							<table width="100%"
@@ -131,7 +131,7 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Crear Evento</h4>
+						<h4 class="modal-title">Crear Socialización</h4>
 					</div>
 					<div class="modal-body">
 						<div id="errorModal" class="alert alert-danger alert-dismissible" role="alert" style="display: none">
@@ -145,7 +145,10 @@
 							<div class="row">
 								<div class="col-sm-6">
 									<div class="form-group">
-										<label for="fecha">*Fecha:</label> <input type="datetime-local"
+										<label for="fecha"><li style="list-style: none; display: inline-flex;">
+										<span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" 
+										title="El campo fecha debe tener una hora especificada exacta, y no se pueden crear socializaciones antes de la fecha actual del sistema."></span>
+										</li> *Fecha:</label> <input type="datetime-local"
 											class="form-control" name="fecha" id="fecha"
 											placeholder="Ingrese la fecha del evento">
 
@@ -167,7 +170,10 @@
 							<div class="row">
 								<div class="col-sm-6">
 									<div class="form-group ">
-										<label for="duracion_horas">*Duración horas:</label> <input
+										<label for="duracion_horas"><li style="list-style: none; display: inline-flex;">
+										<span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" 
+										title="El campo duración en horas no puede tener valores negativos ni cero."></span>
+										</li> *Duración horas:</label> <input
 											type="number" class="form-control" name="duracion_horas"
 											id="duracion_horas"
 											placeholder="Integrese la Duración en horas">
@@ -177,7 +183,10 @@
 							</div>
 						</fieldset>
 						<fieldset>
-							<legend>Salones</legend>
+							<legend><li style="list-style: none; display: inline-flex;">
+										<span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" 
+										title="En esta sección se prodrán elegir los salones asociados a la socialización."></span>
+										</li> Salones</legend>
 
 							<c:forEach items="${salones}" var="salon">
 								<label class="checkbox-inline"><input type="checkbox"
@@ -187,12 +196,15 @@
 							</c:forEach>
 						</fieldset>
 						<fieldset>
-							<legend>Salones Información</legend>
+							<legend><li style="list-style: none; display: inline-flex;">
+										<span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" 
+										title="En esta sección se prodrán elegir los equipos y evaluadores asociados a la socialización."></span>
+										</li> Salones Información</legend>
 							<div id="salones_informacion"></div>
 						</fieldset>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 						<input type="button" id="boton-guardar" class="btn btn-default pull-left"
 							value="Guardar" onclick="saveSocializacion();">
 					</div>
@@ -286,5 +298,10 @@
              });
          });
       </script>
+      <script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip(); 
+});
+</script>
 </body>
 </html>

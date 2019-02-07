@@ -365,15 +365,15 @@ public class usersController {
 				dao.getUsuariosMapper().insert(usuario);
 			}
 			object.put("status", "ok");
-			object.put("message", "Se ha guardado la informaciï¿½n correctamente");
+			object.put("message", "Se ha guardado la informaci�n correctamente");
 		} catch (Exception e) {
 			String cause = e.getLocalizedMessage();
 			if(cause.contains("Duplicate entry")) {
 				object.put("status", "errors");
-				object.put("message", "El correo electrónico ya existe, por favor digite otro correo");
+				object.put("message", "El correo electr�nico ya existe, por favor digite otro correo");
 			}else {
 				object.put("status", "errors");
-				object.put("message", "Ocurrió un error guardando el usuario");
+				object.put("message", "Ocurri� un error guardando el usuario");
 			}
 		}
 		response.setCharacterEncoding("UTF-8");
@@ -428,7 +428,7 @@ public class usersController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurriï¿½ un error guardando el cuadrante");
+			object.put("message", "Ocurri� un error guardando el cuadrante");
 		}
 
 		response.setCharacterEncoding("UTF-8");

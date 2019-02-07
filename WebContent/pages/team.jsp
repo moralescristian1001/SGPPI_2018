@@ -165,9 +165,12 @@
 					<!-- /.panel -->
 				</div>
 				<!-- /.col-lg-12 -->
-				<input type="button" data-toggle="modal" data-target="#myModalEditar"
+				<div class="row" style="padding: 50px">
+					<input type="button" data-toggle="modal" data-target="#myModalEditar"
 					class="btn btn-default pull-left" name="guardar" value="Nuevo equipo" onclick="guardarTeamForm()"></input>
 					<br><br><br><br><br><br>
+				</div>
+				
 			</div>
 		</form>
 		<!-- Modal -->
@@ -215,12 +218,19 @@
 						<h4 class="modal-title">Equipo</h4>
 					</div>
 					<div class="modal-body">
+						<div id="errorModal" class="alert alert-danger alert-dismissible" role="alert" style="display: none">
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						  <strong id="messageErrorModal"></strong>
+						</div>
 						<input type='hidden' id="id_equipo" name="id_equipo"
 							class="form-control" />
 						<div class="form-group">
-							<label for="nombre">*Codigo:</label>
+							<label class="col-12" for="nombre"><li style="list-style: none; display: inline-flex;">
+										<span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" 
+										title="El campo código solo admite caracteres númericos y no admite valores negativos ni 0"></span>
+										</li> *Codigo:</label>
 							<div class='input-group col-lg-12'>
-								<input type="text" class="form-control" name="codigo"
+								<input type="number" class="form-control" name="codigo"
 									id="codigo" placeholder="Ingrese el código del equipo">
 							</div>
 						</div>
@@ -246,7 +256,10 @@
 						</div>
 
 						<fieldset>
-							<legend>Estudiantes</legend>
+							<legend><li style="list-style: none; display: inline-flex;">
+										<span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" 
+										title="En esta sección podrás agregar los estudiantes a un equipo, minimamente debe agregar un estudiante al equipo y con un máximo de 3 estudiantes."></span>
+										</li> Estudiantes</legend>
 							<div class="row">
 								<div class="col-sm-12" id="div_tabla_estudiantes"></div>
 							</div>
@@ -276,5 +289,9 @@
 	<option value="${est.idUsuario}">${est.nombre}
 		${est.apellidos}</option>
 </c:forEach> </template>
-
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip(); 
+});
+</script>
 <jsp:include page="footer.jsp" />

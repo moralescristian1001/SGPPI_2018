@@ -69,8 +69,8 @@ function updateSocializacionForm(idEvento, idTipoEvento, fecha, duracionHoras) {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					var salones = data.salones;
 					for (var i = 0; i < salones.length; i++) {
@@ -93,14 +93,14 @@ function updateSocializacionForm(idEvento, idTipoEvento, fecha, duracionHoras) {
 						}
 					}
 				} else {
-					jQuery('errorDiv').html(
+					jQuery('#messageErrorModal').html(
 							"Ocurri&oacute; un error eliminando el cuadrante");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#errorModal').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
+				jQuery('#messageErrorModal').html(
 						"Ocurrió un error eliminando el cuadrante");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}
@@ -113,19 +113,26 @@ function updateSocializacion() {
 	var duracionHoras = jQuery("#duracion_horas").val();
 	var id_evento = jQuery("#id_evento").val();
 
-	if (fecha == "" || fecha == "0") {
-		jQuery('#errorDiv').html("Debe ingresar la fecha");
-		jQuery('#errorDiv').css('display', 'block');
+	if (fecha == null || fecha == "") {
+		jQuery('#messageErrorModal').html("Debe ingresar la fecha");
+		jQuery('#errorModal').css('display', 'block');
+		return;
+	}else{
+		var today = formatDate(new Date());
+		if(fecha < today){
+			jQuery("#messageErrorModal").html("La fecha seleccionada no es valida");
+			jQuery('#errorModal').css('display', 'block');
+			return;
+		}
+	}
+	if (id_tipo_socializacion == null || id_tipo_socializacion == "0") {
+		jQuery('#messageErrorModal').html("Debe ingresar el tipo de socialización");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
-	if (id_tipo_socializacion == "" || id_tipo_socializacion == "0") {
-		jQuery('#errorDiv').html("Debe ingresar el tipo de socialización");
-		jQuery('#errorDiv').css('display', 'block');
-		return;
-	}
-	if (duracionHoras == "" || duracionHoras == "-1") {
-		jQuery('#errorDiv').html("Debe seleccionar la duración");
-		jQuery('#errorDiv').css('display', 'block');
+	if (duracionHoras == null || duracionHoras == "" || duracionHoras <= 0) {
+		jQuery('#messageErrorModal').html("Debe ingresar la duración");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
 	var idEquipos = [];
@@ -161,8 +168,8 @@ function updateSocializacion() {
 					try {
 						data = jQuery.parseJSON(o);
 						if (data.status != undefined && data.status == 'errors') {
-							jQuery('#errorDiv').html(data.message);
-							jQuery('#errorDiv').css('display', 'block');
+							jQuery('#messageErrorModal').html(data.message);
+							jQuery('#errorModal').css('display', 'block');
 						} else if (data.status != undefined
 								&& data.status == 'ok') {
 							jQuery('#successDiv').html(data.message);
@@ -191,19 +198,26 @@ function saveSocializacion() {
 	var id_tipo_evento = jQuery("#id_tipo_evento").val();
 	var duracionHoras = jQuery("#duracion_horas").val();
 	var idEvento = jQuery("#idEvento").val();
-	if (fecha == "" || fecha == "0") {
-		jQuery('#errorDiv').html("Debe ingresar la fecha");
-		jQuery('#errorDiv').css('display', 'block');
+	if (fecha == null || fecha == "") {
+		jQuery('#messageErrorModal').html("Debe ingresar la fecha");
+		jQuery('#errorModal').css('display', 'block');
+		return;
+	}else{
+		var today = formatDate(new Date());
+		if(fecha < today){
+			jQuery("#messageErrorModal").html("La fecha seleccionada no es valida");
+			jQuery('#errorModal').css('display', 'block');
+			return;
+		}
+	}
+	if (id_tipo_evento == null || id_tipo_evento == "0") {
+		jQuery('#messageErrorModal').html("Debe ingresar el tipo de socialización");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
-	if (id_tipo_evento == "" || id_tipo_evento == "0") {
-		jQuery('#errorDiv').html("Debe ingresar el tipo de socialización");
-		jQuery('#errorDiv').css('display', 'block');
-		return;
-	}
-	if (duracionHoras == "" || duracionHoras == "-1") {
-		jQuery('#errorDiv').html("Debe seleccionar la duración");
-		jQuery('#errorDiv').css('display', 'block');
+	if (duracionHoras == null || duracionHoras == "" || duracionHoras <= 0) {
+		jQuery('#messageErrorModal').html("Debe ingresar la duración");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
 	var cantidadSalones = 0;
@@ -226,21 +240,21 @@ function saveSocializacion() {
 					function(element) {
 						var equipo = jQuery(this).val();
 						if(equipo == "0"){
-							jQuery('#errorDiv').html("Debe seleccionar el equipo en el salon " + descripcionSalon);
-							jQuery('#errorDiv').css('display', 'block');
+							jQuery('#messageErrorModal').html("Debe seleccionar el equipo en el salon " + descripcionSalon);
+							jQuery('#errorModal').css('display', 'block');
 							errorAsignandoEquipo = true;
 							return;
 						}
 						if(idEquipos.indexOf(equipo) >= 0){
-							jQuery('#errorDiv').html("No puedes repetir equipo en el salón " + descripcionSalon);
-							jQuery('#errorDiv').css('display', 'block');
+							jQuery('#messageErrorModal').html("No puedes repetir equipo en el salón " + descripcionSalon);
+							jQuery('#errorModal').css('display', 'block');
 							errorAsignandoEquipo = true;
 							return;
 						}
 						
 						if(idEquiposGeneral.indexOf(equipo) >= 0){
-							jQuery('#errorDiv').html("Hay 2 o más salones con el equipo " + $(this).find("option:selected").html());
-							jQuery('#errorDiv').css('display', 'block');
+							jQuery('#messageErrorModal').html("Hay 2 o más salones con el equipo " + $(this).find("option:selected").html());
+							jQuery('#errorModal').css('display', 'block');
 							errorAsignandoEquipo = true;
 							return;
 						}
@@ -254,8 +268,8 @@ function saveSocializacion() {
 				return;
 			}
 			if(!inserto){
-				jQuery('#errorDiv').html("Debe agregar al menos un equipo del salón " + descripcionSalon);
-				jQuery('#errorDiv').css('display', 'block');
+				jQuery('#messageErrorModal').html("Debe agregar al menos un equipo del salón " + descripcionSalon);
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 			inserto = false;
@@ -267,21 +281,21 @@ function saveSocializacion() {
 					function(element) {
 						var ev = jQuery(this).val()
 						if(ev == "0"){
-							jQuery('#errorDiv').html("Debe seleccionar el evaluador en el salon " + descripcionSalon);
-							jQuery('#errorDiv').css('display', 'block');
+							jQuery('#messageErrorModal').html("Debe seleccionar el evaluador en el salon " + descripcionSalon);
+							jQuery('#errorModal').css('display', 'block');
 							errorAsignandoEvaluador = true;
 							return;
 						}
 						if(idEvaluadores.indexOf(ev) >= 0){
-							jQuery('#errorDiv').html("No puedes repetir evaluador en el salón " + descripcionSalon);
-							jQuery('#errorDiv').css('display', 'block');
+							jQuery('#messageErrorModal').html("No puedes repetir evaluador en el salón " + descripcionSalon);
+							jQuery('#errorModal').css('display', 'block');
 							errorAsignandoEvaluador = true;
 							return;
 						}
 						
 						if(idEvaluadoresGeneral.indexOf(ev) >= 0){
-							jQuery('#errorDiv').html("Hay 2 o más salones con el evaluador " + $(this).find("option:selected").html());
-							jQuery('#errorDiv').css('display', 'block');
+							jQuery('#messageErrorModal').html("Hay 2 o más salones con el evaluador " + $(this).find("option:selected").html());
+							jQuery('#errorModal').css('display', 'block');
 							errorAsignandoEvaluador = true;
 							return;
 						}
@@ -295,8 +309,8 @@ function saveSocializacion() {
 				return;
 			}
 			if(!inserto){
-				jQuery('#errorDiv').html("Debe agregar al menos un evaluador del salón " + descripcionSalon);
-				jQuery('#errorDiv').css('display', 'block');
+				jQuery('#messageErrorModal').html("Debe agregar al menos un evaluador del salón " + descripcionSalon);
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 			//end evaluadores
@@ -304,8 +318,8 @@ function saveSocializacion() {
 	})
 	
 	if(cantidadSalones == 0){
-		jQuery('#errorDiv').html("Debe seleccionar al menos un salon");
-		jQuery('#errorDiv').css('display', 'block');
+		jQuery('#messageErrorModal').html("Debe seleccionar al menos un salon");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
 	
@@ -313,8 +327,8 @@ function saveSocializacion() {
 		return;
 	}
 	if(idEquipos.length == 0){
-		jQuery('#errorDiv').html("Debe seleccionar al menos un equipo en cada uno de los salones");
-		jQuery('#errorDiv').css('display', 'block');
+		jQuery('#messageErrorModal').html("Debe seleccionar al menos un equipo en cada uno de los salones");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
 	idEquipos = idEquipos.join(",");
@@ -324,8 +338,8 @@ function saveSocializacion() {
 		return;
 	}
 	if(idEvaluadores.length == 0){
-		jQuery('#errorDiv').html("Debe seleccionar al menos un evaluador en cada uno de los salones");
-		jQuery('#errorDiv').css('display', 'block');
+		jQuery('#messageErrorModal').html("Debe seleccionar al menos un evaluador en cada uno de los salones");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
 	idEvaluadores = idEvaluadores.join(",");
@@ -351,31 +365,34 @@ function saveSocializacion() {
 					try {
 						data = jQuery.parseJSON(o);
 						if (data.status != undefined && data.status == 'errors') {
-							jQuery('#errorDiv').html(data.message);
-							jQuery('#errorDiv').css('display', 'block');
+							jQuery('#messageErrorModal').html(data.message);
+							jQuery('#errorModal').css('display', 'block');
 						} else if (data.status != undefined
 								&& data.status == 'ok') {
 							jQuery('#successDiv').html(data.message);
 							jQuery('#successDiv').css('display', 'block');
 							clear();
+							jQuery("html, body").animate({ scrollTop: 0 }, 600);
+							jQuery('#myModal').modal('hide');
+							jQuery('.modal-backdrop').removeClass('in');
 							setTimeout(function() {
-								location.reload();
-							}, 500);
+									location.reload();
+							}, 2000);
 						} else {
 							if(typeof data.message !== "undefined"){
-								jQuery('errorDiv').html(data.message);
+								jQuery('#messageErrorModal').html(data.message);
 							}else{
-								jQuery('errorDiv').html(
+								jQuery('#messageErrorModal').html(
 								"Ocurrió un error guardando el evento");
 							}
 							
 							
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#errorModal').css('display', 'block');
 						}
 					} catch (err) {
-						jQuery('errorDiv').html(
+						jQuery('#messageErrorModal').html(
 								"Ocurrió un error guardando el evento");
-						jQuery('errorDiv').css('display', 'block');
+						jQuery('#errorModal').css('display', 'block');
 						return;
 					}
 				}
@@ -419,13 +436,17 @@ function deleteSocializacion(id) {
 							jQuery('#successDiv').html(data.message);
 							jQuery('#successDiv').css('display', 'block');
 							clear();
+							jQuery("html, body").animate({ scrollTop: 0 }, 600);
+							jQuery('#myModal').modal('hide');
+							jQuery('.modal-backdrop').removeClass('in');
+							clear();
 							setTimeout(function() {
 								location.reload();
-							}, 500);
+							}, 2000);
 						} else {
 							jQuery('errorDiv')
 									.html(
-											"Ocurri&oacute; un error eliminando la socialización");
+											"Ocurrió un error eliminando la socialización");
 							jQuery('errorDiv').css('display', 'block');
 						}
 					} catch (err) {
@@ -437,3 +458,14 @@ function deleteSocializacion(id) {
 				}
 			});
 }
+
+function formatDate(date) {
+	  var hours = date.getHours();
+	  var minutes = date.getMinutes();
+	  var ampm = hours >= 12 ? 'pm' : 'am';
+	  hours = hours % 12;
+	  hours = hours ? hours : 12; // the hour '0' should be '12'
+	  minutes = minutes < 10 ? '0'+minutes : minutes;
+	  var strTime = hours + ':' + minutes + ' ' + ampm;
+	  return date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear() + "  " + strTime;
+	}

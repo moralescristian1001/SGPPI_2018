@@ -112,19 +112,19 @@ public class rubricController {
 				if(key.contains("rubrica_descripcion")) {
 					
 					if(value.equals("")) {
-						throw new Exception("Porfavor completar la descripcion de las rÃºbricas");
+						throw new Exception("Por favor completar la descripcion de las rúbricas");
 					}
 					rubricas.put(Integer.parseInt(infoItem[2]), value);
 				}else if(key.contains("id_tipo_rubrica")) {
 					
 					if(value.equals("") || value.equals("-1")) {
-						throw new Exception("Porfavor completar los tipos de las rÃºbricas");
+						throw new Exception("Por favor completar los tipos de las rúbricas");
 					}
 					idTiposRubrica.put(Integer.parseInt(infoItem[3]), Integer.parseInt(value));
 				}else if(key.contains("item")) {
 					
 					if(value.equals("")) {
-						throw new Exception("Porfavor completar las descripciones de las calificaciones");
+						throw new Exception("Por favor completar las descripciones de las calificaciones");
 					}
 					if(items.get(Integer.parseInt(infoItem[1])) != null) {
 						items.get(Integer.parseInt(infoItem[1])).put(Integer.parseInt(infoItem[2]), value);
@@ -178,6 +178,7 @@ public class rubricController {
 			object.put("status", "errors");
 			object.put("message", e.getMessage());
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 

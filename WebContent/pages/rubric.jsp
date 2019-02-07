@@ -129,9 +129,11 @@
 					<!-- /.panel -->
 				</div>
 				<!-- /.col-lg-12 -->
+				<div class="row" style="padding: 50px">
 				<input type="button" data-toggle="modal" data-target="#myModalEditar"
 					class="btn btn-default pull-left" name="guardar" value="Nueva rúbrica" onclick="guardarRubricaForm()"></input>
 					<br><br><br><br><br><br>
+				</div>
 			</div>
 		</form>
 		<div class="modal fade" id="myModalEditar" role="dialog">
@@ -143,6 +145,10 @@
 						<h4 class="modal-title">Rúbricas <span id="nombre_asignatura"></span> Versión <span id="version"></span></h4>
 					</div>
 					<div class="modal-body">
+						<div id="errorModal" class="alert alert-danger alert-dismissible" role="alert" style="display: none">
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						  <strong id="messageErrorModal"></strong>
+						</div>
 						<form id="rubricas_form">
 							<div class="row">
 								<div class="col-sm-12">
@@ -155,6 +161,7 @@
 									</select>
 								</div>
 							</div>
+							<br>
 							<fieldset>
 								<div id="rubricas"></div>
 							</fieldset>

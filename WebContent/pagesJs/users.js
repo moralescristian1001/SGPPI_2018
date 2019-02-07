@@ -12,12 +12,6 @@ function updateUser() {
 	var estado = jQuery("#estado").val();
 	var minimo_asesorias =  jQuery("#minimo_asesorias").val();
 	var idUsuario = jQuery("#id_usuario").val();
-	var asignaturas = jQuery(
-			"input[name*='id_asignatura'], select[name*='id_asignatura']")
-			.each(function(element) {
-				idAsignatura.push(jQuery(this).val());
-			});
-	idAsignatura = idAsignatura.join(",");
 	if (correo == null || correo == undefined || correo == "") {
 		jQuery("#messageErrorModal").html("Debe ingresar el correo");
 		jQuery('#errorModal').css('display', 'block');
@@ -120,20 +114,6 @@ function mostrarYOcultarMinimoAsesorias(cargo){
 	}else{
 		$("#div_minimo_asesorias").hide();
 	}
-}
-function agregarAsignatura() {
-	contAsig++;
-	var options = jQuery("#asignaturas_options").html();
-	jQuery("#asignaturas")
-			.append(
-					"<div class='row' id='"
-							+ contAsig
-							+ "'><div class='col-sm-12'><select name='id_asignatura["
-							+ contAsig
-							+ "]' id='id_asignatura_"
-							+ contAsig
-							+ "' class='form-control'><option value='-1'>Seleccione la asignatura...</option>"
-							+ options + "</select></div></div>");
 }
 function cambioCargo(idCargo) {
 	

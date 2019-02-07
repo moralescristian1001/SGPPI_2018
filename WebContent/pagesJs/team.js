@@ -26,19 +26,25 @@ function updateTeam() {
 	var idAsignatura = jQuery("#id_asignatura").val();
 	var idEquipo = jQuery("#id_equipo").val();
 
-	if (codigo == "" || codigo == "0") {
-		jQuery('#errorDiv').html("Debe ingresar el código");
-		jQuery('#errorDiv').css('display', 'block');
+	if (codigo == null || codigo == "" || codigo == "0") {
+		jQuery('#messageErrorModal').html("Debe ingresar el código");
+		jQuery('#errorModal').css('display', 'block');
+		return;
+	}else{ 
+		if(codigo <= 0) {
+			jQuery('#messageErrorModal').html("Debe ingresar un código valido");
+			jQuery('#errorModal').css('display', 'block');
+			return;
+		}
+	}
+	if (nombre == null || nombre == "" || nombre == "0") {
+		jQuery('#messageErrorModal').html("Debe ingresar el nombre");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
-	if (nombre == "" || nombre == "0") {
-		jQuery('#errorDiv').html("Debe ingresar el nombre");
-		jQuery('#errorDiv').css('display', 'block');
-		return;
-	}
-	if (idAsignatura == "" || idAsignatura == "-1") {
-		jQuery('#errorDiv').html("Debe seleccionar el módulo sol");
-		jQuery('#errorDiv').css('display', 'block');
+	if (idAsignatura == null ||idAsignatura == "" || idAsignatura == "-1") {
+		jQuery('#messageErrorModal').html("Debe seleccionar el módulo sol");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
 	var idUsuario = [];
@@ -47,12 +53,12 @@ function updateTeam() {
 	function(id) {
 		id += 1;
 		if(id == "1" && jQuery(this).val() == "-1"){
-			jQuery('#errorDiv').html("Debe seleccionar un estudiante en el primer campo obligatoriamente, el resto son opcionales");
-			jQuery('#errorDiv').css('display', 'block');
+			jQuery('#messageErrorModal').html("Debe seleccionar un estudiante en el primer campo obligatoriamente, el resto son opcionales");
+			jQuery('#errorModal').css('display', 'block');
 			errorAsignandoEquipo = true;
 		}else if(idUsuario.indexOf(jQuery(this).val()) >= 0){
-			jQuery('#errorDiv').html("No puedes repetir estudiante");
-			jQuery('#errorDiv').css('display', 'block');
+			jQuery('#messageErrorModal').html("No puedes repetir estudiante");
+			jQuery('#errorModal').css('display', 'block');
 			errorAsignandoEquipo = true;
 		}else if(jQuery(this).val() != "-1"){
 			idUsuario.push(jQuery(this).val());
@@ -81,8 +87,8 @@ function updateTeam() {
 						data = jQuery.parseJSON(o);
 						
 						if (data.status != undefined && data.status == 'errors') {
-							jQuery('#errorDiv').html(data.message);
-							jQuery('#errorDiv').css('display', 'block');
+							jQuery('#messageErrorModal').html(data.message);
+							jQuery('#errorModal').css('display', 'block');
 						} else if (data.status != undefined
 								&& data.status == 'ok') {
 							jQuery('#successDiv').html(data.message);
@@ -92,89 +98,22 @@ function updateTeam() {
 								var idEquipo = data.id_equipo;
 								$("#id_equipo").val(idEquipo);
 							}
-//							setTimeout(function() {
-//								location.reload();
-//							}, 500);
-						} else {
-							jQuery('errorDiv').html(
-									"Ocurrió un error guardando el equipo");
-							jQuery('errorDiv').css('display', 'block');
-						}
-					} catch (err) {
-						jQuery('errorDiv').html(
-								"Ocurrió un error guardando el equipo");
-						jQuery('errorDiv').css('display', 'block');
-						return;
-					}
-				}
-			});
-}
-function saveUser() {
-	jQuery('#errorDiv').css('display', 'none');
-	var num = jQuery('#num').val();
-	var nomCuadra = jQuery('#nomCuadra').val();
-	var desCuadra = jQuery('#desCuadra').val();
-	var asigAso = jQuery('#asigAso').val();
-	var idCuadra = jQuery("#idCuadra").val();
-	if (num == "" || num == "0") {
-		jQuery('#errorDiv').html("Debe ingresar el número del cuadrante");
-		jQuery('#errorDiv').css('display', 'block');
-		return;
-	}
-	if (nomCuadra == "" || nomCuadra == "0") {
-		jQuery('#errorDiv').html("Debe nngresar el nombre del cuadrante");
-		jQuery('#errorDiv').css('display', 'block');
-		return;
-	}
-	if (desCuadra == "" || desCuadra == "0") {
-		jQuery('#errorDiv').html("Debe ingresar la descripción");
-		jQuery('#errorDiv').css('display', 'block');
-		return;
-	}
-	if (asigAso == "" || asigAso == "0") {
-		jQuery('#errorDiv').html("Debe seleccionar la asignatura asociada");
-		jQuery('#errorDiv').css('display', 'block');
-		return;
-	}
-
-	jQuery
-			.ajax({
-				url : urlFull + '/pages/quadrant/saveQuadrant.html',
-				data : {
-					num : num,
-					nomCuadra : nomCuadra,
-					desCuadra : desCuadra,
-					asigAso : asigAso,
-					idCuadra : idCuadra
-				},
-				success : function(o) {
-					if (o == "") {
-						return;
-					}
-					var data;
-					try {
-						data = jQuery.parseJSON(o);
-						
-						if (data.status != undefined && data.status == 'errors') {
-							jQuery('#errorDiv').html(data.message);
-							jQuery('#errorDiv').css('display', 'block');
-						} else if (data.status != undefined
-								&& data.status == 'ok') {
-							jQuery('#successDiv').html(data.message);
-							jQuery('#successDiv').css('display', 'block');
-							clear();
+							jQuery("html, body").animate({ scrollTop: 0 }, 600);
+							jQuery('#myModalEditar').modal('hide');
+							jQuery('.modal-backdrop').removeClass('in');
 							setTimeout(function() {
-								location.reload();
-							}, 500);
+									location.reload();
+							}, 2000);
 						} else {
-							jQuery('errorDiv').html(
+							jQuery('#messageErrorModal').html(
 									"Ocurrió un error guardando el equipo");
-							jQuery('errorDiv').css('display', 'block');
+							jQuery('#errorModal').css('display', 'block');
+							return;
 						}
 					} catch (err) {
-						jQuery('errorDiv').html(
+						jQuery('#messageErrorModal').html(
 								"Ocurrió un error guardando el equipo");
-						jQuery('errorDiv').css('display', 'block');
+						jQuery('#errorModal').css('display', 'block');
 						return;
 					}
 				}
@@ -293,9 +232,10 @@ function deleteTeam(id) {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
 					clear();
+					jQuery("html, body").animate({ scrollTop: 0 }, 600);
 					setTimeout(function() {
 						location.reload();
-					}, 500);
+					}, 2000);
 				} else {
 					jQuery('errorDiv').html(
 							"Ocurri&oacute; un error eliminando el equipo");

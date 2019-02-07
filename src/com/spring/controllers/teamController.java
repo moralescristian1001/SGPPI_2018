@@ -218,12 +218,11 @@ public class teamController {
 			List<Rubrica> rubricas = dao.getRubricaMapper().selectByExample(new RubricaExample());
 			
 			AsignaturaExample asig = new AsignaturaExample();
-			asig.createCriteria().andIdAsignaturaIn(rubricas.stream().map(Rubrica::getIdAsignatura).collect(Collectors.toList()));
+			List<Integer> listIdRubricas = rubricas.stream().map(Rubrica::getIdAsignatura).collect(Collectors.toList());
+			if(listIdRubricas != null && !listIdRubricas.isEmpty()) {
+				asig.createCriteria().andIdAsignaturaIn(listIdRubricas);
+			}
 			List<Asignatura> asignaturas = dao.getAsignaturaMapper().selectByExample(asig);
-
-			
-
-			
 
 			List<Usuarios> estudiantesSinEquipo = dao.getUsuariosMapper().selectByExample(estSinEquipoEx);
 			List<Usuarios> estudiantes = dao.getUsuariosMapper().selectByExample(estEx);
@@ -410,12 +409,13 @@ public class teamController {
 
 			object.put("status", "ok");
 			object.put("id_equipo", idEquipo);
-			object.put("message", "Se ha guardado la informaciï¿½n correctamente");
+			object.put("message", "Se ha guardado la información correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurriï¿½ un error guardando el equipo");
+			object.put("message", "Ocurrió un error guardando el equipo");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 
 	}
@@ -437,16 +437,23 @@ public class teamController {
 					object.put("message", "Se ha eliminado el equipo correctamente");
 				} else {
 					object.put("status", "errors");
-					object.put("message", "No se encontrï¿½ el equipo a eliminar");
+					object.put("message", "No se encontró el equipo a eliminar");
 				}
 			} else {
 				object.put("status", "errors");
-				object.put("message", "Ocurriï¿½ un error eliminando el equipo");
+				object.put("message", "Ocurrió un error eliminando el equipo");
 			}
 		} catch (Exception e) {
-			object.put("status", "errors");
-			object.put("message", "Ocurriï¿½ un error eliminando el equipo");
+			String cause = e.getLocalizedMessage();
+			if(cause.contains("foreign key constraint")) {
+				object.put("status", "errors");
+				object.put("message", "La asignatura está asociada con alguna entidad del sistema, no es posible eliminarla");
+			}else {
+				object.put("status", "errors");
+				object.put("message", "Ocurrió un error eliminando la asignatura");				
+			}
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 

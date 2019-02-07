@@ -1,3 +1,4 @@
+var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
 function login() {
 	jQuery('#errorDiv').css('display', 'none');
 
@@ -14,7 +15,7 @@ function login() {
 		return;
 	}
 	jQuery.ajax({
-		url : urlFull + '/SGPPI_2018/login.html',
+		url : urlFull + '/login.html',
 		data : {
 			email : email,
 			password : password,
