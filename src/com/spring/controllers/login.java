@@ -88,17 +88,15 @@ public class login {
 	}
 
 	@RequestMapping("pages/logout")
-	public ModelAndView logOut(HttpServletRequest request, HttpServletResponse response) {
+	public void logOut(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
 			request.getSession().setAttribute("user", null);
 			response.setCharacterEncoding("UTF-8");
-			
-			
+			response.getWriter().write("<script>location.href='../index.jsp';</script>");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new ModelAndView("index");
 	}
 
 	public void writeObject(JSONObject object, HttpServletResponse response) {

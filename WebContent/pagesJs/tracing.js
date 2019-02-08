@@ -74,6 +74,12 @@ function saveTracing() {
 	var asistencia = jQuery("#asistencia").val();
 	var asistencia = asistencia.join();
 	
+	if(observaciones == ""){
+		jQuery('#errorDiv').html("Por favor agregar las observaciones");
+		jQuery('#errorDiv').css('display', 'block');
+		return;
+	}
+	
 	jQuery.ajax({
 		url : urlFull + '/pages/tracing/saveTracing.html',
 		data : {

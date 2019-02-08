@@ -76,7 +76,9 @@
 									%>
 										<th>R<%=i%></th>
 									<%
-									}%><th>Nota parcial</th>
+									}%>
+									<th>Comentarios</th>
+									<th>Nota parcial</th>
 									<th>Nota final</th>
 								</tr>
 							</thead>
@@ -185,6 +187,7 @@
 										double notaParcial = puntaje < cantidadRubricas ? 0.0 : 3.0 + (((puntaje - Y ) * 2) / (X - Y));
 										sumaNotas += notaParcial; 
 										%>
+										<td><%=calificacion.getObservaciones()%></td>
 										<td><%=notaParcial%></td>
 										<%
 										if(firstEvaluador){
@@ -195,7 +198,7 @@
 										}
 									}else{
 										%>
-										<td colspan="11"><div align="center">ESTE EVALUADOR NO HIZO LA EVALUACIÓN DE ESTE EQUIPO</div></td>
+										<td colspan="12"><div align="center">ESTE EVALUADOR NO HIZO LA EVALUACIÓN DE ESTE EQUIPO</div></td>
 										
 										<%
 										if(firstEvaluador){
@@ -242,8 +245,6 @@
 		</div>
 	</div>		
 </div>
-<script src="../vendor/jquery/jquery.min.js"></script>
-<script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
 <script src="../vendor/metisMenu/metisMenu.min.js"></script>
 <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
 <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>

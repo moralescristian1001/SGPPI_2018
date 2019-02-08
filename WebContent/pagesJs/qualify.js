@@ -1,4 +1,6 @@
 var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
+totalRubricas = 0;
+totalRubricasSeleccionadas = 0;
 function saveQualify() {
 	jQuery('#errorDiv').css('display', 'none');
 	var id_equipo = jQuery('#id_equipo').val();
@@ -7,9 +9,17 @@ function saveQualify() {
 	var idSocializacion = jQuery('#id_socializacion').val();
 	var items = "";
 	var itemsArray = [];
+	
+	if(totalRubricas > totalRubricasSeleccionadas){
+		jQuery('#errorDiv').html("No ha seleccionado las notas de las rúbricas");
+		jQuery('#errorDiv').css('display', 'block');
+		return;
+	}
+	
 	rubricas.each(function() {
 		itemsArray.push($(this).attr("id").split("_")[2]);
 	});
+	
 	items = itemsArray.join(",");
 	
 	if (rubricas == "") {
@@ -69,8 +79,7 @@ function abrirEquipo(idEquipo, codigo, nombre, asignatura, idAsignatura, nota) {
 	// buscar la asignatura
 
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/qualify/getInfoAdicional.html',
+		url : urlFull + '/pages/qualify/getInfoAdicional.html',
 		data : {
 			id_asignatura : idAsignatura,
 			id_socializacion : $("#id_socializacion").val()
@@ -94,6 +103,7 @@ function abrirEquipo(idEquipo, codigo, nombre, asignatura, idAsignatura, nota) {
 									+ "<td>Aceptable(2)</td>"
 									+ "<td>Bueno(3)</td>" + "</tr></thead>"
 									+ data.info + "</table>");
+					totalRubricas = data.totalRubricas;
 					actualizarRubricas();
 				} else {
 					jQuery('errorDiv').html(
@@ -114,7 +124,14 @@ function actualizarRubricas() {
 	$(".items_rubrica").click(
 			function() {
 				if ($(this).hasClass("item-seleccionable")) {
+					if($(this).hasClass("item-activo")){
+						totalRubricasSeleccionadas--;
+					}else{
+						totalRubricasSeleccionadas++;
+					}
 					$(this).toggleClass("item-activo");
+					
+					
 					const
 					idRubrica = $(this).attr("id").split("_")[1];
 					$("td[id*='item_" + idRubrica + "']").not(

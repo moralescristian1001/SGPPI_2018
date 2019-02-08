@@ -144,8 +144,6 @@
 
 <!-- /#wrapper -->
 <script src="../pagesJs/quadrant.js"></script>
-<script src="../vendor/jquery/jquery.min.js"></script>
-<script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
 <script src="../vendor/metisMenu/metisMenu.min.js"></script>
 <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
 <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>

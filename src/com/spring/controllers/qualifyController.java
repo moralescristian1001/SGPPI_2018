@@ -142,7 +142,7 @@ public class qualifyController {
 					return new ModelAndView("pages/home");
 				}
 			} else {
-				model.addAttribute("errors", "No hay socializaciones activas ahora misma");
+				model.addAttribute("errors", "No hay socializaciones activas ahora misma o hay más de una");
 				return new ModelAndView("pages/home");
 			}
 
@@ -225,6 +225,7 @@ public class qualifyController {
 			rEx.createCriteria().andIdAsignaturaEqualTo(idAsignatura).andVersionEqualTo(version);
 			rEx.setOrderByClause("numero ASC");
 			List<Rubrica> rubricas = dao.getRubricaMapper().selectByExample(rEx);
+			
 			if (!rubricas.isEmpty()) {
 				int numRubrica = 1;
 				for (Rubrica rubrica : rubricas) {
@@ -257,6 +258,7 @@ public class qualifyController {
 							}
 							numRubrica++;
 						}else {
+							
 							info += "<tr><td>" + rubrica.getNumero() + " - " + rubrica.getDescripcion() + "</td>";
 							for (Rubricaxitem rxi : rxis) {
 								info += "<td class='items_rubrica item-seleccionable' id='item_" + rubrica.getIdRubrica() + "_"
@@ -268,6 +270,7 @@ public class qualifyController {
 					}
 				}
 				object.put("status", "ok");
+				object.put("totalRubricas", rubricas.size());
 				object.put("info", info);
 			} else {
 				object.put("status", "errors");

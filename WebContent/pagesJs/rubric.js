@@ -1,5 +1,5 @@
 var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
-var puerto = '8080';
+
 var numeroRubrica = 0;
 var opened = false;
 var rubricaFila = "<tr>" +
@@ -59,14 +59,17 @@ function agregarRubrica(){
 }
 
 function save() {
-	jQuery('#errorModal').css('display', 'none');
+	jQuery('#errorDiv').css('display', 'none');
 	if(jQuery("#id_asignatura").val() == "-1"){
-		jQuery('#messageErrorModal').html(
+		jQuery('errorDiv').html(
 		"Debe seleccionar la asignatura");
-		jQuery('#errorModal').css('display', 'block');
+		jQuery('errorDiv').css('display', 'block');
+	}
+	if($("#id_asignatura").val() == "-1"){
+		jQuery('#errorDiv').html("Por favor seleccionar una asignatura");
+		jQuery('#errorDiv').css('display', 'block');
 		return;
 	}
-
 	jQuery.ajax({
 		url : urlFull + '/pages/rubric/saveRubric.html',
 		data : $("#rubricas_form").serialize(),
@@ -79,29 +82,24 @@ function save() {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#messageErrorModal').html(data.message);
-					jQuery('#errorModal').css('display', 'block');
+					jQuery('#errorDiv').html(data.message);
+					jQuery('#errorDiv').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
 					clear();
-					jQuery("html, body").animate({ scrollTop: 0 }, 600);
-					jQuery('#myModal').modal('hide');
-					jQuery('.modal-backdrop').removeClass('in');
-					clear();
 					setTimeout(function() {
 						location.reload();
-					}, 2000);
+					}, 500);
 				} else {
-					jQuery('#messageErrorModal').html(
+					jQuery('errorDiv').html(
 							"Ocurrió un error guardando las rúbricas");
-					jQuery('#errorModal').css('display', 'block');
-					return;
+					jQuery('errorDiv').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('#messageErrorModal').html(
+				jQuery('errorDiv').html(
 						"Ocurrió un error guardando las rúbricas");
-				jQuery('#errorModal').css('display', 'block');
+				jQuery('errorDiv').css('display', 'block');
 				return;
 			}
 		}
@@ -128,8 +126,8 @@ function viewRubricForm(idAsignatura, version, nombreAsignatura) {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#messageErrorModal').html(data.message);
-					jQuery('#errorModal').css('display', 'block');
+					jQuery('#errorDiv').html(data.message);
+					jQuery('#errorDiv').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					$("#rubricas").html(
 							"<table class='table'>" + "<thead><tr>"
@@ -140,15 +138,14 @@ function viewRubricForm(idAsignatura, version, nombreAsignatura) {
 									+ "<td>Bueno(3)</td>" + "</tr></thead>"
 									+ data.info + "</table>");
 				} else {
-					jQuery('#messageErrorModal').html(
+					jQuery('errorDiv').html(
 							"Ocurrió un error guardando la calificación");
-					jQuery('#errorModal').css('display', 'block');
-					return;
+					jQuery('errorDiv').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('#messageErrorModal').html(
+				jQuery('errorDiv').html(
 						"Ocurrió un error guardando la calificación");
-				jQuery('#errorModal').css('display', 'block');
+				jQuery('errorDiv').css('display', 'block');
 				return;
 			}
 		}
@@ -176,8 +173,8 @@ function updateRubricForm(idAsignatura, version, nombreAsignatura) {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#messageErrorModal').html(data.message);
-					jQuery('#errorModal').css('display', 'block');
+					jQuery('#errorDiv').html(data.message);
+					jQuery('#errorDiv').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					$("#rubricas").html(
 							"<table class='table'>" + "<thead><tr>"
@@ -189,15 +186,14 @@ function updateRubricForm(idAsignatura, version, nombreAsignatura) {
 									+ "<td>Bueno(3)</td>" + "</tr></thead>"
 									+ data.info + "</table>");
 				} else {
-					jQuery('#messageErrorModal').html(
+					jQuery('errorDiv').html(
 							"Ocurrió un error guardando la calificación");
-					jQuery('#errorModal').css('display', 'block');
-					return;
+					jQuery('errorDiv').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('#messageErrorModal').html(
+				jQuery('errorDiv').html(
 						"Ocurrió un error guardando la calificación");
-				jQuery('#errorModal').css('display', 'block');
+				jQuery('errorDiv').css('display', 'block');
 				return;
 			}
 		}
