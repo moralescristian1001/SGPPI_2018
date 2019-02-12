@@ -174,19 +174,18 @@ function updateSocializacion() {
 								&& data.status == 'ok') {
 							jQuery('#successDiv').html(data.message);
 							jQuery('#successDiv').css('display', 'block');
-							clear();
 							// setTimeout(function() {
 							// location.reload();
 							// }, 500);
 						} else {
-							jQuery('errorDiv').html(
+							jQuery('#messageErrorModal').html(
 									"Ocurrió un error guardando el equipo");
-							jQuery('errorDiv').css('display', 'block');
+							jQuery('#errorModal').css('display', 'block');
 						}
 					} catch (err) {
-						jQuery('errorDiv').html(
+						jQuery('#messageErrorModal').html(
 								"Ocurrió un error guardando el equipo");
-						jQuery('errorDiv').css('display', 'block');
+						jQuery('#errorModal').css('display', 'block');
 						return;
 					}
 				}
@@ -371,7 +370,6 @@ function saveSocializacion() {
 								&& data.status == 'ok') {
 							jQuery('#successDiv').html(data.message);
 							jQuery('#successDiv').css('display', 'block');
-							clear();
 							jQuery("html, body").animate({ scrollTop: 0 }, 600);
 							jQuery('#myModal').modal('hide');
 							jQuery('.modal-backdrop').removeClass('in');
@@ -435,24 +433,22 @@ function deleteSocializacion(id) {
 								&& data.status == 'ok') {
 							jQuery('#successDiv').html(data.message);
 							jQuery('#successDiv').css('display', 'block');
-							clear();
 							jQuery("html, body").animate({ scrollTop: 0 }, 600);
 							jQuery('#myModal').modal('hide');
 							jQuery('.modal-backdrop').removeClass('in');
-							clear();
 							setTimeout(function() {
 								location.reload();
 							}, 2000);
 						} else {
-							jQuery('errorDiv')
+							jQuery('#errorDiv')
 									.html(
 											"Ocurrió un error eliminando la socialización");
-							jQuery('errorDiv').css('display', 'block');
+							jQuery('#errorDiv').css('display', 'block');
 						}
 					} catch (err) {
-						jQuery('errorDiv').html(
+						jQuery('#errorDiv').html(
 								"Ocurrió un error eliminando la socialización");
-						jQuery('errorDiv').css('display', 'block');
+						jQuery('#errorDiv').css('display', 'block');
 						return;
 					}
 				}

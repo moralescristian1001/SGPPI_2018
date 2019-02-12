@@ -50,7 +50,6 @@ function save() {
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
-					clear();
 					jQuery("html, body").animate({ scrollTop: 0 }, 600);
 					jQuery('#myModal').modal('hide');
 					jQuery('.modal-backdrop').removeClass('in');
@@ -115,27 +114,20 @@ function deleteSale(id) {
 					jQuery("html, body").animate({ scrollTop: 0 }, 600);
 					jQuery('#myModal').modal('hide');
 					jQuery('.modal-backdrop').removeClass('in');
-					clear();
 					setTimeout(function() {
 						location.reload();
 					}, 2000);
 				} else {
-					jQuery('errorDiv').html(
+					jQuery('#errorDiv').html(
 							"Ocurrió un error eliminando la asignatura");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#errorDiv').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
+				jQuery('#errorDiv').html(
 						"Ocurrió un error eliminando la asignatura");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#errorDiv').css('display', 'block');
 				return;
 			}
 		}
 	});
-}
-
-function clear() {
-	jQuery('#code').val("");
-	jQuery('#asig').val("");
-	jQuery('#semes').val("");
 }

@@ -80,6 +80,7 @@ public class quadrantController {
 			object.put("status", "errors");
 			object.put("message", "Ocurrió un error guardando el cuadrante");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 
@@ -110,6 +111,7 @@ public class quadrantController {
 			object.put("status", "errors");
 			object.put("message", "Ocurrió un error eliminando el cuadrante");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 

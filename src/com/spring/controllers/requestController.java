@@ -114,7 +114,7 @@ public class requestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurriï¿½ un error guardando la solicitud");
+			object.put("message", "Ocurrió un error guardando la solicitud");
 		}
 		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
@@ -147,6 +147,7 @@ public class requestController {
 			object.put("status", "errors");
 			object.put("message", "Ocurrió un error eliminando la asesoria");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 

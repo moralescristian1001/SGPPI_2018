@@ -80,9 +80,13 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Modal Header</h4>
+						<h4 class="modal-title">Cuadrantes</h4>
 					</div>
 					<div class="modal-body">
+						<div id="errorModal" class="alert alert-danger alert-dismissible" role="alert" style="display: none">
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						  <strong id="messageErrorModal"></strong>
+						</div>
 						<input type='hidden' id="idCuadra" name="idCuadra"
 							class="form-control" value="${id_cuadrante}" />
 						<div class="form-group">
@@ -129,7 +133,7 @@
 
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 						<input type="button" class="btn btn-default pull-left"
 							name="guardar" value="Guardar" onclick="saveCuadra();"></input>
 					</div>

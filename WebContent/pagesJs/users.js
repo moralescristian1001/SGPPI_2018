@@ -95,14 +95,14 @@ function updateUser() {
 							location.reload();
 					}, 2000);
 				} else {
-					jQuery('messageErrorModal').html(
+					jQuery('#messageErrorModal').html(
 							"Ocurrió un error modificando el usuario");
-					jQuery('errorModal').css('display', 'block');
+					jQuery('#errorModal').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('messageErrorModal').html(
+				jQuery('#messageErrorModal').html(
 						"Ocurrió un error modificando el usuario");
-				jQuery('errorModal').css('display', 'block');
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}
@@ -162,35 +162,28 @@ function updateUserForm(id_usuario, correo, nombre, apellidos, cedula,
 							data = jQuery.parseJSON(o);
 							if (data.status != undefined
 									&& data.status == 'errors') {
-								jQuery('#errorDiv').html(data.message);
-								jQuery('#errorDiv').css('display', 'block');
+								jQuery('#messageErrorModal').html(data.message);
+								jQuery('#errorModal').css('display', 'block');
 							} else if (data.status != undefined
 									&& data.status == 'ok') {
 								var info = data.info;
 								jQuery("#info_adicional_usuario").html(info);
 							} else {
-								jQuery('errorDiv')
+								jQuery('#messageErrorModal')
 										.html(
 												"Ocurri&oacute; un error eliminando el cuadrante");
-								jQuery('errorDiv').css('display', 'block');
+								jQuery('#errorModa').css('display', 'block');
 							}
 						} catch (err) {
-							jQuery('errorDiv').html(
+							jQuery('#messageErrorModal').html(
 									"Ocurrió un error eliminando el cuadrante");
-							jQuery('errorDiv').css('display', 'block');
+							jQuery('#errorModa').css('display', 'block');
 							return;
 						}
 					}
 				});
 	}
 
-}
-
-function clear() {
-	jQuery('#num').val("");
-	jQuery('#nomCuadra').val("");
-	jQuery('#desCuadra').val("");
-	jQuery('#asigAso').val("");
 }
 
 function formatDate(date) {

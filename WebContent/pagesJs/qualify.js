@@ -11,8 +11,8 @@ function saveQualify() {
 	var itemsArray = [];
 	
 	if(totalRubricas > totalRubricasSeleccionadas){
-		jQuery('#errorDiv').html("No ha seleccionado las notas de las rúbricas");
-		jQuery('#errorDiv').css('display', 'block');
+		jQuery('#messageErrorModal').html("No ha seleccionado las notas de las rúbricas");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
 	
@@ -23,8 +23,8 @@ function saveQualify() {
 	items = itemsArray.join(",");
 	
 	if (rubricas == "") {
-		jQuery('#errorDiv').html("No ha seleccionado las notas de las rúbricas");
-		jQuery('#errorDiv').css('display', 'block');
+		jQuery('#messageErrorModal').html("No ha seleccionado las notas de las rúbricas");
+		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
 	jQuery.ajax({
@@ -43,24 +43,26 @@ function saveQualify() {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
-					clear();
+					jQuery("html, body").animate({ scrollTop: 0 }, 600);
+					jQuery('#myModal').modal('hide');
+					jQuery('.modal-backdrop').removeClass('in');
 					setTimeout(function() {
-						location.reload();
-					}, 500);
+							location.reload();
+					}, 2000);
 				} else {
-					jQuery('errorDiv').html(
+					jQuery('#messageErrorModal').html(
 							"Ocurrió un error guardando la calificación");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#errorModal').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
+				jQuery('#messageErrorModal').html(
 						"Ocurrió un error guardando la calificación");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}
@@ -92,8 +94,8 @@ function abrirEquipo(idEquipo, codigo, nombre, asignatura, idAsignatura, nota) {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					$("#rubricas").html(
 							"<table class='table'>" + "<thead><tr>"
@@ -106,14 +108,14 @@ function abrirEquipo(idEquipo, codigo, nombre, asignatura, idAsignatura, nota) {
 					totalRubricas = data.totalRubricas;
 					actualizarRubricas();
 				} else {
-					jQuery('errorDiv').html(
+					jQuery('#messageErrorModal').html(
 							"Ocurrió un error guardando la calificación");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#errorModal').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
+				jQuery('#messageErrorModal').html(
 						"Ocurrió un error guardando la calificación");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}

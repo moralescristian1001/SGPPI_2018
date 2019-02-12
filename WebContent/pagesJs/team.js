@@ -93,7 +93,6 @@ function updateTeam() {
 								&& data.status == 'ok') {
 							jQuery('#successDiv').html(data.message);
 							jQuery('#successDiv').css('display', 'block');
-							clear();
 							if(insertar){
 								var idEquipo = data.id_equipo;
 								$("#id_equipo").val(idEquipo);
@@ -231,29 +230,21 @@ function deleteTeam(id) {
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
-					clear();
 					jQuery("html, body").animate({ scrollTop: 0 }, 600);
 					setTimeout(function() {
 						location.reload();
 					}, 2000);
 				} else {
-					jQuery('errorDiv').html(
-							"Ocurri&oacute; un error eliminando el equipo");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#errorDiv').html(
+							"Ocurrió un error eliminando el equipo");
+					jQuery('#errorDiv').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('errorDiv')
+				jQuery('#errorDiv')
 						.html("Ocurrió un error eliminando el equipo");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#errorDiv').css('display', 'block');
 				return;
 			}
 		}
 	});
-}
-
-function clear() {
-	jQuery('#num').val("");
-	jQuery('#nomCuadra').val("");
-	jQuery('#desCuadra').val("");
-	jQuery('#asigAso').val("");
 }

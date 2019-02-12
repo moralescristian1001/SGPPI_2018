@@ -7,23 +7,23 @@ function saveCuadra(){
 	var asigAso = jQuery('#asigAso').val();
 	var idCuadra = jQuery("#idCuadra").val();
 	if(num == "" || num == "0"){
-		jQuery('#errorDiv').html("Debe ingresar el número del cuadrante");
-		jQuery('#errorDiv').css('display', 'block');
+		jQuery('#messageErrorModal').html("Debe ingresar el número del cuadrante");
+		jQuery('#errorModal').css('display', 'block');
 	    return;
 	}
 	if(nomCuadra == "" || nomCuadra == "0"){
-		jQuery('#errorDiv').html("Debe nngresar el nombre del cuadrante");
-		jQuery('#errorDiv').css('display', 'block');
+		jQuery('#messageErrorModal').html("Debe ingresar el nombre del cuadrante");
+		jQuery('#errorModal').css('display', 'block');
 	    return;
 	}
 	if(desCuadra == "" || desCuadra == "0"){
-		jQuery('#errorDiv').html("Debe ingresar la descripción");
-		jQuery('#errorDiv').css('display', 'block');
+		jQuery('#messageErrorModal').html("Debe ingresar la descripción");
+		jQuery('#errorModal').css('display', 'block');
 	    return;
 	}
 	if(asigAso == "" || asigAso == "0"){
-		jQuery('#errorDiv').html("Debe seleccionar la asignatura asociada");
-		jQuery('#errorDiv').css('display', 'block');
+		jQuery('#messageErrorModal').html("Debe seleccionar la asignatura asociada");
+		jQuery('#errorModal').css('display', 'block');
 	    return;
 	}
 	
@@ -38,20 +38,25 @@ function saveCuadra(){
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				}else if(data.status != undefined && data.status == 'ok'){
 					jQuery('#successDiv').html(data.message);
 		        	jQuery('#successDiv').css('display', 'block');
-		        	clear();
-		        	setTimeout(function(){ location.reload(); }, 500);
+		        	jQuery("html, body").animate({ scrollTop: 0 }, 600);
+					jQuery('#myModal').modal('hide');
+					jQuery('.modal-backdrop').removeClass('in');
+					setTimeout(function() {
+							location.reload();
+					}, 2000);
 				}else{
-					jQuery('errorDiv').html("Ocurrió un error guardando el cuadrante");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html("Ocurrió un error guardando el cuadrante");
+					jQuery('#errorModal').css('display', 'block');
+					return;
 				}
 			} catch (err) {
-				jQuery('errorDiv').html("Ocurrió un error guardando el cuadrante");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#messageErrorModal').html("Ocurrió un error guardando el cuadrante");
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}
@@ -77,8 +82,8 @@ function deleteCuadra(id) {
 	var idCuadra = id;
 	
 	if(idCuadra == "" || idCuadra == "" || idCuadra == undefined){
-		jQuery('#errorDiv').html("No se encontró el cuadrante");
-		jQuery('#errorDiv').css('display', 'block');
+		jQuery('#messageErrorModal').html("No se encontró el cuadrante");
+		jQuery('#errorModal').css('display', 'block');
 	    return;
 	}
 	jQuery.ajax({
@@ -92,29 +97,22 @@ function deleteCuadra(id) {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				}else if(data.status != undefined && data.status == 'ok'){
 					jQuery('#successDiv').html(data.message);
 		        	jQuery('#successDiv').css('display', 'block');
-		        	clear();
-		        	setTimeout(function(){ location.reload(); }, 500);
+		        	jQuery("html, body").animate({ scrollTop: 0 }, 600);
+		        	setTimeout(function(){ location.reload(); }, 1000);
 				}else{
-					jQuery('errorDiv').html("Ocurri&oacute; un error eliminando el cuadrante");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html("Ocurri&oacute; un error eliminando el cuadrante");
+					jQuery('#errorModal').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('errorDiv').html("Ocurrió un error eliminando el cuadrante");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#messageErrorModal').html("Ocurrió un error eliminando el cuadrante");
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}
 	});
-}
-
-function clear(){
-	jQuery('#num').val("");
-	jQuery('#nomCuadra').val("");
-	jQuery('#desCuadra').val("");
-	jQuery('#asigAso').val("");
 }

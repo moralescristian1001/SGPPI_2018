@@ -57,9 +57,9 @@ public class changePassword {
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "OcurriÃ³ un error guardando la clave");
+			object.put("message", "Ocurrió un error guardando la clave");
 		}
-		
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 
 	}

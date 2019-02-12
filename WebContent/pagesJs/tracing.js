@@ -100,7 +100,6 @@ function saveTracing() {
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
-					clear();
 					setTimeout(function() {
 						location.reload();
 					}, 500);
@@ -117,11 +116,4 @@ function saveTracing() {
 			}
 		}
 	});
-}
-
-function clear() {
-	jQuery('#id_equipo').val("-1");
-	jQuery('#id_asesoria').val("");
-	jQuery('#dia_semana').val("");
-	jQuery('#hora_semana').val("");
 }

@@ -192,12 +192,13 @@ public class qualifyController {
 			}
 			
 			object.put("status", "ok");
-			object.put("message", "Se ha creado la calificaci�n correctamente");
+			object.put("message", "Se ha creado la calificación correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurri� un error guardando la calificaci�n");
+			object.put("message", "Ocurrió un error guardando la calificaci�n");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 
@@ -236,7 +237,7 @@ public class qualifyController {
 
 					if (rxis.isEmpty() || rxis.size() != 4) {
 						object.put("status", "errors");
-						object.put("info", "No hay rubricas relacionadas con el m�dulo sol del equipo");
+						object.put("info", "No hay rubricas relacionadas con el módulo sol del equipo");
 						break;
 					} else {
 						if(editable) {

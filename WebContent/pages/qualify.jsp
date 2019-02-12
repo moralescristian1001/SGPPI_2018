@@ -105,6 +105,10 @@
 						<h4 class="modal-title">Calificar equipo</h4>
 					</div>
 					<div class="modal-body">
+						<div id="errorModal" class="alert alert-danger alert-dismissible" role="alert" style="display: none">
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						  <strong id="messageErrorModal"></strong>
+						</div>
 						<input type='hidden' id="id_equipo" name="id_equipo"
 							class="form-control" />
 

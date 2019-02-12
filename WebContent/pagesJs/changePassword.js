@@ -63,9 +63,9 @@ function changePassword() {
 					}
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
+				jQuery('#errorDiv').html(
 						"Ocurrió un error validando los datos");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#errorDiv').css('display', 'block');
 				jQuery('#successDiv').css('display', 'none');
 				return;
 			}

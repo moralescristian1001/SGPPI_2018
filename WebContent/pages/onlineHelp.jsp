@@ -14,17 +14,19 @@
 	<div id="page-wrapper">
 		<div class="row">
 			<div class="col-lg-12">
-				<h1 class="page-header">Ayuda</h1>
+				<h1 class="page-header text-center">Ayuda</h1>
 			</div>
 			<!-- /.col-lg-12 -->
 		</div>
 		<div class="row">
-			<div class="col-lg-6">
-				<p style="font-size:14px; color: #adadad">Manual de Usuario en PDF <a href="./downloads/manual_usuario_sgppi.pdf">Descargal&oacute; aqu&iacute;</a></p>
+		<div class="col-3"></div>
+			<div class="panel panel-default col-6">
+			  <div class="panel-body text-center">
+				<p style="font-size:20px;">Manual de Usuario en PDF <a href="../downloads/MANUAL_DE_USUARIO.pdf" target="_blank">Descargal&oacute; aqu&iacute;</a></p>
+				<p style="font-size:20px;">Comunicarse con el correo <a href="mailto:ppityt@elpoli.edu.co?Subject=Ayuda%20SGPPI">ppityt@elpoli.edu.co</a> para recibir asesoria</p>
+			  </div>
 			</div>
-			<div class="col-lg-6">
-				<p style="font-size:14px; color: #adadad">Comunicarse con el correo <a href="mailto:alejandro_cardona23161@elpoli.edu.co?Subject=Ayuda%20SGPPI">alejandro_cardona23161@elpoli.edu.co</a> para recibir asesoria</p>
-			</div>			
+		<div class="col-3"></div>			
 		</div>
 	</div>
 </div>	

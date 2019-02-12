@@ -74,16 +74,15 @@ public class login {
 				object.put("status", "ok");
 			} else {
 				object.put("status", "errors");
-				object.put("message", "Correo o contraseÃ±a no validas");
+				object.put("message", "Correo o contraseña no validas");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurriï¿½ un error validando los datos");
+			object.put("message", "Ocurrió un error validando los datos");
 		}
 		response.setCharacterEncoding("UTF-8");
-
 		writeObject(object, response);
 	}
 

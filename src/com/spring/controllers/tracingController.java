@@ -228,7 +228,7 @@ public class tracingController {
 		}
 		object.put("seguimientos", jsonSeguimientos);
 		object.put("estudiantes", estudiantes);
-
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 
@@ -269,8 +269,9 @@ public class tracingController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurriï¿½ un error guardando el seguimiento");
+			object.put("message", "Ocurrió un error guardando el seguimiento");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 

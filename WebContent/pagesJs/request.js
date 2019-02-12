@@ -117,10 +117,3 @@ function deleteSolicitud(id) {
 	}
 	
 }
-
-function clear(){
-	jQuery('#id_equipo').val("-1");
-	jQuery('#id_asesoria').val("");
-	jQuery('#dia_semana').val("");
-	jQuery('#hora_semana').val("");
-}

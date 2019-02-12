@@ -164,12 +164,13 @@ public class qualifyGradeReportController {
 			
 			
 			object.put("status", "ok");
-			object.put("message", "Se ha creado la calificaciï¿½n correctamente");
+			object.put("message", "Se ha creado la calificación correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurriï¿½ un error guardando la calificaciï¿½n");
+			object.put("message", "Ocurrió un error guardando la calificación");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 

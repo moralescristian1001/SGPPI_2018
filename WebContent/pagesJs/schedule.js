@@ -54,7 +54,6 @@ function saveAsesoria() {
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
-					clear();
 					jQuery("html, body").animate({ scrollTop: 0 }, 600);
 					jQuery('#myModal').modal('hide');
 					jQuery('.modal-backdrop').removeClass('in');
@@ -107,7 +106,6 @@ function deleteAsesoria(id) {
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
-					clear();
 					jQuery("html, body").animate({ scrollTop: 0 }, 600);
 					jQuery('#myModal').modal('hide');
 					jQuery('.modal-backdrop').removeClass('in');
@@ -125,11 +123,4 @@ function deleteAsesoria(id) {
 			}
 		}
 	});
-}
-
-function clear() {
-	jQuery('#id_equipo').val("-1");
-	jQuery('#id_asesoria').val("");
-	jQuery('#dia_semana').val("");
-	jQuery('#hora_semana').val("");
 }
