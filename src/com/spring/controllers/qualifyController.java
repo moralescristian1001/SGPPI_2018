@@ -138,11 +138,14 @@ public class qualifyController {
 					model.addAttribute("salon", salon);
 					return new ModelAndView("pages/qualify");
 				} else {
-					model.addAttribute("errors", "No se te ha asignado un salon en la socializaciï¿½n");
+					model.addAttribute("errors", "No se te ha asignado un salón en la socialización");
 					return new ModelAndView("pages/home");
 				}
-			} else {
-				model.addAttribute("errors", "No hay socializaciones activas ahora misma o hay mÃ¡s de una");
+			} else if(eventoActual.size() == 0) {
+				model.addAttribute("errors", "No hay socializaciones activas");
+				return new ModelAndView("pages/home");
+			}else {
+				model.addAttribute("errors", "Hay más de una socialización activa");
 				return new ModelAndView("pages/home");
 			}
 
@@ -192,11 +195,11 @@ public class qualifyController {
 			}
 			
 			object.put("status", "ok");
-			object.put("message", "Se ha creado la calificaciÃ³n correctamente");
+			object.put("message", "Se ha creado la calificación correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "OcurriÃ³ un error guardando la calificaciï¿½n");
+			object.put("message", "Ocurrió un error guardando la calificaciónn");
 		}
 		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
@@ -237,7 +240,7 @@ public class qualifyController {
 
 					if (rxis.isEmpty() || rxis.size() != 4) {
 						object.put("status", "errors");
-						object.put("info", "No hay rubricas relacionadas con el mÃ³dulo sol del equipo");
+						object.put("info", "No hay rubricas relacionadas con el módulo sol del equipo");
 						break;
 					} else {
 						if(editable) {
@@ -275,13 +278,13 @@ public class qualifyController {
 				object.put("info", info);
 			} else {
 				object.put("status", "errors");
-				object.put("info", "No hay rubricas relacionadas con el mÃ³dulo sol del equipo");
+				object.put("info", "No hay rúbricas relacionadas con el módulo sol del equipo");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "OcurriÃ³ un error guardando el cuadrante");
+			object.put("message", "Ocurrió un error guardando la calificación");
 		}
 
 		response.setCharacterEncoding("UTF-8");

@@ -274,11 +274,11 @@ public class socialController {
 			}
 
 			object.put("status", "ok");
-			object.put("message", "Se ha creado la asesoria correctamente");
+			object.put("message", "Se ha creado el evento correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando el asesoria");
+			object.put("message", "Ocurrió un error guardando el evento");
 		}
 		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
@@ -334,16 +334,16 @@ public class socialController {
 					}
 				} else {
 					object.put("status", "errors");
-					object.put("message", "No se encontró la socialización a eliminar");
+					object.put("message", "No se encontró el evento a eliminar");
 				}
 			} else {
 				object.put("status", "errors");
-				object.put("message", "Ocurrió un error eliminando la socialización");
+				object.put("message", "Ocurrió un error eliminando el evento");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error eliminando la socialización");
+			object.put("message", "Ocurrió un error eliminando el evento");
 		}
 		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);

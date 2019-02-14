@@ -172,11 +172,11 @@ public class rubricController {
 			}
 
 			object.put("status", "ok");
-			object.put("message", "Se ha creado el cuadrante correctamente");
+			object.put("message", "Se ha creado la rúbrica correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", e.getMessage());
+			object.put("message", "Ocurrió un error guardando los datos");
 		}
 		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);

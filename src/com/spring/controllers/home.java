@@ -38,19 +38,7 @@ public class home {
 				}
 				return null;
 			}else {
-				UsuariosExample usuariosEx = new UsuariosExample();
-				usuariosEx.createCriteria().andEstadoEqualTo(true);
-				List<Usuarios> usuariosActivos = dao.getUsuariosMapper().selectByExample(usuariosEx);
-				
-				Semestre sem = dao.getSemestreMapper().selectSemestreActual();
-				EquipoExample eEx = new EquipoExample();
-				eEx.createCriteria().andIdSemestreEqualTo(sem.getIdSemestre());
-				List<Equipo> equiposActivos = dao.getEquipoMapper().selectByExample(eEx);
-				
 				model.addAttribute("user", (Usuarios)request.getSession().getAttribute("user"));
-				model.addAttribute("usuarios_creados", String.valueOf(usuariosActivos.size()));
-				model.addAttribute("semestreActual", sem.getAno() + " - " + sem.getNumero());
-				model.addAttribute("equipos_creados", String.valueOf(equiposActivos.size()));
 				return new ModelAndView("pages/home");
 			}
 		}else{

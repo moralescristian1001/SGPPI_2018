@@ -1,3 +1,9 @@
+<%@page import="com.mybatis.models.Equipo"%>
+<%@page import="com.mybatis.models.Semestre"%>
+<%@page import="com.mybatis.models.EquipoExample"%>
+<%@page import="com.springMybatis.persistence.daoHelper"%>
+<%@page import="java.util.List"%>
+<%@page import="com.mybatis.models.UsuariosExample"%>
 <%@page import="com.mybatis.models.Usuarios"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page language="java" pageEncoding="UTF-8"%>
@@ -13,6 +19,19 @@
 		<div class="row">
 			<div class="alert alert-danger alert-dismissible" role="alert" style="display:
 			<%
+			daoHelper dao = new daoHelper();
+			UsuariosExample usuariosEx = new UsuariosExample();
+			usuariosEx.createCriteria().andEstadoEqualTo(true);
+			List<Usuarios> usuariosActivos = dao.getUsuariosMapper().selectByExample(usuariosEx);
+			
+			Semestre sem = dao.getSemestreMapper().selectSemestreActual();
+			EquipoExample eEx = new EquipoExample();
+			eEx.createCriteria().andIdSemestreEqualTo(sem.getIdSemestre());
+			List<Equipo> equiposActivos = dao.getEquipoMapper().selectByExample(eEx);
+			
+			request.setAttribute("usuarios_creados", String.valueOf(usuariosActivos.size()));
+			request.setAttribute("semestreActual", sem.getAno() + " - " + sem.getNumero());
+			request.setAttribute("equipos_creados", String.valueOf(equiposActivos.size()));
 			String errors = "";
 			if(request.getAttribute("errors") != null){
 				errors = String.valueOf(request.getAttribute("errors"));

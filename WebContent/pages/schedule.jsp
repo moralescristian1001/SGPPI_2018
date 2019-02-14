@@ -48,12 +48,12 @@
 								List<SolicitudAsesoria> listRequests = (List<SolicitudAsesoria>)request.getAttribute("listRequests");
 								Usuarios usu = (Usuarios) request.getAttribute("user");
 								Integer minimoAsesorias = usu.getMinimoAsesorias();
-								
+								if (minimoAsesorias == null ) minimoAsesorias = 0;
 								%>
-							
 								<h4>Tienes un minimo de asesorias de <%=minimoAsesorias%></h4>
 								<%
 								String mensajeAsesoriasPendiente = "";
+								
 								if(!asesorias.isEmpty() && asesorias.size() == minimoAsesorias){
 									mensajeAsesoriasPendiente = "Ya has asignado todas las asesorias";
 								}else{
