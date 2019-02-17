@@ -139,6 +139,10 @@
 						<h4 class="modal-title">Seguimiento de Asesorias</h4>
 					</div>
 					<div class="modal-body">
+						<div id="errorModal" class="alert alert-danger alert-dismissible" role="alert" style="display: none">
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						  <strong id="messageErrorModal"></strong>
+						</div>
 						<input type='hidden' id="id_seguimiento" name="id_seguimiento"
 							class="form-control" /> <input type='hidden' id="id_asesoria"
 							name="id_asesoria" class="form-control" />
@@ -157,14 +161,17 @@
 										<legend>Seguimiento Hoy</legend>
 										<div class="row">
 											<div class="col-sm-12 form-group">
-												<label>Observaciones:</label>
+												<label>*Observaciones:</label>
 												<textarea id="observaciones" name="observaciones"
 													class="form-control"></textarea>
 											</div>
 										</div>
 										<div class="row">
 											<div class="col-sm-12 form-group">
-												<label>Asistencia Estudiantes:</label> <select
+												<label><li style="list-style: none; display: inline-flex;">
+												<span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" 
+												title="Seleccione los estudiantes que asistieron"></span>
+												</li> Estudiantes:</label> <select
 													id="asistencia" name="asistencia" class="form-control"
 													multiple>
 												</select>
@@ -221,5 +228,10 @@
 <%
 	}
 %>
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip(); 
+});
+</script>
 
 <jsp:include page="footer.jsp" />

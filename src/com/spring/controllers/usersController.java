@@ -357,15 +357,23 @@ public class usersController {
 			usuario.setEstado(estado == 1 ? true : false);
 			usuario.setMinimoAsesorias(minimoAsesorias);
 			
-			if (idUser != null && !idUser.isEmpty() && !idUser.equals("0") && !idUser.equals("undefined")
-					&& !idUser.equals("null")) {
-				usuario.setIdUsuario(Integer.parseInt(idUser));
-				dao.getUsuariosMapper().updateByPrimaryKey(usuario);
-			} else {
-				dao.getUsuariosMapper().insert(usuario);
+			UsuariosExample userExample = new UsuariosExample();
+			userExample.createCriteria().andCedulaEqualTo(usuario.getCedula());
+			List<Usuarios> userExistWithCedula = dao.getUsuariosMapper().selectByExample(userExample);
+			if(userExistWithCedula == null || userExistWithCedula.isEmpty()) {
+				if (idUser != null && !idUser.isEmpty() && !idUser.equals("0") && !idUser.equals("undefined")
+						&& !idUser.equals("null")) {
+					usuario.setIdUsuario(Integer.parseInt(idUser));
+					dao.getUsuariosMapper().updateByPrimaryKey(usuario);
+				} else {
+					dao.getUsuariosMapper().insert(usuario);
+				}
+				object.put("status", "ok");
+				object.put("message", "Se ha guardado la información correctamente");
+			}else {
+				object.put("status", "errors");
+				object.put("message", "Ya existe un usuario con la cédula ingresada");
 			}
-			object.put("status", "ok");
-			object.put("message", "Se ha guardado la información correctamente");
 		} catch (Exception e) {
 			String cause = e.getLocalizedMessage();
 			if(cause.contains("Duplicate entry")) {
