@@ -33,7 +33,7 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="panel panel-default">
-						<div class="panel-heading">Equipos del Salon
+						<div class="panel-heading">Equipos del Salón
 							${salon.getDescripcion()}</div>
 						<!-- /.panel-heading -->
 						<div class="panel-body">
@@ -53,7 +53,7 @@
 									<%
 										List<Equipo> equipos = (List<Equipo>) request.getAttribute("equipos");
 										List<Asignatura> asignaturas = (List<Asignatura>) request.getAttribute("asignaturas");
-										Map<Integer, Integer> notas = (Map<Integer, Integer>)request.getAttribute("notas");
+										Map<Integer, Double> notas = (Map<Integer, Double>)request.getAttribute("notas");
 										for (Equipo equipo : equipos) {
 											String asignatura = "";
 											String nota = "";
@@ -119,7 +119,7 @@
 							<label for="empleado">*Módulo Sol:</label><span id="asignatura"></span>
 						</div>
 						<fieldset>
-							<legend>Rubricas</legend>
+							<legend>Rúbricas</legend>
 							<div id="rubricas"></div>
 						</fieldset>
 						<div class="form-group">

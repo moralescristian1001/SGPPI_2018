@@ -43,7 +43,7 @@
 						<div class="panel-body">
 							<div class="row">
 								<%
-									String[] colores = new String[] { "fff3aa", "ffd0a8", "ffb1b1", "d9d1ff", "b7efff" };
+									String[] colores = new String[] { "fff3aa", "ffd0a8", "ffb1b1", "d9d1ff", "b7efff", "fff3aa", "ffd0a8", "ffb1b1", "d9d1ff", "b7efff", "fff3aa", "ffd0a8", "ffb1b1", "d9d1ff", "b7efff", "fff3aa", "ffd0a8", "ffb1b1", "d9d1ff", "b7efff" };
 
 									List<Usuarios> asesores = (List<Usuarios>) request.getAttribute("listAsesores");
 									Map<Integer, String> coloresXAsesor = new HashMap();
@@ -87,14 +87,16 @@
 										List<Asesorias> asesorias = (List<Asesorias>) request.getAttribute("listAsesorias");
 										List<SolicitudAsesoria> solicitudes = (List<SolicitudAsesoria>) request.getAttribute("listSolicitudes");
 										Equipo equipoEstudiante = (Equipo) request.getAttribute("equipoEstudiante");
-										for (int hora = 6; hora < 22; hora++) {
+										for (double hora = 6; hora < 22; hora += 0.5) {
 									%>
 									<tr>
-										<td><%=hora == 12 ? hora + "PM" : ((hora % 12) + "" + (hora > 12 ? "PM" : "AM"))%></td>
+										<td><%=hora == 12 || hora == 12.5 ? ((int) hora) + ":" + (hora % 1 == 0 ? "00" : "30") + "PM"
+						: (((int) hora % 12) + ":" + (hora % 1 == 0 ? "00" : "30") + (hora > 12 ? "PM" : "AM"))%></td>
 										<%
 											for (int dia = 1; dia < 7; dia++) {
 										%>
-										<td class="schedule-td" id="td-<%=dia + "-" + hora%>">
+										<td class="schedule-td"
+											id="td-<%=dia + "-" + ((int) hora) + ":" + (hora % 1 == 0 ? 0 : 30)%>">
 											<%
 												boolean encontrado = false;
 														List<Integer> asesoresEncontrados = new ArrayList();
@@ -105,33 +107,37 @@
 																	if (a.getIdEquipo() == equipoEstudiante.getIdEquipo()) {
 																		String nombreAsesor = "";
 																		for (Usuarios asesor : asesores) {
-																			nombreAsesor = asesor.getNombre() + " " + asesor.getApellidos();
-																		}
-											%><a
-											href="javascript:verMiAsesoria(<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>', '<%=nombreAsesor%>')"><i
-												class='fa fa-calendar-check-o fa-fw'></i></a>
-											<%
-												encontrado = true;
-																		asesoresEncontrados.add(a.getIdAsesor());
-																	} else {
-											%> No esta disponible <%
-												}
-
-																} else { // no esta ocupada por otro equipo
-
-																	asesoresEncontrados.add(a.getIdAsesor());
-																	if (!encontrado) {
-																		boolean yaSolicito = false;
-																		for (SolicitudAsesoria s : solicitudes) {
-																			if (s.getHoraSemana() == hora && s.getDiaSemana() == dia) {
-																				yaSolicito = true;
+																			if(asesor.getIdUsuario() == a.getIdAsesor()){
+																				nombreAsesor = asesor.getNombre() + " " + asesor.getApellidos();
 																				break;
 																			}
 																		}
-																		if (!yaSolicito) {
-											%> <a
+											%><a
+											href="javascript:verMiAsesoria(<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>', '<%=nombreAsesor%>')"><i
+												class='fa fa-calendar-check-o fa-fw' data-toggle="tooltip" 
+										title="Tienes una asesoría programada, click aquí para más información"></i></a> <%
+ 	encontrado = true;
+ 							asesoresEncontrados.add(a.getIdAsesor());
+ 						} else {
+ %> No esta disponible <%
+ 	}
+
+ 					} else { // no esta ocupada por otro equipo
+
+ 						asesoresEncontrados.add(a.getIdAsesor());
+ 						if (!encontrado) {
+ 							boolean yaSolicito = false;
+ 							for (SolicitudAsesoria s : solicitudes) {
+ 								if (s.getHoraSemana() == hora && s.getDiaSemana() == dia) {
+ 									yaSolicito = true;
+ 									break;
+ 								}
+ 							}
+ 							if (!yaSolicito) {
+ %> <a
 											href="javascript:solicitarCitaForm(<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>')"><i
-												class='fa fa-calendar-plus-o fa-fw'></i></a> <%
+												class='fa fa-calendar-plus-o fa-fw' data-toggle="tooltip" 
+										title="Puedes solicitar esta asesoria."></i></a> <%
  	}
 
  							encontrado = true;
@@ -155,14 +161,17 @@
  				if (asesoresEncontrados.size() == 1) {
  					coloresAgregados += ", #" + coloresXAsesor.get(asesoresEncontrados.get(0));
  				}
- 				scriptColores += "$('#td-" + dia + "-" + hora + "').css({background: 'linear-gradient(to right"
+ 				String horaStr = hora == 12 || hora == 12.5 ? ((int) hora) + "\\:" + (hora % 1 == 0 ? "00" : "30") + "PM"
+						: (((int) hora % 12) + "\\:" + (hora % 1 == 0 ? "00" : "30"));
+ 				%><script>console.log('<%=dia +"-"+ horaStr + " " + coloresAgregados%>')</script><%
+ 				scriptColores += "$('#td-" + dia + "-" + horaStr + "').css({background: 'linear-gradient(to right"
  						+ coloresAgregados + ")'});";
  			}
  			for (SolicitudAsesoria s : solicitudes) {
  				if (s.getHoraSemana() == hora && s.getDiaSemana() == dia) {
- %> <a
-											href="javascript:deleteSolicitud(<%=s.getIdSolicitud()%>)"><i
-												class='fa fa-calendar-times-o fa-fw'></i></a> <%
+ %> <a href="javascript:deleteSolicitud(<%=s.getIdSolicitud()%>)"><i
+												class='fa fa-calendar-times-o fa-fw' data-toggle="tooltip" 
+										title="La solicitud de la asesoría aun esta pendiente por aprobación, click aquí si desea eliminar la solicitud."></i></a> <%
  	}
  			}
  %>
@@ -196,6 +205,10 @@
 						<h4 class="modal-title">Solicitud de Asesorias</h4>
 					</div>
 					<div class="modal-body">
+						<div id="errorModal" class="alert alert-danger alert-dismissible" role="alert" style="display: none">
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						  <strong id="messageErrorModal"></strong>
+						</div>
 						<input type='hidden' id="id_solicitud" name="id_solicitud"
 							class="form-control" /> <input type='hidden' id="dia_semana"
 							name="dia_semana" class="form-control" /> <input type='hidden'
@@ -234,5 +247,9 @@
 <%
 	}
 %>
-
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip(); 
+});
+</script>
 <jsp:include page="footer.jsp" />

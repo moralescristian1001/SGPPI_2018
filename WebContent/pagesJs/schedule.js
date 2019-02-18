@@ -1,8 +1,7 @@
-var puerto = '8080';
-function asignarCitaForm(dia, hora, diaString) {
+var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
 
-	jQuery('#dia-hora-asesoria').html(
-			diaString + " de " + hora + ":00 a " + (hora + 1) + ":00");
+function asignarCitaForm(dia, hora, diaString) {
+	jQuery('#dia-hora-asesoria').html(diaString + " de " + (Math.floor(hora)) + ":" + (hora % 1 == 0 ? "00" : "30") + " a " + (Math.floor(hora + 0.5)) + ":" + ((hora + 0.5) % 1 == 0 ? "00" : "30"));
 	jQuery("#dia_semana").val(dia);
 	jQuery("#hora_semana").val(hora);
 	jQuery("#myModal").modal("show");
@@ -34,8 +33,7 @@ function saveAsesoria() {
 	}
 
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/schedule/saveSchedule.html',
+		url : urlFull + '/pages/schedule/saveSchedule.html',
 		data : {
 			id_asesoria : idAsesoria,
 			id_equipo : idEquipo,
@@ -51,24 +49,25 @@ function saveAsesoria() {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
 					clear();
+					jQuery("html, body").animate({ scrollTop: 0 }, 600);
+					jQuery('#myModal').modal('hide');
+					jQuery('.modal-backdrop').removeClass('in');
 					setTimeout(function() {
-						location.reload();
-					}, 500);
+							location.reload();
+					}, 2000);
 				} else {
-					jQuery('errorDiv').html(
-							"Ocurrió un error guardando la asesoria");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html("Ocurrió un error guardando la asesoria");
+					jQuery('#errorModal').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
-						"Ocurrió un error guardando la asesoria");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#messageErrorModal').html("Ocurrió un error guardando la asesoria");
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}
@@ -91,8 +90,7 @@ function deleteAsesoria(id) {
 		return;
 	}
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/pages/schedule/deleteSchedule.html',
+		url : urlFull + '/pages/schedule/deleteSchedule.html',
 		data : {
 			id_asesoria : idAsesoria
 		},
@@ -104,24 +102,25 @@ function deleteAsesoria(id) {
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
 					jQuery('#successDiv').html(data.message);
 					jQuery('#successDiv').css('display', 'block');
 					clear();
+					jQuery("html, body").animate({ scrollTop: 0 }, 600);
+					jQuery('#myModal').modal('hide');
+					jQuery('.modal-backdrop').removeClass('in');
 					setTimeout(function() {
-						location.reload();
-					}, 500);
+							location.reload();
+					}, 2000);
 				} else {
-					jQuery('errorDiv').html(
-							"Ocurri&oacute; un error eliminando la asesoria");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html("Ocurrió un error eliminando la asesoria");
+					jQuery('#errorModal').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('errorDiv').html(
-						"Ocurrió un error eliminando la asesoria");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#messageErrorModal').html("Ocurrió un error eliminando la asesoria");
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}

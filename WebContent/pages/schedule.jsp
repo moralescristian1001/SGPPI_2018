@@ -1,3 +1,4 @@
+<%@page import="com.mybatis.models.Usuarios"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.text.DateFormat"%>
 <%@page import="com.mybatis.models.SolicitudAsesoria"%>
@@ -39,6 +40,29 @@
 						<div class="panel-heading">Asesoria</div>
 						<!-- /.panel-heading -->
 						<div class="panel-body">
+							<div align="center">
+								<%
+								
+								List<Asesorias> asesorias = (List<Asesorias>) request.getAttribute("listSchedules");
+								List<Equipo> equipos = (List<Equipo>) request.getAttribute("listTeams");
+								List<SolicitudAsesoria> listRequests = (List<SolicitudAsesoria>)request.getAttribute("listRequests");
+								Usuarios usu = (Usuarios) request.getAttribute("user");
+								Integer minimoAsesorias = usu.getMinimoAsesorias();
+								
+								%>
+							
+								<h4>Tienes un minimo de asesorias de <%=minimoAsesorias%></h4>
+								<%
+								String mensajeAsesoriasPendiente = "";
+								if(!asesorias.isEmpty() && asesorias.size() == minimoAsesorias){
+									mensajeAsesoriasPendiente = "Ya has asignado todas las asesorias";
+								}else{
+									mensajeAsesoriasPendiente = "Tienes pendiente asignar <span id='titulo_asesorias_pendientes'>"+ (minimoAsesorias - asesorias.size() < 0 ? 0 : minimoAsesorias - asesorias.size())+" asesorias.</span>";
+								}
+								%>
+								<h4><%=mensajeAsesoriasPendiente%></h4>
+							</div>
+							
 							<table width="100%" class="table table-bordered"
 								id="dataTables-example">
 								<thead>
@@ -60,21 +84,19 @@
 								<tbody>
 									<%
 										//desde las 6am hasta las
-										List<Asesorias> asesorias = (List<Asesorias>) request.getAttribute("listSchedules");
-										List<Equipo> equipos = (List<Equipo>) request.getAttribute("listTeams");
-										List<SolicitudAsesoria> listRequests = (List<SolicitudAsesoria>)request.getAttribute("listRequests");
+										
 										
 										String scriptsColor = "";
 										DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-										for (int hora = 6; hora < 22; hora++) {
+										for (double hora = 6; hora < 22; hora+=0.5) {
 									%>
 									<tr>
-										<td><%=hora == 12 ? hora + "PM" : ((hora % 12) + "" + (hora > 12 ? "PM" : "AM"))%></td>
+										<td><%=hora == 12 || hora == 12.5 ? ((int)hora) + ":" + (hora%1 == 0 ? "00" : "30") + "PM" : (((int)hora % 12) + ":" + (hora%1 == 0 ? "00" : "30") + (hora > 12 ? "PM" : "AM"))%></td>
 										<%
 											for (int dia = 1; dia < 7; dia++) {
 										%>
-										<td class="schedule-td" id="td-<%=dia + "-" + hora%>">
+										<td class="schedule-td" id="td-<%=dia + "-" + ((int)hora) + ":" + (hora%1 == 0 ? 0 : 30)%>">
 											
 											<%
 												boolean encontrado = false;
@@ -193,6 +215,10 @@
 						<h4 class="modal-title">Programación de Asesorias</h4>
 					</div>
 					<div class="modal-body">
+						<div id="errorModal" class="alert alert-danger alert-dismissible" role="alert" style="display: none">
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						  <strong id="messageErrorModal"></strong>
+						</div>
 						<input type='hidden' id="id_asesoria" name="id_asesoria"
 							class="form-control" /> <input type='hidden' id="dia_semana"
 							name="dia_semana" class="form-control" /> <input type='hidden'
@@ -206,7 +232,11 @@
 						<div class="row">
 							<div class="col-sm-12">
 								<div class="form-group">
-									<label for="id_equipo">*Equipo:</label>
+									<label for="id_equipo"><li style="list-style: none; display: inline-flex;">
+										<span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" 
+										title="Si guardas una asesoria sin equipo programado, cualquier otro equipo puede tomar dicha asesoria en el horario programado,
+										si escoges un equipo, la asesoria quedará ocupada por el equipo seleccionado."></span>
+										</li> Equipo:</label>
 									<div class='input-group'>
 										<select class="form-control" id="id_equipo" name="id_equipo"
 											required>
@@ -254,6 +284,11 @@
 			responsive : true
 		});
 	});
+</script>
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip(); 
+});
 </script>
 <%
 	if(!scriptsColor.equals("")){

@@ -1,5 +1,3 @@
-var puerto = '8080';
-
 function login() {
 	jQuery('#errorDiv').css('display', 'none');
 
@@ -16,8 +14,7 @@ function login() {
 		return;
 	}
 	jQuery.ajax({
-		url : 'http://localhost:' + puerto
-				+ '/SGPPI_2018/login.html',
+		url : urlFull + '/SGPPI_2018/login.html',
 		data : {
 			email : email,
 			password : password,

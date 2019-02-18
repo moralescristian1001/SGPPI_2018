@@ -53,7 +53,7 @@
 											<td><c:out value="${listCuad.nombreAsig}" /></td>
 											<td><input type="button" data-toggle="modal"
 												data-target="#myModal" class="btn btn-default pull-left"
-												onclick="updateCuadrantes(${listCuad.id_cuadrante},${listCuad.numero},'${listCuad.nombre}','${listCuad.descripcion}','${listCuad.nombreAsig}')"
+												onclick="updateCuadrantes(${listCuad.id_cuadrante},${listCuad.numero},'${listCuad.nombre}','${listCuad.descripcion}','${listCuad.id_asignatura}')"
 												value="Actualizar" /> <input type="button"
 												class="btn btn-default pull-left"
 												onclick="confirmationCuadra(${listCuad.id_cuadrante});"
@@ -87,7 +87,7 @@
 							class="form-control" value="${id_cuadrante}" />
 						<div class="form-group">
 							<label for="cliente">*Número:</label>
-							<div class='input-group col-lg-12' id='fecha'>
+							<div class='input-group col-md-12' id='fecha'>
 								<select class="form-control" id="num" name="num">
 									<option>Seleccione</option>
 									<option>1</option>
@@ -100,7 +100,7 @@
 
 						<div class="form-group">
 							<label for="empleado">*Nombre:</label>
-							<div class='input-group col-lg-12' id='fecha'>
+							<div class='input-group col-xs-12' id='fecha'>
 								<input type="text" class="form-control" name="nomCuadra"
 									id="nomCuadra" placeholder="Ingrese el nombre del cuadrante">
 							</div>
@@ -108,7 +108,7 @@
 
 						<div class="form-group">
 							<label for="medioPago">*Descripción:</label>
-							<div class='input-group col-lg-12' id='fecha'>
+							<div class='input-group col-xs-12' id='fecha'>
 								<textarea class="form-control" rows="5" name="desCuadra"
 									id="desCuadra"
 									placeholder="Ingrese la descripción del cuadrante"></textarea>
@@ -116,7 +116,7 @@
 						</div>
 						<div class="form-group ">
 							<label for="totalVenta">*Asignatura asociada:</label>
-							<div class='input-group col-lg-12' id='fecha'>
+							<div class='input-group col-xs-12' id='fecha'>
 								<span class="input-group-addon"><i class="glyphicon glyphicon-ok"></i></span> <select
 									class="form-control" id="asigAso" name="asigAso" required>
 									<option value="0">Seleccione</option>

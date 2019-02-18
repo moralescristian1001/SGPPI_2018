@@ -3,8 +3,10 @@ package com.spring.controllers;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,12 +22,17 @@ import org.springframework.web.servlet.ModelAndView;
 import com.mybatis.models.Asesorias;
 import com.mybatis.models.AsesoriasExample;
 import com.mybatis.models.Asignatura;
+import com.mybatis.models.CalificacionExample;
+import com.mybatis.models.Califxsoc;
+import com.mybatis.models.CalifxsocExample;
 import com.mybatis.models.Equipo;
 import com.mybatis.models.EquipoExample;
 import com.mybatis.models.Estudiantesxequipos;
 import com.mybatis.models.EstudiantesxequiposExample;
 import com.mybatis.models.Evento;
 import com.mybatis.models.EventoExample;
+import com.mybatis.models.Notasxcalifxsoc;
+import com.mybatis.models.NotasxcalifxsocExample;
 import com.mybatis.models.Profesoresxasignaturas;
 import com.mybatis.models.ProfesoresxasignaturasExample;
 import com.mybatis.models.Salon;
@@ -34,6 +41,7 @@ import com.mybatis.models.Salonxequipo;
 import com.mybatis.models.SalonxequipoExample;
 import com.mybatis.models.Salonxprofesores;
 import com.mybatis.models.SalonxprofesoresExample;
+import com.mybatis.models.SeguimientoAsistencia;
 import com.mybatis.models.Semestre;
 import com.mybatis.models.Socializacion;
 import com.mybatis.models.SocializacionExample;
@@ -66,9 +74,25 @@ public class socialController {
 			List<Equipo> equipos = dao.getEquipoMapper().selectByExample(eEx);
 
 			UsuariosExample usuEx = new UsuariosExample();
-			usuEx.createCriteria().andIdCargoIn(Arrays.asList(new Integer[] { 2, 4 }));
+			usuEx.createCriteria().andIdCargoIn(Arrays.asList(new Integer[] { 2, 4, 6}));
 			List<Usuarios> evaluadores = dao.getUsuariosMapper().selectByExample(usuEx);
-
+			
+			List<Salonxequipo> salonesxequipo = new ArrayList<>();
+			List<Califxsoc> calificaciones = new ArrayList<>();
+			if(!eventos.isEmpty()) {
+				SalonxequipoExample sxeEx = new SalonxequipoExample();
+				sxeEx.createCriteria().andIdSocializacionIn(eventos.stream().map(Evento::getIdEvento).collect(Collectors.toList()));
+				salonesxequipo = dao.getSalonxequipoMapper().selectByExample(sxeEx);
+				if(!salonesxequipo.isEmpty()){
+					CalifxsocExample cxsEx = new CalifxsocExample();
+					cxsEx.createCriteria().andIdSalonxequipoIn(salonesxequipo.stream().map(Salonxequipo::getIdSalonxequipo).collect(Collectors.toList()));
+					calificaciones = dao.getCalifxsocMapper().selectByExample(cxsEx);
+				}
+			}
+				
+				
+			model.addAttribute("salonesXEequipo", salonesxequipo);
+			model.addAttribute("calificaciones", calificaciones);
 			model.addAttribute("tiposEvento", tiposEvento);
 			model.addAttribute("eventos", eventos);
 			model.addAttribute("salones", salones);
@@ -90,7 +114,7 @@ public class socialController {
 		}
 
 	}
-
+	@SuppressWarnings("unchecked")
 	@RequestMapping("pages/social/getInfoAdicional")
 	public void getInfoAdicional(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
@@ -155,19 +179,20 @@ public class socialController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error buscando el evento");
+			object.put("message", "Ocurriï¿½ un error buscando el evento");
 		}
 
 		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping("pages/social/saveSocial")
 	public void saveSaleSchedule(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
 		try {
 
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd'T'hh:mm");
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm");
 
 			String idEvento = request.getParameter("id_evento");
 			String fecha = request.getParameter("fecha");
@@ -196,7 +221,7 @@ public class socialController {
 				int idEventoInt = dao.getEventoMapper().getNextId();
 				evento.setIdEvento(idEventoInt);
 				dao.getEventoMapper().insert(evento);
-				// creamos la socialización
+				// creamos la socializaciï¿½n
 				socializacion = new Socializacion();
 				int idSocializacion = dao.getSocializacionMapper().getNextId();
 				socializacion.setIdSocializacion(idSocializacion);
@@ -205,7 +230,7 @@ public class socialController {
 
 			}
 
-			// asignamos los equipos y evaluadores a socialización
+			// asignamos los equipos y evaluadores a socializaciï¿½n
 
 			String[] idEquiposArrStr = idEquipos.split(",");
 			String[] idEvaluadoresArrStr = idEvaluadores.split(",");
@@ -253,8 +278,9 @@ public class socialController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando el asesoria");
+			object.put("message", "Ocurriï¿½ un error guardando el asesoria");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 
@@ -270,22 +296,56 @@ public class socialController {
 				aseEx.createCriteria().andIdEventoEqualTo(Integer.parseInt(idEvento));
 				List<Evento> aseList = dao.getEventoMapper().selectByExample(aseEx);
 				if (aseList != null && !aseList.isEmpty()) {
-					dao.getEventoMapper().deleteByExample(aseEx);
-					object.put("status", "ok");
-					object.put("message", "Se ha eliminado el evento correctamente");
+					
+					//buscamos socializaciones y despues buscamos el 
+					SocializacionExample seEx = new SocializacionExample();
+					seEx.createCriteria().andIdEventoEqualTo(aseList.get(0).getIdEvento());
+					
+					List<Socializacion> socs = dao.getSocializacionMapper().selectByExample(seEx);
+					Socializacion soc = socs.get(0);
+					int idSoc = soc.getIdSocializacion();
+					
+					SalonxequipoExample sxeEx = new SalonxequipoExample();
+					sxeEx.createCriteria().andIdSocializacionEqualTo(idSoc);
+					
+					List<Salonxequipo> salonesxequipos = dao.getSalonxequipoMapper().selectByExample(sxeEx);
+					
+					CalifxsocExample califxsocEx = new CalifxsocExample();
+					califxsocEx.createCriteria().andIdSalonxequipoIn(salonesxequipos.stream().map(Salonxequipo::getIdSalonxequipo).collect(Collectors.toList()));
+					
+					List<Califxsoc> califxsoc = dao.getCalifxsocMapper().selectByExample(califxsocEx);
+					
+					if(!califxsoc.isEmpty()) {
+						object.put("status", "errors");
+						object.put("message", "El evento ya tiene registros de realizado no se puede eliminar");
+					}else {	
+						dao.getSalonxequipoMapper().deleteByExample(sxeEx);
+						
+						SalonxprofesoresExample sxpEx = new SalonxprofesoresExample();
+						sxpEx.createCriteria().andIdSocializacionEqualTo(idSoc);
+						
+						dao.getSalonxprofesoresMapper().deleteByExample(sxpEx);
+						
+						dao.getSocializacionMapper().deleteByPrimaryKey(idSoc);
+						
+						dao.getEventoMapper().deleteByExample(aseEx);
+						object.put("status", "ok");
+						object.put("message", "Se ha eliminado el evento correctamente");
+					}
 				} else {
 					object.put("status", "errors");
-					object.put("message", "No se encontró el evento a eliminar");
+					object.put("message", "No se encontrï¿½ el evento a eliminar");
 				}
 			} else {
 				object.put("status", "errors");
-				object.put("message", "Ocurrió un error eliminando el evento");
+				object.put("message", "Ocurriï¿½ un error eliminando el evento");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error eliminando el evento");
+			object.put("message", "Ocurriï¿½ un error eliminando el evento");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 

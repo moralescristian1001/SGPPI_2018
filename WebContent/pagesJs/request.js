@@ -1,8 +1,7 @@
-var puerto = '8080';
+var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
+
 function solicitarCitaForm(dia, hora, diaString) {
-	
-	jQuery('#dia-hora-asesoria').html(
-			diaString + " de " + hora + ":00 a " + (hora + 1) + ":00");
+	jQuery('#dia-hora-asesoria').html(diaString + " de " + (Math.floor(hora)) + ":" + (hora % 1 == 0 ? "00" : "30") + " a " + (Math.floor(hora + 0.5)) + ":" + ((hora + 0.5) % 1 == 0 ? "00" : "30"));
 	jQuery("#dia_semana").val(dia);
 	jQuery("#hora_semana").val(hora);
 	jQuery("#foot-MyModal").html('<div class="modal-footer" id="footer-div">\
@@ -31,7 +30,7 @@ function saveSolicitud(){
 		
 		
 	jQuery.ajax({
-		url : 'http://localhost:'+puerto+'/SGPPI_2018/pages/request/saveRequest.html',
+		url : urlFull + '/pages/request/saveRequest.html',
 		data: {dia_semana:diaSemana, hora_semana:horaSemana},
 		success: function(o) {
 			if(o=="") {
@@ -41,20 +40,24 @@ function saveSolicitud(){
 			try {
 				data = jQuery.parseJSON(o);
 				if (data.status != undefined && data.status == 'errors') {
-					jQuery('#errorDiv').html(data.message);
-					jQuery('#errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html(data.message);
+					jQuery('#errorModal').css('display', 'block');
 				}else if(data.status != undefined && data.status == 'ok'){
 					jQuery('#successDiv').html(data.message);
 		        	jQuery('#successDiv').css('display', 'block');
 		        	clear();
-		        	setTimeout(function(){ location.reload(); }, 500);
+		        	jQuery('#myModal').modal('hide');
+					jQuery('.modal-backdrop').removeClass('in');
+					setTimeout(function() {
+							location.reload();
+					}, 2000);
 				}else{
-					jQuery('errorDiv').html("Ocurrió un error guardando la asesoria");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html("Ocurrió un error guardando la asesoria");
+					jQuery('#errorModal').css('display', 'block');
 				}
 			} catch (err) {
-				jQuery('errorDiv').html("Ocurrió un error guardando la asesoria");
-				jQuery('errorDiv').css('display', 'block');
+				jQuery('#messageErrorModal').html("Ocurrió un error guardando la asesoria");
+				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
 		}
@@ -79,7 +82,7 @@ function deleteSolicitud(id) {
 	}
 	if(confirm("Esta seguro que desea eliminar su solicitd?")){
 		jQuery.ajax({
-			url : 'http://localhost:'+puerto+'/SGPPI_2018/pages/request/deleteRequest.html',
+			url : urlFull + '/pages/request/deleteRequest.html',
 			data: {id_solicitud:idSolicitud},
 			success: function(o) {
 				if(o=="") {
@@ -89,20 +92,24 @@ function deleteSolicitud(id) {
 				try {
 					data = jQuery.parseJSON(o);
 					if (data.status != undefined && data.status == 'errors') {
-						jQuery('#errorDiv').html(data.message);
-						jQuery('#errorDiv').css('display', 'block');
+						jQuery('#messageErrorModal').html(data.message);
+						jQuery('#errorModal').css('display', 'block');
 					}else if(data.status != undefined && data.status == 'ok'){
 						jQuery('#successDiv').html(data.message);
 			        	jQuery('#successDiv').css('display', 'block');
 			        	clear();
-			        	setTimeout(function(){ location.reload(); }, 500);
+			        	jQuery('#myModal').modal('hide');
+						jQuery('.modal-backdrop').removeClass('in');
+						setTimeout(function() {
+								location.reload();
+						}, 2000);
 					}else{
-						jQuery('errorDiv').html("Ocurri&oacute; un error eliminando la solicitud");
-						jQuery('errorDiv').css('display', 'block');
+						jQuery('#messageErrorModal').html("Ocurrió un error eliminando la solicitud");
+						jQuery('#errorModal').css('display', 'block');
 					}
 				} catch (err) {
-					jQuery('errorDiv').html("Ocurrió un error eliminando la solicitud");
-					jQuery('errorDiv').css('display', 'block');
+					jQuery('#messageErrorModal').html("Ocurrió un error eliminando la solicitud");
+					jQuery('#errorModal').css('display', 'block');
 					return;
 				}
 			}

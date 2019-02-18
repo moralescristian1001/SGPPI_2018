@@ -1,3 +1,4 @@
+<%@page import="java.time.LocalDate"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.HashMap"%>
@@ -64,17 +65,17 @@
 										List<Asesorias> asesorias = (List<Asesorias>) request.getAttribute("listAsesorias");
 										List<Equipo> equipos = (List<Equipo>) request.getAttribute("listEquipos");
 										int horaHoy = Integer.parseInt(request.getAttribute("hora").toString()); // 6 - 10
-										int diaHoy = 3; // 1- 7
+										int diaHoy = LocalDate.now().getDayOfWeek().getValue(); // 1- 7
 										// 										int diaHoy = Integer.parseInt(request.getAttribute("dia").toString()); // 1- 7
 										String scriptColores = "";
-										for (int hora = 6; hora < 22; hora++) {
-									%>
-									<tr>
-										<td><%=hora == 12 ? hora + "PM" : ((hora % 12) + "" + (hora > 12 ? "PM" : "AM"))%></td>
-										<%
-											for (int dia = 1; dia < 7; dia++) {
-										%>
-										<td class="schedule-td" id="td-<%=dia + "-" + hora%>">
+										for (double hora = 6; hora < 22; hora+=0.5) {
+											%>
+											<tr>
+												<td><%=hora == 12 || hora == 12.5 ? ((int)hora) + ":" + (hora%1 == 0 ? "00" : "30") + "PM" : (((int)hora % 12) + ":" + (hora%1 == 0 ? "00" : "30") + (hora > 12 ? "PM" : "AM"))%></td>
+												<%
+													for (int dia = 1; dia < 7; dia++) {
+												%>
+												<td class="schedule-td" id="td-<%=dia + "-" + ((int)hora) + ":" + (hora%1 == 0 ? 0 : 30)%>">
 											<%
 												boolean encontrado = false;
 

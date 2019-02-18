@@ -28,7 +28,7 @@
 	<div id="page-wrapper">
 		<div class="row">
 			<div class="col-lg-12">
-				<h1 class="page-header">Equipos</h1>
+				<h1 class="page-header">Equipos de trabajo</h1>
 			</div>
 			<!-- /.col-lg-12 -->
 		</div>
@@ -51,7 +51,7 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="panel panel-default">
-						<div class="panel-heading">Gestionar Equipos</div>
+						<div class="panel-heading">Gestionar Equipos de trabajo</div>
 						<!-- /.panel-heading -->
 						<div class="panel-body">
 							<%
@@ -165,8 +165,9 @@
 					<!-- /.panel -->
 				</div>
 				<!-- /.col-lg-12 -->
-				<input type="button" data-toggle="modal" data-target="#myModal"
-					class="btn btn-default pull-left" name="guardar" value="Nuevo"></input>
+				<input type="button" data-toggle="modal" data-target="#myModalEditar"
+					class="btn btn-default pull-left" name="guardar" value="Nuevo equipo" onclick="guardarTeamForm()"></input>
+					<br><br><br><br><br><br>
 			</div>
 		</form>
 		<!-- Modal -->
@@ -211,12 +212,9 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Modificar Equipo</h4>
+						<h4 class="modal-title">Equipo</h4>
 					</div>
-
-
 					<div class="modal-body">
-
 						<input type='hidden' id="id_equipo" name="id_equipo"
 							class="form-control" />
 						<div class="form-group">
@@ -251,12 +249,6 @@
 							<legend>Estudiantes</legend>
 							<div class="row">
 								<div class="col-sm-12" id="div_tabla_estudiantes"></div>
-							</div>
-							<div class="row">
-								<div class="col-sm-12">
-									<a href='javascript:agregarEstudiante()'
-										class='btn btn-success'><i class='fa fa-plus fa-fw'></i></a>
-								</div>
 							</div>
 						</fieldset>
 

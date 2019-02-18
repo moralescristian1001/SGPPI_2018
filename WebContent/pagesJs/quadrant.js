@@ -1,4 +1,4 @@
-var puerto = '8080';
+var urlFull = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port : '') + '/SGPPI_2018';
 function saveCuadra(){
 	jQuery('#errorDiv').css('display', 'none');
 	var num = jQuery('#num').val();
@@ -28,7 +28,7 @@ function saveCuadra(){
 	}
 	
 	jQuery.ajax({
-		url : 'http://localhost:'+puerto+'/SGPPI_2018/pages/quadrant/saveQuadrant.html',
+		url : urlFull + '/pages/quadrant/saveQuadrant.html',
 		data: {num: num, nomCuadra:nomCuadra, desCuadra:desCuadra, asigAso:asigAso, idCuadra: idCuadra},
 		success: function(o) {
 			if(o=="") {
@@ -82,7 +82,7 @@ function deleteCuadra(id) {
 	    return;
 	}
 	jQuery.ajax({
-		url : 'http://localhost:'+puerto+'/SGPPI_2018/pages/quadrant/deleteQuadrant.html',
+		url : urlFull + '/pages/quadrant/deleteQuadrant.html',
 		data: {idCuadra:idCuadra},
 		success: function(o) {
 			if(o=="") {

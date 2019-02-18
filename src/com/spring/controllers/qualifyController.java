@@ -67,10 +67,9 @@ public class qualifyController {
 		if (request.getSession().getAttribute("user") != null) {
 
 			Usuarios usu = (Usuarios) request.getSession().getAttribute("user");
-			Semestre semestreActual = (Semestre) request.getSession().getAttribute("semestre");
 			model.addAttribute("user", usu);
 
-			// primero hay que buscar la socialización que se este haciendo ya
+			// primero hay que buscar la socializaciï¿½n que se este haciendo ya
 			List<Evento> eventoActual = dao.getEventoMapper().selectEventosActuales();
 
 			request.setCharacterEncoding("UTF-8");
@@ -96,7 +95,7 @@ public class qualifyController {
 
 					List<Salonxequipo> salonxequipos = dao.getSalonxequipoMapper().selectByExample(sxeEx);
 					List<Equipo> equipos = new ArrayList<>();
-					Map<Integer, Integer> notas = new HashMap<>();
+					Map<Integer, Double> notas = new HashMap<>();
 					for (Salonxequipo sxe : salonxequipos) {
 						Equipo equipo = dao.getEquipoMapper().selectByPrimaryKey(sxe.getIdEquipo());
 						equipos.add(equipo);
@@ -109,13 +108,21 @@ public class qualifyController {
 							nxcxsEx.createCriteria().andIdCalifxsocEqualTo(cxs.get(0).getIdCalifxsoc());
 							
 							List<Notasxcalifxsoc> nxcxss = dao.getNotasxcalifxsocMapper().selectByExample(nxcxsEx);
-							int nota = 0;
+							int puntaje = 0;
+							int cantidadRubricas = 0;
 							for(Notasxcalifxsoc nxcxs : nxcxss){
 								Rubricaxitem rxi = dao.getRubricaxitemMapper().selectByPrimaryKey(nxcxs.getIdRubricaxitem());
-								nota += rxi.getCalificacion();
+								puntaje += rxi.getCalificacion();
+								cantidadRubricas++;
 							}
-							nota = nota / nxcxss.size();
-							notas.put(equipo.getIdEquipo(), nota);
+
+							int X = cantidadRubricas * 3;
+							int Y = cantidadRubricas * 2;
+									
+							double notaParcial = puntaje < cantidadRubricas ? 0.0 : 3.0 + (((puntaje - Y ) * 2) / (X - Y));
+							
+							
+							notas.put(equipo.getIdEquipo(), notaParcial);
 						}
 					}
 
@@ -131,7 +138,7 @@ public class qualifyController {
 					model.addAttribute("salon", salon);
 					return new ModelAndView("pages/qualify");
 				} else {
-					model.addAttribute("errors", "No se te ha asignado un salon en la socialización");
+					model.addAttribute("errors", "No se te ha asignado un salon en la socializaciï¿½n");
 					return new ModelAndView("pages/home");
 				}
 			} else {
@@ -185,29 +192,41 @@ public class qualifyController {
 			}
 			
 			object.put("status", "ok");
-			object.put("message", "Se ha creado la calificación correctamente");
+			object.put("message", "Se ha creado la calificaciï¿½n correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando la calificación");
+			object.put("message", "Ocurriï¿½ un error guardando la calificaciï¿½n");
 		}
 		writeObject(object, response);
 	}
 
+	@RequestMapping("pages/qualify/getInfoAdicionalEditable")
+	public void getInfoAdicionalEditable(HttpServletRequest request, HttpServletResponse response) {
+		infoAdicionalRubric(request, response, true);
+	}
+	
 	@RequestMapping("pages/qualify/getInfoAdicional")
 	public void getInfoAdicional(HttpServletRequest request, HttpServletResponse response) {
+		infoAdicionalRubric(request, response, false);
+	}
+	private void infoAdicionalRubric(HttpServletRequest request, HttpServletResponse response, boolean editable) {
 		JSONObject object = new JSONObject();
 
 		try {
 			int idAsignatura = Integer.parseInt(request.getParameter("id_asignatura"));
+			
+			int version = request.getParameter("version") == null ? dao.getRubricaMapper().getLastVersion(idAsignatura) : Integer.parseInt(request.getParameter("version"));
+			
 			// int idSocializacion =
 			// Integer.parseInt(request.getParameter("id_socializacion"));
 			String info = "";
 			RubricaExample rEx = new RubricaExample();
-			rEx.createCriteria().andIdAsignaturaEqualTo(idAsignatura);
+			rEx.createCriteria().andIdAsignaturaEqualTo(idAsignatura).andVersionEqualTo(version);
 			rEx.setOrderByClause("numero ASC");
 			List<Rubrica> rubricas = dao.getRubricaMapper().selectByExample(rEx);
 			if (!rubricas.isEmpty()) {
+				int numRubrica = 1;
 				for (Rubrica rubrica : rubricas) {
 					RubricaxitemExample rxiEx = new RubricaxitemExample();
 					rxiEx.createCriteria().andIdRubricaEqualTo(rubrica.getIdRubrica());
@@ -216,28 +235,49 @@ public class qualifyController {
 
 					if (rxis.isEmpty() || rxis.size() != 4) {
 						object.put("status", "errors");
-						object.put("info", "No hay rubricas relacionadas con el módulo sol del equipo");
+						object.put("info", "No hay rubricas relacionadas con el mï¿½dulo sol del equipo");
 						break;
 					} else {
-						info += "<tr><td>" + rubrica.getNumero() + " - " + rubrica.getDescripcion() + "</td>";
-						for (Rubricaxitem rxi : rxis) {
-							info += "<td class='items_rubrica item-seleccionable' id='item_" + rubrica.getIdRubrica() + "_"
-									+ rxi.getIdRubricaxitem() + "'>" + rxi.getDescripcionItem() + "</td>";
+						if(editable) {
+							info += "<tr><td><textarea id='rubrica_descripcion_"+numRubrica+"' name='rubrica_descripcion_"+numRubrica+"' class='form-control'>" +rubrica.getDescripcion() + "</textarea></td>";
+							info += "<td>" +
+									"<select id='id_tipo_rubrica_"+numRubrica+"' name='id_tipo_rubrica_"+numRubrica+"' class='form-control'>" +
+									"<option value='-1'>Seleccione el tipo</option>" +
+									"<option value='1' "+(rubrica.getIdTipoRubrica() == 1 ? "selected" : "") + ">Criterios TÃ©maticos</option>" +
+									"<option value='2' "+(rubrica.getIdTipoRubrica() == 2 ? "selected" : "") + ">Criterios AxiolÃ³gicos</option>" +
+									"</select>" +
+									"</td>";
+							int itemRubrica = 0;
+							
+							for (Rubricaxitem rxi : rxis) {
+								info += "<td class='items_rubrica item-seleccionable' id='item_" + rubrica.getIdRubrica() + "_"
+										+ rxi.getIdRubricaxitem() + "'>"
+										+ "<textarea id='item_"+numRubrica+"_"+itemRubrica+"' name='item_"+numRubrica+"_"+itemRubrica+"' class='form-control'>" + rxi.getDescripcionItem() + "</textarea></td>";
+								itemRubrica++;
+							}
+							numRubrica++;
+						}else {
+							info += "<tr><td>" + rubrica.getNumero() + " - " + rubrica.getDescripcion() + "</td>";
+							for (Rubricaxitem rxi : rxis) {
+								info += "<td class='items_rubrica item-seleccionable' id='item_" + rubrica.getIdRubrica() + "_"
+										+ rxi.getIdRubricaxitem() + "'>" + rxi.getDescripcionItem() + "</td>";
+							}
 						}
 						info += "</tr>";
+						
 					}
 				}
 				object.put("status", "ok");
 				object.put("info", info);
 			} else {
 				object.put("status", "errors");
-				object.put("info", "No hay rubricas relacionadas con el módulo sol del equipo");
+				object.put("info", "No hay rubricas relacionadas con el mÃ³dulo sol del equipo");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando el cuadrante");
+			object.put("message", "OcurriÃ³ un error guardando el cuadrante");
 		}
 
 		response.setCharacterEncoding("UTF-8");

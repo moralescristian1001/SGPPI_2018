@@ -3,7 +3,10 @@ package com.spring.controllers;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,25 +22,34 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.mybatis.models.Asesorias;
+import com.mybatis.models.AsesoriasExample;
 import com.mybatis.models.Asignatura;
 import com.mybatis.models.AsignaturaExample;
+import com.mybatis.models.Cargo;
+import com.mybatis.models.CargoExample;
 import com.mybatis.models.Equipo;
 import com.mybatis.models.EquipoExample;
 import com.mybatis.models.Estudiantesxequipos;
 import com.mybatis.models.EstudiantesxequiposExample;
 import com.mybatis.models.Profesoresxasignaturas;
 import com.mybatis.models.ProfesoresxasignaturasExample;
+import com.mybatis.models.Rubrica;
+import com.mybatis.models.RubricaExample;
 import com.mybatis.models.Semestre;
+import com.mybatis.models.SemestreExample;
 import com.mybatis.models.SolicitudAsesoria;
 import com.mybatis.models.SolicitudAsesoriaExample;
 import com.mybatis.models.Usuarios;
 import com.mybatis.models.UsuariosExample;
+import com.mysql.fabric.xmlrpc.base.Array;
 import com.springMybatis.persistence.daoHelper;
 
 @Controller
@@ -45,6 +57,132 @@ public class teamController {
 
 	daoHelper dao = new daoHelper();
 
+	@RequestMapping("pages/teamReporte")
+	public ModelAndView reporte(HttpServletRequest request, ModelMap model, HttpServletResponse response)
+			throws UnsupportedEncodingException {
+		if (request.getSession().getAttribute("user") != null) {
+			
+			JSONArray arrayUsuarios = new JSONArray();
+			int idSemestre = -1;
+			if(request.getParameter("id_semestre") != null) {
+				idSemestre = Integer.parseInt(request.getParameter("id_semestre"));
+			}
+			int estudiante = -1;
+			if(request.getParameter("id_estudiante") != null) {
+				estudiante = Integer.parseInt(request.getParameter("id_estudiante"));
+			}
+			
+			List<Cargo> cargos = dao.getCargoMapper().selectByExample(new CargoExample());
+			EquipoExample usuEx = new EquipoExample();
+			if(idSemestre >= 1 && estudiante >= 1) {
+				EstudiantesxequiposExample eeex = new EstudiantesxequiposExample();
+				eeex.createCriteria().andIdEstudianteEqualTo(estudiante);
+				List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(eeex);
+				
+				usuEx.createCriteria().andIdEquipoIn(exes.stream().map(Estudiantesxequipos::getIdEquipo).collect(Collectors.toList())).andIdSemestreEqualTo(idSemestre);
+			}else if(estudiante >= 1){
+				EstudiantesxequiposExample eeex = new EstudiantesxequiposExample();
+				eeex.createCriteria().andIdEstudianteEqualTo(estudiante);
+				List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(eeex);
+				
+				usuEx.createCriteria().andIdEquipoIn(exes.stream().map(Estudiantesxequipos::getIdEquipo).collect(Collectors.toList()));
+			}else if(idSemestre >= 1) {
+				usuEx.createCriteria().andIdSemestreEqualTo(idSemestre);
+			}
+			
+			
+						
+			String orderClause = "nombre";
+			usuEx.setOrderByClause(orderClause);
+
+			List<Equipo> usuarios = dao.getEquipoMapper().selectByExample(usuEx);
+			int idSemestreActual = dao.getSemestreMapper().selectSemestreActual().getIdSemestre();
+			for (Equipo usu : usuarios) {
+				
+				String integrantes = "";
+				EstudiantesxequiposExample eeex = new EstudiantesxequiposExample();
+				eeex.createCriteria().andIdEquipoEqualTo(usu.getIdEquipo());
+				
+				List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(eeex);
+				for(Estudiantesxequipos aexe : exes) {
+					Usuarios integrante = dao.getUsuariosMapper().selectByPrimaryKey(aexe.getIdEstudiante());
+					integrantes += integrante.getNombre() + " " + integrante.getApellidos() + "<br>";
+				}
+				
+				String asesoriasStr = "";
+				AsesoriasExample aEx = new AsesoriasExample();
+				aEx.createCriteria().andIdEquipoEqualTo(usu.getIdEquipo());
+				List<Asesorias> asesorias = dao.getAsesoriasMapper().selectByExample(aEx);
+				ArrayList<String> arrayDias = new ArrayList<String>(){
+					{
+						add(0,"Lunes");
+						add(1,"Martes");
+						add(2,"MiÃ©rcoles");
+						add(3,"Jueves");
+						add(4,"Viernes");
+						add(5,"SÃ¡bado");
+					}
+				};
+				
+				
+				for(Asesorias asesoria : asesorias) {
+					
+					String diaSemana = arrayDias.get(asesoria.getDiaSemana() - 1);
+					Usuarios asesor = dao.getUsuariosMapper().selectByPrimaryKey(asesoria.getIdAsesor());
+					double hora = asesoria.getHoraSemana();
+					
+					String horaSemana = hora == 12 || hora == 12.5 ? ((int) hora) + ":" + (hora % 1 == 0 ? "00" : "30") + "PM"
+							: (((int) hora % 12) + ":" + (hora % 1 == 0 ? "00" : "30") + (hora > 12 ? "PM" : "AM"));
+					asesoriasStr += diaSemana + " " + horaSemana + " - " + asesor.getNombre() + " " + asesor.getApellidos() + "<br>";
+				}
+				
+				
+				Asignatura asig = dao.getAsignaturaMapper().selectByPrimaryKey(usu.getIdAsignatura());
+				Semestre sem = dao.getSemestreMapper().selectByPrimaryKey(usu.getIdSemestre());
+				Integer nota = 0;
+				JSONObject usuJSON = new JSONObject();
+				usuJSON.put("codigo", usu.getCodigo());
+				usuJSON.put("nombre", usu.getNombre());
+				usuJSON.put("asignatura", asig.getNombre());
+				usuJSON.put("semestre", sem.getAno() + " - " + sem.getNumero());
+				usuJSON.put("integrantes", integrantes);
+				usuJSON.put("asesorias", asesoriasStr);
+				arrayUsuarios.add(usuJSON);
+			}
+			
+			// System.out.println(dao.getAsignaturaMapper().selectByExample(new
+			// AsignaturaExample()));
+			UsuariosExample estEx = new UsuariosExample();
+			estEx.createCriteria().andIdCargoEqualTo(1);
+			List<Usuarios> estudiantes = dao.getUsuariosMapper().selectByExample(estEx);
+			SemestreExample semEx = new SemestreExample();
+			short numeroSemestre = Calendar.getInstance().get(Calendar.MONTH) <= 6 ? (short)1 : (short)2;
+			semEx.createCriteria().andAnoLessThan(Calendar.getInstance().get(Calendar.YEAR) + 1).andNumeroLessThanOrEqualTo(numeroSemestre);
+			List<Semestre> semestres = dao.getSemestreMapper().selectByExample(semEx);
+			
+			Usuarios user = (Usuarios) request.getSession().getAttribute("user");
+			model.addAttribute("user", user);
+			request.setAttribute("semestres", semestres);
+			request.setAttribute("estudiantes", estudiantes);
+			request.setAttribute("equipos", arrayUsuarios);
+			
+			request.setCharacterEncoding("UTF-8");
+			response.setCharacterEncoding("UTF-8");
+			return new ModelAndView("pages/teamsReporte");
+		} else {
+			// return new ModelAndView("index");
+			try {
+				response.getWriter().write("<script>location.href='../index.jsp';</script>");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return null;
+		}
+
+	}
+	
 	@RequestMapping("pages/team")
 	public ModelAndView sale(HttpServletRequest request, ModelMap model, HttpServletResponse response) {
 
@@ -57,21 +195,35 @@ public class teamController {
 			EquipoExample eEx = new EquipoExample();
 			eEx.createCriteria().andIdSemestreEqualTo(semestreActual.getIdSemestre());
 			List<Equipo> equipos = dao.getEquipoMapper().selectByExample(eEx);
-
-			EstudiantesxequiposExample eeEx = new EstudiantesxequiposExample();
-			eeEx.createCriteria().andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
-			List<Estudiantesxequipos> estudiantesxequipos = dao.getEstudiantesxequiposMapper().selectByExample(eeEx);
-
-			List<Asignatura> asignaturas = dao.getAsignaturaMapper().selectByExample(new AsignaturaExample());
-
+			List<Estudiantesxequipos> estudiantesxequipos = new ArrayList<>();
+			
 			UsuariosExample estEx = new UsuariosExample();
-			estEx.createCriteria().andIdUsuarioIn(estudiantesxequipos.stream().map(Estudiantesxequipos::getIdEstudiante)
-					.collect(Collectors.toList()));
-
 			UsuariosExample estSinEquipoEx = new UsuariosExample();
-			estSinEquipoEx.createCriteria().andEstadoEqualTo(true).andIdCargoEqualTo(1)
-					.andIdUsuarioNotIn(estudiantesxequipos.stream().map(Estudiantesxequipos::getIdEstudiante)
-							.collect(Collectors.toList()));
+			if(!equipos.isEmpty()) {
+				EstudiantesxequiposExample eeEx = new EstudiantesxequiposExample();
+				eeEx.createCriteria().andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
+				estudiantesxequipos = dao.getEstudiantesxequiposMapper().selectByExample(eeEx);
+				
+				estEx.createCriteria().andIdUsuarioIn(estudiantesxequipos.stream().map(Estudiantesxequipos::getIdEstudiante)
+						.collect(Collectors.toList()));
+				
+				estSinEquipoEx.createCriteria().andEstadoEqualTo(true).andIdCargoEqualTo(1)
+						.andIdUsuarioNotIn(estudiantesxequipos.stream().map(Estudiantesxequipos::getIdEstudiante)
+								.collect(Collectors.toList()));
+			}else{
+				estEx.createCriteria().andIdCargoLessThan(0);
+				estSinEquipoEx.createCriteria().andEstadoEqualTo(true).andIdCargoEqualTo(1);
+			}
+			
+			List<Rubrica> rubricas = dao.getRubricaMapper().selectByExample(new RubricaExample());
+			
+			AsignaturaExample asig = new AsignaturaExample();
+			asig.createCriteria().andIdAsignaturaIn(rubricas.stream().map(Rubrica::getIdAsignatura).collect(Collectors.toList()));
+			List<Asignatura> asignaturas = dao.getAsignaturaMapper().selectByExample(asig);
+
+			
+
+			
 
 			List<Usuarios> estudiantesSinEquipo = dao.getUsuariosMapper().selectByExample(estSinEquipoEx);
 			List<Usuarios> estudiantes = dao.getUsuariosMapper().selectByExample(estEx);
@@ -101,7 +253,7 @@ public class teamController {
 	public void saveSaleTeam(HttpServletRequest request, HttpServletResponse response) {
 		int r = 1;
 		try {
-			InputStream myxls = new FileInputStream("C:\\Users\\USER\\workspace\\SGPPI_2018\\equipos_subida.xls");
+			InputStream myxls = new FileInputStream("E:\\PPI\\SGPPI_2018\\equipos_subida.xls");
 			XSSFWorkbook wb = new XSSFWorkbook(myxls);
 
 			XSSFSheet sheet = wb.getSheetAt(0);
@@ -116,16 +268,16 @@ public class teamController {
 
 				String errors = "";
 				// if (codigo.isEmpty()) {
-				// errors += "Código,";
+				// errors += "Cï¿½digo,";
 				// }
 				if (nombre.isEmpty()) {
 					errors += "Nombre,";
 				}
 				if (codigoAsignatura.isEmpty()) {
-					errors += "Código asignatura,";
+					errors += "Cï¿½digo asignatura,";
 				}
 				if (cedulas.isEmpty()) {
-					errors += "Cédulas,";
+					errors += "Cï¿½dulas,";
 				}
 
 				if (!errors.isEmpty()) {
@@ -195,7 +347,12 @@ public class teamController {
 			String idAsignatura = request.getParameter("id_asignatura");
 			Equipo equipo = new Equipo();
 			String idEquipo = request.getParameter("id_equipo");
-
+			boolean update = true;
+			if(idEquipo.isEmpty()) {
+				idEquipo = String.valueOf(dao.getEquipoMapper().getNextId());
+				update = false;
+			}
+			
 			equipo.setCodigo(Integer.parseInt(codigo));
 			equipo.setNombre(nombre);
 			equipo.setIdSemestre(idSemestre);
@@ -205,7 +362,14 @@ public class teamController {
 			if (idEquipo != null && !idEquipo.isEmpty() && !idEquipo.equals("0") && !idEquipo.equals("undefined")
 					&& !idEquipo.equals("null")) {
 				equipo.setIdEquipo(Integer.parseInt(idEquipo));
-				dao.getEquipoMapper().updateByPrimaryKey(equipo);
+				if(update) {
+					
+					dao.getEquipoMapper().updateByPrimaryKey(equipo);
+				}else {
+					dao.getEquipoMapper().insert(equipo);
+				}
+				
+				
 
 				String idEstudiantesStr = request.getParameter("id_usuario");
 				String[] estudiantesArrStr = idEstudiantesStr.split(",");
@@ -215,6 +379,7 @@ public class teamController {
 				}
 
 				EstudiantesxequiposExample estxeqEx = new EstudiantesxequiposExample();
+				estxeqEx.createCriteria().andIdEquipoEqualTo(equipo.getIdEquipo());
 				dao.getEstudiantesxequiposMapper().deleteByExample(estxeqEx);
 
 				for (int idEstudiante : estudiantes) {
@@ -225,16 +390,31 @@ public class teamController {
 				}
 
 			} else {
-				object.put("status", "errors");
-				object.put("message", "Ha ocurrido un error inesperado");
+				dao.getEquipoMapper().insert(equipo);
+				
+				String idEstudiantesStr = request.getParameter("id_usuario");
+				String[] estudiantesArrStr = idEstudiantesStr.split(",");
+				int[] estudiantes = new int[estudiantesArrStr.length];
+				
+				for (int i = 0; i < estudiantes.length; i++) {
+					estudiantes[i] = Integer.parseInt(estudiantesArrStr[i]);
+				}
+
+				for (int idEstudiante : estudiantes) {
+					Estudiantesxequipos exe = new Estudiantesxequipos();
+					exe.setIdEquipo(equipo.getIdEquipo());
+					exe.setIdEstudiante(idEstudiante);
+					dao.getEstudiantesxequiposMapper().insert(exe);
+				}
 			}
 
 			object.put("status", "ok");
-			object.put("message", "Se ha creado el equipo correctamente");
+			object.put("id_equipo", idEquipo);
+			object.put("message", "Se ha guardado la informaciï¿½n correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando el equipo");
+			object.put("message", "Ocurriï¿½ un error guardando el equipo");
 		}
 		writeObject(object, response);
 
@@ -257,15 +437,15 @@ public class teamController {
 					object.put("message", "Se ha eliminado el equipo correctamente");
 				} else {
 					object.put("status", "errors");
-					object.put("message", "No se encontró el equipo a eliminar");
+					object.put("message", "No se encontrï¿½ el equipo a eliminar");
 				}
 			} else {
 				object.put("status", "errors");
-				object.put("message", "Ocurrió un error eliminando el equipo");
+				object.put("message", "Ocurriï¿½ un error eliminando el equipo");
 			}
 		} catch (Exception e) {
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error eliminando el equipo");
+			object.put("message", "Ocurriï¿½ un error eliminando el equipo");
 		}
 		writeObject(object, response);
 	}

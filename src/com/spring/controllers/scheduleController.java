@@ -2,6 +2,7 @@ package com.spring.controllers;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,18 +44,23 @@ public class scheduleController {
 			eEx.createCriteria().andIdSemestreEqualTo(idSemestreActual);
 			List<Equipo> equipos = dao.getEquipoMapper().selectByExample(eEx);
 
-			AsesoriasExample aEx = new AsesoriasExample();
-			aEx.createCriteria().andIdSemestreEqualTo(idSemestreActual).andIdAsesorEqualTo(usu.getIdUsuario());
-			List<Asesorias> asesorias = dao.getAsesoriasMapper().selectByExample(aEx);
-
-			SolicitudAsesoriaExample sEx = new SolicitudAsesoriaExample();
-			sEx.createCriteria().andAceptadaEqualTo(false)
-					.andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
-			List<SolicitudAsesoria> solicitudes = dao.getSolicitudAsesoriaMapper().selectByExample(sEx);
-
+			List<SolicitudAsesoria> solicitudes = new ArrayList<>();
+			List<Asesorias> asesorias = new ArrayList<>();
+			
+			if (!equipos.isEmpty()) {
+				AsesoriasExample aEx = new AsesoriasExample();
+				aEx.createCriteria().andIdSemestreEqualTo(idSemestreActual).andIdAsesorEqualTo(usu.getIdUsuario());
+				asesorias = dao.getAsesoriasMapper().selectByExample(aEx);
+				SolicitudAsesoriaExample sEx = new SolicitudAsesoriaExample();
+				sEx.createCriteria().andAceptadaEqualTo(false)
+						.andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
+				solicitudes = dao.getSolicitudAsesoriaMapper().selectByExample(sEx);
+			}
+			
 			model.addAttribute("listRequests", solicitudes);
 			model.addAttribute("listSchedules", asesorias);
 			model.addAttribute("listTeams", equipos);
+			
 			request.setCharacterEncoding("UTF-8");
 			response.setCharacterEncoding("UTF-8");
 			return new ModelAndView("pages/schedule");
@@ -70,7 +76,7 @@ public class scheduleController {
 			return null;
 		}
 	}
-
+	@SuppressWarnings("unchecked")
 	@RequestMapping("pages/schedule/saveSchedule")
 	public void saveSaleSchedule(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
@@ -84,7 +90,7 @@ public class scheduleController {
 			Integer idEquipo = request.getParameter("id_equipo").equals("-1") ? null
 					: Integer.parseInt(request.getParameter("id_equipo"));
 			int diaSemana = Integer.parseInt(request.getParameter("dia_semana"));
-			int horaSemana = Integer.parseInt(request.getParameter("hora_semana"));
+			double horaSemana = Double.parseDouble(request.getParameter("hora_semana"));
 			String idSolicitud = request.getParameter("id_solicitud");
 
 			Asesorias asesoria = new Asesorias();
@@ -111,14 +117,14 @@ public class scheduleController {
 				}
 
 			}
-
 			object.put("status", "ok");
-			object.put("message", "Se ha creado la asesoria correctamente");
+			object.put("message", "Se ha guardado la asesoria correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
 			object.put("message", "Ocurrió un error guardando el asesoria");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 
@@ -130,6 +136,7 @@ public class scheduleController {
 			String idAsesoria = request.getParameter("id_asesoria");
 			if (idAsesoria != null && !idAsesoria.isEmpty() && !idAsesoria.equals("0")
 					&& !idAsesoria.equals("undefined") && !idAsesoria.equals("null")) {
+				
 				AsesoriasExample aseEx = new AsesoriasExample();
 				aseEx.createCriteria().andIdAsesoriaEqualTo(Integer.parseInt(idAsesoria));
 				List<Asesorias> aseList = dao.getAsesoriasMapper().selectByExample(aseEx);
@@ -149,6 +156,7 @@ public class scheduleController {
 			object.put("status", "errors");
 			object.put("message", "Ocurrió un error eliminando la asesoria");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 

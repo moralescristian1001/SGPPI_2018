@@ -88,7 +88,7 @@ public class requestController {
 			return null;
 		}
 	}
-
+	@SuppressWarnings("unchecked")
 	@RequestMapping("pages/request/saveRequest")
 	public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject object = new JSONObject();
@@ -97,7 +97,7 @@ public class requestController {
 			Equipo equipoEstudiante = (Equipo)request.getSession().getAttribute("team");
 			
 			int diaSemana = Integer.parseInt(request.getParameter("dia_semana"));
-			int horaSemana = Integer.parseInt(request.getParameter("hora_semana"));
+			double horaSemana = Double.parseDouble(request.getParameter("hora_semana"));
 
 			SolicitudAsesoria solicitud = new SolicitudAsesoria();
 			solicitud.setIdEquipo(equipoEstudiante.getIdEquipo());
@@ -114,8 +114,9 @@ public class requestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando la solicitud");
+			object.put("message", "Ocurriï¿½ un error guardando la solicitud");
 		}
+		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
 	}
 

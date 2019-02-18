@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <generatorConfiguration>
-<classPathEntry location="C:/Users/USER/workspace/SGPPI_2018/WebContent/WEB-INF/lib/mysql-connector-java-5.1.24-bin.jar" />
+<classPathEntry location="/Users/alejandro/eclipse-workspace/SGPPI_2018/WebContent/WEB-INF/lib/mysql-connector-java-5.1.24-bin.jar" />
   <context id="context1">
-    <jdbcConnection connectionURL="jdbc:mysql://127.0.0.1:3306/sgppi" driverClass="com.mysql.jdbc.Driver" password="" userId="root"/>
+    <jdbcConnection connectionURL="jdbc:mysql://127.0.0.1:3306/sgppi" driverClass="com.mysql.jdbc.Driver" password="root" userId="root"/>
     <javaModelGenerator targetPackage="com.mybatis.models" targetProject="SGPPI_2018/src" />
     <sqlMapGenerator targetPackage="com.mybatis.mappers" targetProject="SGPPI_2018/src" />
     <javaClientGenerator targetPackage="com.mybatis.mappers" targetProject="SGPPI_2018/src" type="XMLMAPPER" />
-    <table schema="califsoc" tableName="califxsoc"/>
+    <table schema="usuarios" tableName="usuarios"/>
   </context>
 </generatorConfiguration>
