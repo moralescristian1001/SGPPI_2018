@@ -311,6 +311,7 @@ function saveSocializacion() {
 			//end equipos
 			
 			//evaluadores
+
 			
 			if(!jQuery("input[id*='id_evaluador_" + salon + "'],select[id*='id_evaluador_"+salon+"']").length){
 				jQuery('#messageErrorModal').html("No se ha seleccionado evaluadores para el salón " + descripcionSalon);
@@ -319,6 +320,9 @@ function saveSocializacion() {
 				return;
 			}
 			
+
+			var contEvaluadores = 0;
+
 			jQuery("input[id*='id_evaluador_" + salon + "'],select[id*='id_evaluador_" + salon + "']").each(
 					function(element) {
 						var ev = jQuery(this).val()
@@ -345,6 +349,7 @@ function saveSocializacion() {
 								+ ev);
 						idEvaluadoresGeneral.push(ev);
 						inserto = true;
+						contEvaluadores ++;
 						
 					});
 			if(errorAsignandoEvaluador){
@@ -355,6 +360,7 @@ function saveSocializacion() {
 				jQuery('#errorModal').css('display', 'block');
 				return;
 			}
+		
 			//end evaluadores
 		}
 	})
@@ -379,8 +385,8 @@ function saveSocializacion() {
 	if(errorAsignandoEvaluador){
 		return;
 	}
-	if(idEvaluadores.length == 0){
-		jQuery('#messageErrorModal').html("Debe seleccionar al menos un evaluador en cada uno de los salones");
+	if(idEvaluadores.length <=1){
+		jQuery('#messageErrorModal').html("Debe seleccionar al menos 2 evaluadores en cada uno de los salones");
 		jQuery('#errorModal').css('display', 'block');
 		return;
 	}

@@ -63,8 +63,7 @@
 								<h4><%=mensajeAsesoriasPendiente%></h4>
 							</div>
 							
-							<table width="100%" class="table table-bordered"
-								id="dataTables-example">
+							<table width="100%" class="table table-bordered">
 								<thead>
 									<tr>
 										<th>Hora</th>

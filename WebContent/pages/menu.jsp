@@ -56,6 +56,7 @@
 					events.add(new Modulo("Programar Evento", "social", 5, "bullhorn"));
 					events.add(new Modulo("Gestionar Rúbricas", "rubric", 5, "check-square"));
 					events.add(new Modulo("Gestionar Cuadrantes", "quadrant", 5, "sticky-note-o"));
+					events.add(new Modulo("Salones", "classRoom", 5, "fa fa-th"));
 
 					ArrayList<Modulo> reports = new ArrayList<Modulo>();
 					reports.add(new Modulo("Informe Usuarios", "userReporte", 5, "user-plus"));

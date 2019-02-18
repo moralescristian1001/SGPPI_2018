@@ -127,7 +127,7 @@
 							<div id="rubricas"></div>
 						</fieldset>
 						<div class="form-group">
-							<label for="empleado">*Observaciones:</label>
+							<label for="empleado">Observaciones:</label>
 							<textarea id="observaciones" name="observaciones"
 								class="form-control"></textarea>
 						</div>

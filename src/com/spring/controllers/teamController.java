@@ -357,59 +357,66 @@ public class teamController {
 			equipo.setIdSemestre(idSemestre);
 			equipo.setIdAsignatura(Integer.parseInt(idAsignatura));
 			// usuario.setFechaNac(fechaNac);
-
-			if (idEquipo != null && !idEquipo.isEmpty() && !idEquipo.equals("0") && !idEquipo.equals("undefined")
-					&& !idEquipo.equals("null")) {
-				equipo.setIdEquipo(Integer.parseInt(idEquipo));
-				if(update) {
+			
+			EquipoExample equipoExample = new EquipoExample();
+			equipoExample.createCriteria().andCodigoEqualTo(equipo.getCodigo());
+			List<Equipo> existTeam = dao.getEquipoMapper().selectByExample(equipoExample);
+			if(existTeam == null || existTeam.isEmpty()) {
+				if (idEquipo != null && !idEquipo.isEmpty() && !idEquipo.equals("0") && !idEquipo.equals("undefined")
+						&& !idEquipo.equals("null")) {
+					equipo.setIdEquipo(Integer.parseInt(idEquipo));
+					if(update) {
+						
+						dao.getEquipoMapper().updateByPrimaryKey(equipo);
+					}else {
+						dao.getEquipoMapper().insert(equipo);
+					}
 					
-					dao.getEquipoMapper().updateByPrimaryKey(equipo);
-				}else {
+					
+
+					String idEstudiantesStr = request.getParameter("id_usuario");
+					String[] estudiantesArrStr = idEstudiantesStr.split(",");
+					int[] estudiantes = new int[estudiantesArrStr.length];
+					for (int i = 0; i < estudiantes.length; i++) {
+						estudiantes[i] = Integer.parseInt(estudiantesArrStr[i]);
+					}
+
+					EstudiantesxequiposExample estxeqEx = new EstudiantesxequiposExample();
+					estxeqEx.createCriteria().andIdEquipoEqualTo(equipo.getIdEquipo());
+					dao.getEstudiantesxequiposMapper().deleteByExample(estxeqEx);
+
+					for (int idEstudiante : estudiantes) {
+						Estudiantesxequipos exe = new Estudiantesxequipos();
+						exe.setIdEquipo(equipo.getIdEquipo());
+						exe.setIdEstudiante(idEstudiante);
+						dao.getEstudiantesxequiposMapper().insert(exe);
+					}
+
+				} else {
 					dao.getEquipoMapper().insert(equipo);
-				}
-				
-				
+					
+					String idEstudiantesStr = request.getParameter("id_usuario");
+					String[] estudiantesArrStr = idEstudiantesStr.split(",");
+					int[] estudiantes = new int[estudiantesArrStr.length];
+					
+					for (int i = 0; i < estudiantes.length; i++) {
+						estudiantes[i] = Integer.parseInt(estudiantesArrStr[i]);
+					}
 
-				String idEstudiantesStr = request.getParameter("id_usuario");
-				String[] estudiantesArrStr = idEstudiantesStr.split(",");
-				int[] estudiantes = new int[estudiantesArrStr.length];
-				for (int i = 0; i < estudiantes.length; i++) {
-					estudiantes[i] = Integer.parseInt(estudiantesArrStr[i]);
+					for (int idEstudiante : estudiantes) {
+						Estudiantesxequipos exe = new Estudiantesxequipos();
+						exe.setIdEquipo(equipo.getIdEquipo()); 
+						exe.setIdEstudiante(idEstudiante);
+						dao.getEstudiantesxequiposMapper().insert(exe);
+					}
 				}
-
-				EstudiantesxequiposExample estxeqEx = new EstudiantesxequiposExample();
-				estxeqEx.createCriteria().andIdEquipoEqualTo(equipo.getIdEquipo());
-				dao.getEstudiantesxequiposMapper().deleteByExample(estxeqEx);
-
-				for (int idEstudiante : estudiantes) {
-					Estudiantesxequipos exe = new Estudiantesxequipos();
-					exe.setIdEquipo(equipo.getIdEquipo());
-					exe.setIdEstudiante(idEstudiante);
-					dao.getEstudiantesxequiposMapper().insert(exe);
-				}
-
-			} else {
-				dao.getEquipoMapper().insert(equipo);
-				
-				String idEstudiantesStr = request.getParameter("id_usuario");
-				String[] estudiantesArrStr = idEstudiantesStr.split(",");
-				int[] estudiantes = new int[estudiantesArrStr.length];
-				
-				for (int i = 0; i < estudiantes.length; i++) {
-					estudiantes[i] = Integer.parseInt(estudiantesArrStr[i]);
-				}
-
-				for (int idEstudiante : estudiantes) {
-					Estudiantesxequipos exe = new Estudiantesxequipos();
-					exe.setIdEquipo(equipo.getIdEquipo());
-					exe.setIdEstudiante(idEstudiante);
-					dao.getEstudiantesxequiposMapper().insert(exe);
-				}
+				object.put("status", "ok");
+				object.put("id_equipo", idEquipo);
+				object.put("message", "Se ha guardado la información correctamente");
+			}else {
+				object.put("status", "errors");
+				object.put("message", "Ya existe un equipo con el código ingresado");
 			}
-
-			object.put("status", "ok");
-			object.put("id_equipo", idEquipo);
-			object.put("message", "Se ha guardado la información correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");

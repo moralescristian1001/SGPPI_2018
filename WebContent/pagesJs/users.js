@@ -55,10 +55,16 @@ function updateUser() {
 		jQuery('#errorModal').css('display', 'block');
 		return;
 	}
-	if (idCargo == 3 && (isNaN(minimo_asesorias) || minimo_asesorias == "" || minimo_asesorias == "0")) {
-		jQuery('#errorDiv').html("Debe ingresar un minimo de asesorias y debe ser mayor a 0");
-		jQuery('#errorDiv').css('display', 'block');
+	if (idCargo == 3 && (isNaN(minimo_asesorias) || minimo_asesorias == "" || minimo_asesorias == "0" || minimo_asesorias == null)) {
+		jQuery('#messageErrorModal').html("Debe ingresar un minimo de asesorias y debe ser mayor a 0");
+		jQuery('#errorModal').css('display', 'block');
 		return;
+	}else {
+		if(idCargo == 3 && minimo_asesorias <= 0) {
+			jQuery('#messageErrorModal').html("Minimo de asesorias y debe ser mayor a 0");
+			jQuery('#errorModal').css('display', 'block');
+			return;
+		}
 	}
 	
 	
@@ -171,13 +177,13 @@ function updateUserForm(id_usuario, correo, nombre, apellidos, cedula,
 							} else {
 								jQuery('#messageErrorModal')
 										.html(
-												"Ocurri&oacute; un error eliminando el cuadrante");
-								jQuery('#errorModa').css('display', 'block');
+												"Ocurrió un error guardando la información");
+								jQuery('#errorModal').css('display', 'block');
 							}
 						} catch (err) {
 							jQuery('#messageErrorModal').html(
-									"Ocurrió un error eliminando el cuadrante");
-							jQuery('#errorModa').css('display', 'block');
+									"Ocurrió un error guardando la información");
+							jQuery('#errorModal').css('display', 'block');
 							return;
 						}
 					}

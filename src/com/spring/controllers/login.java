@@ -40,38 +40,42 @@ public class login {
 			user.setUsuario(email);
 
 			if (new UsuariosExample().validateLogin(user)) {
+				if(user.getEstado()) {
+					// obtenemos el semestre actual
+					Semestre semestreActual = dao.getSemestreMapper().selectSemestreActual();
+					request.getSession().setAttribute("semestre", semestreActual);
+					// equipos del semestra actual
+					EquipoExample eEx = new EquipoExample();
+					eEx.createCriteria().andIdSemestreEqualTo(semestreActual.getIdSemestre());
+					List<Equipo> equipos = dao.getEquipoMapper().selectByExample(eEx);
 
-				// obtenemos el semestre actual
-				Semestre semestreActual = dao.getSemestreMapper().selectSemestreActual();
-				request.getSession().setAttribute("semestre", semestreActual);
-				// equipos del semestra actual
-				EquipoExample eEx = new EquipoExample();
-				eEx.createCriteria().andIdSemestreEqualTo(semestreActual.getIdSemestre());
-				List<Equipo> equipos = dao.getEquipoMapper().selectByExample(eEx);
+					if (user.getIdCargo() == 1 || user.getIdCargo() == 6) {
 
-				if (user.getIdCargo() == 1 || user.getIdCargo() == 6) {
-
-					if (equipos.isEmpty()) {
-						request.getSession().setAttribute("team", null);
-					} else {
-
-						// obteniendo el equipo del usuario
-						EstudiantesxequiposExample axeEx = new EstudiantesxequiposExample();
-						axeEx.createCriteria().andIdEstudianteEqualTo(user.getIdUsuario())
-								.andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
-
-						List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(axeEx);
-						if (!exes.isEmpty() && exes.size() == 1) {
-							Equipo equipoEstudiante = dao.getEquipoMapper()
-									.selectByPrimaryKey(exes.get(0).getIdEquipo());
-							request.getSession().setAttribute("team", equipoEstudiante);
-						} else {
+						if (equipos.isEmpty()) {
 							request.getSession().setAttribute("team", null);
+						} else {
+
+							// obteniendo el equipo del usuario
+							EstudiantesxequiposExample axeEx = new EstudiantesxequiposExample();
+							axeEx.createCriteria().andIdEstudianteEqualTo(user.getIdUsuario())
+									.andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
+
+							List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(axeEx);
+							if (!exes.isEmpty() && exes.size() == 1) {
+								Equipo equipoEstudiante = dao.getEquipoMapper()
+										.selectByPrimaryKey(exes.get(0).getIdEquipo());
+								request.getSession().setAttribute("team", equipoEstudiante);
+							} else {
+								request.getSession().setAttribute("team", null);
+							}
 						}
 					}
+					request.getSession().setAttribute("user", user);
+					object.put("status", "ok");
+				}else {
+					object.put("status", "errors");
+					object.put("message", "El usuario actualmente no está activo en el sistema.");
 				}
-				request.getSession().setAttribute("user", user);
-				object.put("status", "ok");
 			} else {
 				object.put("status", "errors");
 				object.put("message", "Correo o contraseña no validas");
