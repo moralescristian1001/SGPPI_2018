@@ -1,3 +1,4 @@
+<%@page import="com.mybatis.models.Estudiantesxequipos"%>
 <%@page import="org.json.JSONObject"%>
 <%@page import="com.mybatis.models.Evento"%>
 <%@page import="com.mybatis.models.Rubrica"%>
@@ -44,6 +45,8 @@
 						List<Salon> salones = (List<Salon>)request.getAttribute("salones");
 						List<Usuarios> profesores = (List<Usuarios>)request.getAttribute("profesores");
 						List<Equipo> equipos = (List<Equipo>)request.getAttribute("equipos");
+						List<Estudiantesxequipos> estxequipos = (List<Estudiantesxequipos>)request.getAttribute("estxequipos");
+						List<Usuarios> estudiantes = (List<Usuarios>)request.getAttribute("estudiantes");
 						List<Califxsoc> califxsoc = (List<Califxsoc>)request.getAttribute("califxsoc");
 						List<Notasxcalifxsoc> notasxcalifxsoc = (List<Notasxcalifxsoc>)request.getAttribute("notasxcalifxsoc");
 						List<Rubricaxitem> rubricasxitem = (List<Rubricaxitem>)request.getAttribute("rubricasxitem");
@@ -63,7 +66,7 @@
 									
 						%>
 						<table width="100%"
-							class="table table-striped table-bordered table-hover"
+							class="table table-bordered"
 							id="dataTables-example-<%=salon.getIdSalon()%>">
 							<caption><%=salon.getDescripcion()%></caption>
 							<thead>
@@ -72,6 +75,7 @@
 									<th>Evaluador</th>
 									<th>Equipo</th>
 									<th>M&oacute;dulo sol</th>
+									<th>Estudiantes</th>
 									<%for(int i = 1; i <= 10; i++){
 									%>
 										<th>R<%=i%></th>
@@ -79,7 +83,7 @@
 									}%>
 									<th>Comentarios</th>
 									<th>Nota parcial</th>
-									<th>Nota final</th>
+									<th>Nota grupal final</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -100,6 +104,12 @@
 								int cantidadCalificadores = 0;
 								int cantidadCalificadoresAsistentes = 0;
 								double sumaNotas = 0.0;
+								int contadorEstudiantes = 0;
+								for(Estudiantesxequipos estxeq : estxequipos){
+									if(estxeq.getIdEquipo() == equipo.getIdEquipo()){
+										contadorEstudiantes++;
+									}
+								}
 								for(Salonxprofesores salonxprofesor : salonxprofesores){
 									Usuarios profesor = null;
 									if(salonxprofesor.getIdSalon() == salon.getIdSalon()){
@@ -132,73 +142,110 @@
 											break;
 										}
 									}
+									
+									//we're gonna see if this rubric is either individually or not 
+									
+									
 								%>
 								<tr>
-									<td><%=profesor.getNombre() + " " + profesor.getApellidos()%></td>
-									<td><%=equipo.getNombre()%></td>
-									<td><%=sunModule%></td>
+									<td rowspan="<%=contadorEstudiantes%>"><%=profesor.getNombre() + " " + profesor.getApellidos()%></td>
+									<td rowspan="<%=contadorEstudiantes%>"><%=equipo.getNombre()%></td>
+									<td rowspan="<%=contadorEstudiantes%>"><%=sunModule%></td>
 									<%
-									JSONArray rubricasJSON = new JSONArray();
-									JSONArray notas = new JSONArray();
+									
 									
 									if(calificacion != null){
+										
 										cantidadCalificadoresAsistentes++;
-										int cantidadRubricas = 0;
-										for(Notasxcalifxsoc nota : notasxcalifxsoc){
-											if(nota.getIdCalifxsoc() == calificacion.getIdCalifxsoc()){
-												rubricasJSON.add(nota.getIdRubricaxitem());
-											}
-										}
-										for(Rubricaxitem rubricaxitem : rubricasxitem){
-											if(rubricasJSON.indexOf(rubricaxitem.getIdRubricaxitem()) >= 0){
-												JSONObject notaObj = new JSONObject();
-												notaObj.put("rubrica", rubricaxitem.getIdRubrica());
-												notaObj.put("calificacion", rubricaxitem.getCalificacion());
-												notas.add(notaObj);
-											}
-										}
-										int puntaje = 0;
-										for(Rubrica rubrica : rubricas){
-											int notaRub = -1;
-											for(Object nota : notas){
-												JSONObject notaObj = (JSONObject)nota;
-												if(notaObj.getInt("rubrica") == rubrica.getIdRubrica()){
-													notaRub = notaObj.getInt("calificacion");
-													puntaje += notaRub;
-													break;
+										boolean firstEstudiante = true;
+										for(Estudiantesxequipos estxeq : estxequipos){
+											
+											JSONArray rubricasJSON = new JSONArray();
+											JSONArray notas = new JSONArray();
+											if(estxeq.getIdEquipo() == equipo.getIdEquipo()){
+												int cantidadRubricas = 0;
+												String estudiante = "";
+												for(Usuarios est : estudiantes){
+													if(est.getIdUsuario() == estxeq.getIdEstudiante()){
+														estudiante = est.getNombre() + " " + est.getApellidos() + " - " + est.getCedula();
+													}
 												}
-											}
-											if(notaRub == -1){
-												continue;	
-											}
-											cantidadRubricas++;
-											%>
-											<td><%=notaRub%></td>
-											<%
-										}
-										for(int i = cantidadRubricas; i < 10; i++){
-											%>
-											<td>N/A</td>
-											<%
-										}
-										int X = cantidadRubricas * 3;
-										int Y = cantidadRubricas * 2;
+												if(!firstEstudiante){
+													%>
+													<tr>
+													<%
+												}
+												%>
+												<td><%=estudiante%></td>
+												<%
+												for(Notasxcalifxsoc nota : notasxcalifxsoc){
+													if(nota.getIdCalifxsoc() == calificacion.getIdCalifxsoc() && (nota.getIdEstudiante() == 0 || estxeq.getIdEstudiante() == nota.getIdEstudiante())){
+														rubricasJSON.add(nota.getIdRubricaxitem());
+														
+													}
+												}
+												for(Rubricaxitem rubricaxitem : rubricasxitem){
+													if(rubricasJSON.indexOf(rubricaxitem.getIdRubricaxitem()) >= 0){
+														JSONObject notaObj = new JSONObject();
+														notaObj.put("rubrica", rubricaxitem.getIdRubrica());
+														notaObj.put("calificacion", rubricaxitem.getCalificacion());
+														notas.add(notaObj);
+													}
+												}
 												
-										double notaParcial = puntaje < cantidadRubricas ? 0.0 : 3.0 + (((puntaje - Y ) * 2) / (X - Y));
-										sumaNotas += notaParcial; 
-										%>
-										<td><%=calificacion.getObservaciones()%></td>
-										<td><%=notaParcial%></td>
-										<%
-										if(firstEvaluador){
-											firstEvaluador = false;
-											%>
-											<td id="total-<%=salonxequipo.getIdSalonxequipo()%>" style="vertical-align: middle;"></td>
-											<%
+												int puntaje = 0;
+												for(Rubrica rubrica : rubricas){
+													int notaRub = -1;
+													for(Object nota : notas){
+														JSONObject notaObj = (JSONObject)nota;
+														if(notaObj.getInt("rubrica") == rubrica.getIdRubrica()){
+															notaRub = notaObj.getInt("calificacion");
+															puntaje += notaRub;
+															break;
+														}
+													}
+													if(notaRub == -1){
+														continue;	
+													}
+													cantidadRubricas++;
+													%>
+													<td><%=notaRub%></td>
+													<%
+												}
+												for(int i = cantidadRubricas; i < 10; i++){
+													%>
+													<td>N/A</td>
+													<%
+												}
+												int X = cantidadRubricas * 3;
+												int Y = cantidadRubricas * 2;
+														
+												double notaParcial = puntaje < cantidadRubricas ? 0.0 : 3.0 + (((puntaje - Y ) * 2) / (X - Y));
+												sumaNotas += Math.round((notaParcial / contadorEstudiantes) * 100.0) / 100.0; 
+												if(firstEstudiante){
+													firstEstudiante = false;
+												%>
+													<td rowspan="<%=contadorEstudiantes%>"><%=calificacion.getObservaciones()%></td>
+												<%
+												}
+												%>
+												<td><%=notaParcial%></td>
+												<%
+												if(firstEvaluador){
+													firstEvaluador = false;	
+												%>
+												
+												<td id="total-<%=salonxequipo.getIdSalonxequipo()%>" style="vertical-align: middle;"></td>
+												<%
+												}
+												%>
+													</tr>
+												<%
+											}
 										}
 									}else{
 										%>
-										<td colspan="12"><div align="center">ESTE EVALUADOR NO HIZO LA EVALUACIÓN DE ESTE EQUIPO</div></td>
+										<td colspan="13"><div align="center">ESTE EVALUADOR NO HIZO LA EVALUACIÓN DE ESTE EQUIPO</div></td>
 										
 										<%
 										if(firstEvaluador){
@@ -223,7 +270,7 @@
 							
 						<script>
 							
-							document.getElementById("total-<%=salonxequipo.getIdSalonxequipo()%>").rowSpan = '<%=cantidadCalificadores%>';
+							document.getElementById("total-<%=salonxequipo.getIdSalonxequipo()%>").rowSpan = '<%=contadorEstudiantes * (cantidadCalificadoresAsistentes == 0 ? 1 : cantidadCalificadoresAsistentes)%>';
 							document.getElementById("total-<%=salonxequipo.getIdSalonxequipo()%>").innerHTML = '<%=notaFinal%>';
 						</script>
 						<%

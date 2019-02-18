@@ -191,6 +191,35 @@ function updateSocializacion() {
 				}
 			});
 }
+
+function toJSDate( dateTime ) {
+
+	var dateTime = dateTime.split("T");//dateTime[0] = date, dateTime[1] = time
+
+	var date = dateTime[0].split("-");
+	var time = dateTime[1].split(":");
+
+	//(year, month, day, hours, minutes, seconds, milliseconds)
+	//subtract 1 from month because Jan is 0 and Dec is 11
+	return new Date(date[0], (date[1]-1), date[2], time[0], time[1], 0, 0);
+
+}
+function futureDateTime( dateTime ) {
+	var now = new Date();
+	var future = false;
+	if( Date.parse(now) < Date.parse(dateTime) ) {
+		future = true;
+	}
+	
+	return future;
+}
+function isNumberKey(evt){
+    var charCode = (evt.which) ? evt.which : event.keyCode
+    if (charCode > 31 && (charCode < 48 || charCode > 57))
+        return false;
+    return true;
+}
+
 function saveSocializacion() {
 	jQuery('#errorDiv').css('display', 'none');
 	var fecha = jQuery("#fecha").val();
@@ -202,8 +231,9 @@ function saveSocializacion() {
 		jQuery('#errorModal').css('display', 'block');
 		return;
 	}else{
-		var today = formatDate(new Date());
-		if(fecha < today){
+		
+		fechaDate = toJSDate(fecha);
+		if(!futureDateTime(fechaDate)){
 			jQuery("#messageErrorModal").html("La fecha seleccionada no es valida");
 			jQuery('#errorModal').css('display', 'block');
 			return;
@@ -234,6 +264,12 @@ function saveSocializacion() {
 			var inserto = false; 
 			//equipos
 			
+			if(!jQuery("input[id*='id_equipo_" + salon + "'],select[id*='id_equipo_"+salon+"']").length){
+				jQuery('#messageErrorModal').html("No se ha seleccionado equipos para el salón " + descripcionSalon);
+				jQuery('#errorModal').css('display', 'block');
+				errorAsignandoEquipo = true;
+				return;
+			}
 			
 			jQuery("input[id*='id_equipo_" + salon + "'],select[id*='id_equipo_"+salon+"']").each(
 					function(element) {
@@ -275,6 +311,13 @@ function saveSocializacion() {
 			//end equipos
 			
 			//evaluadores
+			
+			if(!jQuery("input[id*='id_evaluador_" + salon + "'],select[id*='id_evaluador_"+salon+"']").length){
+				jQuery('#messageErrorModal').html("No se ha seleccionado evaluadores para el salón " + descripcionSalon);
+				jQuery('#errorModal').css('display', 'block');
+				errorAsignandoEvaluador = true;
+				return;
+			}
 			
 			jQuery("input[id*='id_evaluador_" + salon + "'],select[id*='id_evaluador_" + salon + "']").each(
 					function(element) {

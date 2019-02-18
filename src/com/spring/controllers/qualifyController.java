@@ -138,14 +138,14 @@ public class qualifyController {
 					model.addAttribute("salon", salon);
 					return new ModelAndView("pages/qualify");
 				} else {
-					model.addAttribute("errors", "No se te ha asignado un salón en la socialización");
+					model.addAttribute("errors", "No se te ha asignado un salï¿½n en la socializaciï¿½n");
 					return new ModelAndView("pages/home");
 				}
 			} else if(eventoActual.size() == 0) {
 				model.addAttribute("errors", "No hay socializaciones activas");
 				return new ModelAndView("pages/home");
 			}else {
-				model.addAttribute("errors", "Hay más de una socialización activa");
+				model.addAttribute("errors", "Hay mï¿½s de una socializaciï¿½n activa");
 				return new ModelAndView("pages/home");
 			}
 
@@ -187,19 +187,31 @@ public class qualifyController {
 			
 			String[] rubricasArr = rubricas.split(",");
 			for (String rubricaStr : rubricasArr){
-				int rubrica = Integer.parseInt(rubricaStr);
+				String[] rubricasPartes = rubricaStr.split("_");
+				String usuarioAlcanceNota = rubricasPartes[0];
+				String rubricaNota = rubricasPartes[1];
 				Notasxcalifxsoc nxcxs = new Notasxcalifxsoc();
+				
+				if(!usuarioAlcanceNota.equals("0")) {
+					//si no es grupal
+					nxcxs.setIdEstudiante(Integer.parseInt(usuarioAlcanceNota));
+				}else {
+					nxcxs.setIdEstudiante(0);
+				}
+				
+				int rubrica = Integer.parseInt(rubricaNota);
+				
 				nxcxs.setIdCalifxsoc(idCalifxsoc);
 				nxcxs.setIdRubricaxitem(rubrica);
 				dao.getNotasxcalifxsocMapper().insert(nxcxs);
 			}
 			
 			object.put("status", "ok");
-			object.put("message", "Se ha creado la calificación correctamente");
+			object.put("message", "Se ha creado la calificaciï¿½n correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando la calificaciónn");
+			object.put("message", "Ocurriï¿½ un error guardando la calificaciï¿½nn");
 		}
 		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);
@@ -232,6 +244,7 @@ public class qualifyController {
 			
 			if (!rubricas.isEmpty()) {
 				int numRubrica = 1;
+				int numCalificacionesObligatorias = 0;
 				for (Rubrica rubrica : rubricas) {
 					RubricaxitemExample rxiEx = new RubricaxitemExample();
 					rxiEx.createCriteria().andIdRubricaEqualTo(rubrica.getIdRubrica());
@@ -240,16 +253,23 @@ public class qualifyController {
 
 					if (rxis.isEmpty() || rxis.size() != 4) {
 						object.put("status", "errors");
-						object.put("info", "No hay rubricas relacionadas con el módulo sol del equipo");
+						object.put("info", "No hay rubricas relacionadas con el mï¿½dulo sol del equipo");
 						break;
 					} else {
 						if(editable) {
 							info += "<tr><td><textarea id='rubrica_descripcion_"+numRubrica+"' name='rubrica_descripcion_"+numRubrica+"' class='form-control'>" +rubrica.getDescripcion() + "</textarea></td>";
 							info += "<td>" +
-									"<select id='id_tipo_rubrica_"+numRubrica+"' name='id_tipo_rubrica_"+numRubrica+"' class='form-control'>" +
+									"<select id='id_tipo_rubrica_"+numRubrica+"' name='id_tipo_rubrica_"+numRubrica+"' class='form-control'>"+
 									"<option value='-1'>Seleccione el tipo</option>" +
 									"<option value='1' "+(rubrica.getIdTipoRubrica() == 1 ? "selected" : "") + ">Criterios TÃ©maticos</option>" +
 									"<option value='2' "+(rubrica.getIdTipoRubrica() == 2 ? "selected" : "") + ">Criterios AxiolÃ³gicos</option>" +
+									"</select>"+
+									"</td>"+
+									"<td>" +
+									"<select id='alcance_nota_"+numRubrica+"' name='alcance_nota_"+numRubrica+"' class='form-control'>" +
+									"<option value='-1'>Seleccione el alcance de la nota</option>" +
+									"<option value='1' "+(rubrica.getAlcanceNota() == 1 ? "selected" : "") + ">Grupal</option>" +
+									"<option value='2' "+(rubrica.getAlcanceNota() == 2 ? "selected" : "") + ">Individual</option>" +
 									"</select>" +
 									"</td>";
 							int itemRubrica = 0;
@@ -263,28 +283,56 @@ public class qualifyController {
 							numRubrica++;
 						}else {
 							
-							info += "<tr><td>" + rubrica.getNumero() + " - " + rubrica.getDescripcion() + "</td>";
-							for (Rubricaxitem rxi : rxis) {
-								info += "<td class='items_rubrica item-seleccionable' id='item_" + rubrica.getIdRubrica() + "_"
-										+ rxi.getIdRubricaxitem() + "'>" + rxi.getDescripcionItem() + "</td>";
+							if(rubrica.getAlcanceNota() == 2 && request.getParameter("id_equipo") != null) { //si es individual
+								
+								int idEquipo = Integer.parseInt(request.getParameter("id_equipo"));
+								EstudiantesxequiposExample exeEx = new EstudiantesxequiposExample();
+								exeEx.createCriteria().andIdEquipoEqualTo(idEquipo);
+								List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(exeEx);
+								
+								info += "<tr><td rowspan='" + exes.size() + "'>" + rubrica.getNumero() + " - " + rubrica.getDescripcion() + "</td>";
+								
+								boolean first = true;
+								for(Estudiantesxequipos exe : exes) {
+									numCalificacionesObligatorias++;
+									Usuarios est = dao.getUsuariosMapper().selectByPrimaryKey(exe.getIdEstudiante());
+									if(!first) {
+										info+= "</tr><tr>";
+									}
+									info += "<td>" + est.getNombre() + "  " + est.getApellidos() +  "</td>";
+									for (Rubricaxitem rxi : rxis) {
+										info += "<td class='items_rubrica item-seleccionable' id='item_" + rubrica.getIdRubrica() + "_"
+												+ est.getIdUsuario() + "_" + rxi.getIdRubricaxitem() + "'>" + rxi.getDescripcionItem() + "</td>";
+									}
+									info += "</tr>";
+								}
+							}else {
+								numCalificacionesObligatorias++;
+								info += "<tr><td>" + rubrica.getNumero() + " - " + rubrica.getDescripcion() + "</td>";
+								info += "<td>Grupal</td>"; // el de estudiante
+								for (Rubricaxitem rxi : rxis) {
+									info += "<td class='items_rubrica item-seleccionable' id='item_" + rubrica.getIdRubrica() + "_0_"
+											+ rxi.getIdRubricaxitem() + "'>" + rxi.getDescripcionItem() + "</td>";
+								}
 							}
+							
 						}
 						info += "</tr>";
 						
 					}
 				}
 				object.put("status", "ok");
-				object.put("totalRubricas", rubricas.size());
+				object.put("totalRubricas", editable ? rubricas.size() : numCalificacionesObligatorias);
 				object.put("info", info);
 			} else {
 				object.put("status", "errors");
-				object.put("info", "No hay rúbricas relacionadas con el módulo sol del equipo");
+				object.put("info", "No hay rï¿½bricas relacionadas con el mï¿½dulo sol del equipo");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando la calificación");
+			object.put("message", "Ocurriï¿½ un error guardando la calificaciï¿½n");
 		}
 
 		response.setCharacterEncoding("UTF-8");

@@ -175,7 +175,7 @@
 										title="El campo duración en horas no puede tener valores negativos ni cero."></span>
 										</li> *Duración horas:</label> <input
 											type="number" class="form-control" name="duracion_horas"
-											id="duracion_horas"
+											id="duracion_horas" onkeypress="return isNumberKey(event)"
 											placeholder="Integrese la Duración en horas">
 
 									</div>

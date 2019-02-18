@@ -96,22 +96,22 @@
 											for (int dia = 1; dia < 7; dia++) {
 										%>
 										<td class="schedule-td"
-											id="td-<%=dia + "-" + ((int) hora) + ":" + (hora % 1 == 0 ? 0 : 30)%>">
+											id="td-<%=dia + "-" + ((int) hora) + ":" + (hora % 1 == 0 ? "00" : 30)%>">
 											<%
 												boolean encontrado = false;
 														List<Integer> asesoresEncontrados = new ArrayList();
 														for (Asesorias a : asesorias) {
-
+															String nombreAsesor = "";
+															for (Usuarios asesor : asesores) {
+																if(asesor.getIdUsuario() == a.getIdAsesor()){
+																	nombreAsesor = asesor.getNombre() + " " + asesor.getApellidos();
+																	break;
+																}
+															}
 															if (a.getHoraSemana() == hora && a.getDiaSemana() == dia) {
-																if (a.getIdEquipo() != null && !encontrado) { // esta ocupada por otro equipo
+																if (a.getIdEquipo() != null) { // esta ocupada por otro equipo
 																	if (a.getIdEquipo() == equipoEstudiante.getIdEquipo()) {
-																		String nombreAsesor = "";
-																		for (Usuarios asesor : asesores) {
-																			if(asesor.getIdUsuario() == a.getIdAsesor()){
-																				nombreAsesor = asesor.getNombre() + " " + asesor.getApellidos();
-																				break;
-																			}
-																		}
+																		
 											%><a
 											href="javascript:verMiAsesoria(<%=dia%>,<%=hora%>,'<%=diasSemana[dia - 1]%>', '<%=nombreAsesor%>')"><i
 												class='fa fa-calendar-check-o fa-fw' data-toggle="tooltip" 
@@ -119,7 +119,12 @@
  	encontrado = true;
  							asesoresEncontrados.add(a.getIdAsesor());
  						} else {
- %> No esta disponible <%
+ %>
+ 	<span data-toggle="tooltip" title="El asesor <%=nombreAsesor%> tiene ocupada esta asesoria con otro equipo">No esta disponible</span> 
+ 
+ <%
+ 	asesoresEncontrados.add(a.getIdAsesor());
+ 	encontrado = true;
  	}
 
  					} else { // no esta ocupada por otro equipo
@@ -161,8 +166,8 @@
  				if (asesoresEncontrados.size() == 1) {
  					coloresAgregados += ", #" + coloresXAsesor.get(asesoresEncontrados.get(0));
  				}
- 				String horaStr = hora == 12 || hora == 12.5 ? ((int) hora) + "\\:" + (hora % 1 == 0 ? "00" : "30") + "PM"
-						: (((int) hora % 12) + "\\:" + (hora % 1 == 0 ? "00" : "30"));
+ 				String horaStr = hora == 12 || hora == 12.5 ? ((int) hora) + "\\\\:" + (hora % 1 == 0 ? "00" : "30") + "PM"
+						: (((int) hora % 12) + "\\\\:" + (hora % 1 == 0 ? "00" : "30"));
  				%><script>console.log('<%=dia +"-"+ horaStr + " " + coloresAgregados%>')</script><%
  				scriptColores += "$('#td-" + dia + "-" + horaStr + "').css({background: 'linear-gradient(to right"
  						+ coloresAgregados + ")'});";

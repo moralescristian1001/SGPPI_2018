@@ -101,6 +101,8 @@ public class rubricController {
 			
 			Map<Integer, String> rubricas = new HashMap<Integer, String>();
 			Map<Integer, Integer> idTiposRubrica = new HashMap<Integer, Integer>();
+			Map<Integer, Integer> alcancesRubricas = new HashMap<Integer, Integer>();
+			
 			Map<Integer, Map<Integer, String>> items = new HashMap<Integer, Map<Integer, String>>();
 			
 			for(Map.Entry<String, String> entry : modelMap.entrySet()) {
@@ -112,15 +114,21 @@ public class rubricController {
 				if(key.contains("rubrica_descripcion")) {
 					
 					if(value.equals("")) {
-						throw new Exception("Por favor completar la descripcion de las rúbricas");
+						throw new Exception("Por favor completar la descripcion de las rï¿½bricas");
 					}
 					rubricas.put(Integer.parseInt(infoItem[2]), value);
 				}else if(key.contains("id_tipo_rubrica")) {
 					
 					if(value.equals("") || value.equals("-1")) {
-						throw new Exception("Por favor completar los tipos de las rúbricas");
+						throw new Exception("Por favor completar los tipos de las rï¿½bricas");
 					}
 					idTiposRubrica.put(Integer.parseInt(infoItem[3]), Integer.parseInt(value));
+				}else if(key.contains("alcance_nota")) {
+					
+					if(value.equals("") || value.equals("-1")) {
+						throw new Exception("Por favor completar los alcances de notas");
+					}
+					alcancesRubricas.put(Integer.parseInt(infoItem[2]), Integer.parseInt(value));
 				}else if(key.contains("item")) {
 					
 					if(value.equals("")) {
@@ -146,6 +154,7 @@ public class rubricController {
 				rubrica.setIdAsignatura(idAsignatura);
 				rubrica.setDescripcion(entry.getValue());
 				rubrica.setIdTipoRubrica(idTiposRubrica.get(entry.getKey()));
+				rubrica.setAlcanceNota(alcancesRubricas.get(entry.getKey()));
 				rubrica.setVersion(version);
 				rubrica.setFechaVersion(new Date());
 				rubrica.setNumero(entry.getKey());
@@ -172,11 +181,11 @@ public class rubricController {
 			}
 
 			object.put("status", "ok");
-			object.put("message", "Se ha creado la rúbrica correctamente");
+			object.put("message", "Se ha creado la rï¿½brica correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando los datos");
+			object.put("message", e.getMessage());
 		}
 		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);

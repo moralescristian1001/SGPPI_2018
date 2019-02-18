@@ -14,6 +14,13 @@ var rubricaFila = "<tr>" +
 		"</select>" +
 		"</td>" +
 		"<td>" +
+		"<select id='alcance_nota_{numeroRubrica}' name='alcance_nota_{numeroRubrica}' class='form-control'>" +
+		"<option value='-1'>Seleccione el alcance de la nota</option>" +
+		"<option value='1'>Grupal</option>" +
+		"<option value='2'>Individual</option>" +
+		"</select>" +
+		"</td>" +
+		"<td>" +
 		"<textarea id='item_{numeroRubrica}_0' name='item_{numeroRubrica}_0' class='form-control'></textarea>" +
 		"</td>" +
 		"<td>" +
@@ -41,6 +48,7 @@ function guardarRubricaForm(){
 				"<table class='table' id='table_rubricas'>" + "<thead><tr>"
 						+ "<td>Rúbrica</td>"
 						+ "<td>Tipo Rúbrica</td>"
+						+ "<td>Alcance nota</td>"
 						+ "<td>Deficiente(0)</td>"
 						+ "<td>Insuficiente(1)</td>"
 						+ "<td>Aceptable(2)</td>"
@@ -137,6 +145,7 @@ function viewRubricForm(idAsignatura, version, nombreAsignatura) {
 					$("#rubricas").html(
 							"<table class='table'>" + "<thead><tr>"
 									+ "<td>Rúbrica</td>"
+									+ "<td>Alcance nota</td>"
 									+ "<td>Deficiente(0)</td>"
 									+ "<td>Insuficiente(1)</td>"
 									+ "<td>Aceptable(2)</td>"
@@ -181,15 +190,17 @@ function updateRubricForm(idAsignatura, version, nombreAsignatura) {
 					jQuery('#messageErrorModal').html(data.message);
 					jQuery('#errorModal').css('display', 'block');
 				} else if (data.status != undefined && data.status == 'ok') {
+					numeroRubrica = data.totalRubricas;
 					$("#rubricas").html(
-							"<table class='table'>" + "<thead><tr>"
+							"<table class='table' id='table_rubricas'>" + "<thead><tr>"
 									+ "<td>Rúbrica</td>"
 									+ "<td>Tipo Rúbrica</td>"
+									+ "<td>Alcance nota</td>"
 									+ "<td>Deficiente(0)</td>"
 									+ "<td>Insuficiente(1)</td>"
 									+ "<td>Aceptable(2)</td>"
 									+ "<td>Bueno(3)</td>" + "</tr></thead>"
-									+ data.info + "</table>");
+									+ data.info + "</table><input type='button' onclick='agregarRubrica()' value='Agregar Rúbrica' class='btn btn-primary'>");
 				} else {
 					jQuery('#messageErrorModal').html(
 							"Ocurrió un error guardando la calificación");

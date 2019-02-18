@@ -97,6 +97,17 @@ public class qualifyGradeReportController {
 				eEx.createCriteria().andIdEquipoIn(salonxequipos.stream().map(Salonxequipo::getIdEquipo).collect(Collectors.toList()));
 				List<Equipo> equipos = dao.getEquipoMapper().selectByExample(eEx);
 				
+				EstudiantesxequiposExample eeex = new EstudiantesxequiposExample();
+				eeex.createCriteria().andIdEquipoIn(equipos.stream().map(Equipo::getIdEquipo).collect(Collectors.toList()));
+				
+				List<Estudiantesxequipos> exes = dao.getEstudiantesxequiposMapper().selectByExample(eeex);
+				List<Usuarios> estudiantes = new ArrayList<>();
+				for(Estudiantesxequipos aexe : exes) {
+					Usuarios integrante = dao.getUsuariosMapper().selectByPrimaryKey(aexe.getIdEstudiante());
+					estudiantes.add(integrante);
+				}
+				
+				
 				CalifxsocExample cxsEx = new CalifxsocExample();
 				cxsEx.createCriteria().andIdSalonxequipoIn(salonxequipos.stream().map(Salonxequipo::getIdSalonxequipo).collect(Collectors.toList()));
 				
@@ -131,6 +142,9 @@ public class qualifyGradeReportController {
 				
 				
 				model.addAttribute("equipos", equipos);
+				model.addAttribute("estxequipos", exes);
+				model.addAttribute("estudiantes", estudiantes);
+				
 				model.addAttribute("califxsoc", califxsoc);
 				model.addAttribute("notasxcalifxsoc", notasxcalifxsoc);
 				
@@ -164,11 +178,11 @@ public class qualifyGradeReportController {
 			
 			
 			object.put("status", "ok");
-			object.put("message", "Se ha creado la calificación correctamente");
+			object.put("message", "Se ha creado la calificaciï¿½n correctamente");
 		} catch (Exception e) {
 			e.printStackTrace();
 			object.put("status", "errors");
-			object.put("message", "Ocurrió un error guardando la calificación");
+			object.put("message", "Ocurriï¿½ un error guardando la calificaciï¿½n");
 		}
 		response.setCharacterEncoding("UTF-8");
 		writeObject(object, response);

@@ -17,7 +17,8 @@ function saveQualify() {
 	}
 	
 	rubricas.each(function() {
-		itemsArray.push($(this).attr("id").split("_")[2]);
+		var partesId = $(this).attr("id").split("_");
+		itemsArray.push(partesId[2] + "_" + partesId[3]);
 	});
 	
 	items = itemsArray.join(",");
@@ -70,6 +71,8 @@ function saveQualify() {
 }
 
 function abrirEquipo(idEquipo, codigo, nombre, asignatura, idAsignatura, nota) {
+	totalRubricas = 0;
+	totalRubricasSeleccionadas = 0;
 	jQuery('#id_equipo').val(idEquipo);
 	jQuery('#codigo').html(codigo);
 	jQuery('#nombre').html(nombre);
@@ -84,7 +87,8 @@ function abrirEquipo(idEquipo, codigo, nombre, asignatura, idAsignatura, nota) {
 		url : urlFull + '/pages/qualify/getInfoAdicional.html',
 		data : {
 			id_asignatura : idAsignatura,
-			id_socializacion : $("#id_socializacion").val()
+			id_socializacion : $("#id_socializacion").val(),
+			id_equipo : idEquipo
 		},
 		success : function(o) {
 			if (o == "") {
@@ -100,6 +104,7 @@ function abrirEquipo(idEquipo, codigo, nombre, asignatura, idAsignatura, nota) {
 					$("#rubricas").html(
 							"<table class='table'>" + "<thead><tr>"
 									+ "<td>Rúbrica</td>"
+									+ "<td>Estudiantes</td>"
 									+ "<td>Deficiente(0)</td>"
 									+ "<td>Insuficiente(1)</td>"
 									+ "<td>Aceptable(2)</td>"
@@ -134,9 +139,10 @@ function actualizarRubricas() {
 					$(this).toggleClass("item-activo");
 					
 					
-					const
-					idRubrica = $(this).attr("id").split("_")[1];
-					$("td[id*='item_" + idRubrica + "']").not(
+					const idRubrica = $(this).attr("id").split("_")[1];
+					const usuarioNota = $(this).attr("id").split("_")[2];
+					console.log(idRubrica + " " + usuarioNota);
+					$("td[id*='item_" + idRubrica + "_" + usuarioNota + "']").not(
 							"#" + $(this).attr("id")).toggleClass(
 							"item-seleccionable");
 				}
